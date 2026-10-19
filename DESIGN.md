@@ -666,5 +666,5 @@ Agreed with Oleksii for the landing rebuild (spec: `docs/superpowers/specs/2026-
 - **Surfaces.** Besides hero and CTA, the key-promise section ("What you build with") is black. White sections may hold **dark cards** (`.surface-black`, radius 4, no shadow): "The Standard" card and the two "Two ways in" cards.
 - **Headline + body.** Section headers may carry one body paragraph: marker → 16 → two-tone headline → 24 → p1 `neutral/800`, max 650. Temporary: the Vercel copy has long leads; revisit later.
 - **Primary CTA on dark.** Blue filled `primary/450`, white label, not darkened (label contrast 4.16, below AA for 14px; accepted).
-- **Wave in cards.** Every dark card hosts its own live `[data-wave]` with `frame {x:0,w:1}`. Skill card = fine/thin texture, Scenario card = heavy texture (tuned via `fibers` and scale overrides). The black key section has no wave.
+- **Wave in cards.** Every dark card hosts its own live `[data-wave]`, framed `{x:0, y:0, w:1.4, h:1.2–1.3}` so the ribbon fills the card with no canvas edge showing. Skill card = fine/thin texture, Scenario card = heavy texture (tuned via `fibers` and scale overrides). The black key section has no wave.
 - **Sticky tabs.** Rule / Skill / Scenario explainers share one sticky pill-tab bar that follows scroll on every breakpoint; tabs also jump to their panel.
