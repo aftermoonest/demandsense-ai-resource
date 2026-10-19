@@ -143,8 +143,8 @@ b { font-weight: 500; color: var(--text); }
 }
 
 /* ---------- The stage is paid for: the followspot left, the header and three facts right ---------- */
-/* Halves 612 with an 80px gap (DESIGN §6.1 chess rows); the figure spans both rows of the right column and
-   stands on the band line that closes the last fact */
+/* Halves 612 with an 80px gap (DESIGN §6.1 chess rows); the figure spans both rows of the right column,
+   centred on them; a band line closes the last fact */
 .split { display: grid; gap: 40px; }
 .bleed.b-end { border-top: 0; }
 .spot { margin: 0; }
@@ -156,7 +156,7 @@ b { font-weight: 500; color: var(--text); }
 .facts .t-p2 { margin-top: 8px; max-width: 42ch; }
 @media (min-width: 1000px) {
   .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 80px; row-gap: 0; }
-  .spot { grid-column: 1; grid-row: 1 / span 2; align-self: end; }
+  .spot { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
   .split > .head, .facts { grid-column: 2; }
   .facts { margin-top: 48px; align-self: end; }
 }
