@@ -32,8 +32,13 @@ Made while you were away (2026-10-19). Each one is reversible; say "revert N" or
 20. Muted text below 24px moved from `neutral-500` to `neutral-800` where it sat on white (DESIGN §4.5).
 21. Board connectors are drawn per block (centre to centre), so wrapped blocks never leave spurs.
 
+22. **New token `--primary-550: #2556c4`** for the blue button hover: 1.6:1 against the default (brief §0.5 asks ≥1.4), white label 6.3:1. Needs adding to the Figma `Colors` collection.
+23. **Main room plays one lap** (screen 1 → screen 3 → back to centre) the first time it scrolls into view, so readers learn it answers the pointer; never under reduced motion, and a real pointer takes over.
+24. **"500-600" counts up** once (DESIGN §11 count-up pattern), width held so nothing shifts.
+25. **WebGL waves fade in** over 1.6s when ready instead of popping.
+
 ## Open for you
 
 - Button labels on "Build with", "The Standard" card and both "Two ways in" cards all say "Bring your work" (not on the Vercel site).
 - Figma still draws band rules edge-to-edge (DESIGN §7 updated, comps not).
-- Blue CTA hover uses the report's `brightness(.94)`; default→hover contrast is below the brief's 1.4 target. A darker hover needs a new token: see audit notes.
+

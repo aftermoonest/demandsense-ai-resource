@@ -58,7 +58,7 @@ b { font-weight: 500; color: var(--text); }
 .btn.brand { background: var(--action-brand); color: var(--neutral-0); }
 .btn.outlined { background: none; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
 @media (hover: hover) and (pointer: fine) {
-  .btn.brand:hover { filter: brightness(.94); }
+  .btn.brand:hover { background: var(--primary-550); }
   .btn.outlined:hover { box-shadow: inset 0 0 0 1px var(--text); }
 }
 .btn:active { transform: scale(.97); }
@@ -359,15 +359,16 @@ b { font-weight: 500; color: var(--text); }
    ===================================================================== */
 :root { --t-reveal: 760ms; --t-draw: 1100ms; }
 .js .rv { opacity: 0; translate: 0 16px; transition: opacity var(--t-reveal) var(--ease-out) var(--d, 0ms), translate var(--t-reveal) var(--ease-out) var(--d, 0ms), filter var(--t-reveal) var(--ease-out) var(--d, 0ms); }
-.js .rv.on { opacity: 1; translate: none; filter: none; }
+/* .on.on.on: the end state must beat every per-block start state */
+.js .rv.on.on.on { opacity: 1; translate: none; filter: none; }
 .js .headline.rv { filter: blur(6px); }
 .js .headline.rv.on { filter: none; }
 
 /* Hero stack: drafts slide out from behind the front sheet, rows write themselves in */
-.js .stack .sheet.back.rv { translate: -18px 22px; }
-.js .stack .sheet.front.rv { translate: 0 24px; }
+.js .stack .sheet.back.rv:not(.on) { translate: -18px 22px; }
+.js .stack .sheet.front.rv:not(.on) { translate: 0 24px; }
 .js .stack .floor.rv { translate: none; }
-.js .toc li.rv { translate: -8px 0; }
+.js .toc li.rv:not(.on) { translate: -8px 0; }
 .toc .bars i { transform-origin: left; }
 .js .toc li .bars i { transform: scaleX(0); transition: transform 900ms var(--ease-out) calc(var(--d, 0ms) + 220ms); }
 .js .toc li .bars i + i { transition-delay: calc(var(--d, 0ms) + 320ms); }
@@ -401,9 +402,9 @@ b { font-weight: 500; color: var(--text); }
 .js .flow > .wire.rv.on { transform: none; }
 .js .flow > .node.main.rv { translate: none; scale: .96; transition: opacity 500ms var(--ease-out) var(--d), scale 500ms var(--ease-out) var(--d); }
 .js .flow > .node.main.rv.on { scale: none; }
-.js .grp.in > .node.rv { translate: -12px 0; }
-.js .grp.out > .node.rv { translate: 12px 0; }
-@media (max-width: 999px) { .js .grp.in > .node.rv, .js .grp.out > .node.rv { translate: 0 12px; } }
+.js .grp.in > .node.rv:not(.on) { translate: -12px 0; }
+.js .grp.out > .node.rv:not(.on) { translate: 12px 0; }
+@media (max-width: 999px) { .js .grp.in > .node.rv, .js .grp.out > .node.rv:not(.on) { translate: 0 12px; } }
 
 /* Hub: tool wires draw, then the orange one to DemandSense */
 .js .hub > .wire.rv { translate: none; transform: scaleX(0); transition: opacity 200ms linear var(--d), transform 520ms var(--ease-in-out) var(--d); }
@@ -411,8 +412,8 @@ b { font-weight: 500; color: var(--text); }
 
 /* Chain: the connector chips pop onto the dividers */
 .js .chain .link.rv { translate: -50% -50%; scale: .8; transition: opacity 400ms var(--ease-out) var(--d), scale 400ms var(--ease-out) var(--d); }
-.js .chain .link.rv.on { scale: none; translate: -50% -50%; }
-@media (max-width: 999px) { .js .chain .link.rv, .js .chain .link.rv.on { translate: none; } }
+.js .chain .link.rv.on.on.on.on { scale: none; translate: -50% -50%; }
+@media (max-width: 999px) { .js .chain .link.rv, .js .chain .link.rv.on.on.on.on { translate: none; } }
 
 /* Level scale fills from the business end */
 .levels .bar { transform-origin: left; }
@@ -420,12 +421,13 @@ b { font-weight: 500; color: var(--text); }
 .js .levels .bar.rv.on { transform: none; }
 
 /* Pass: the badge swings in on its lanyard and settles at -2deg */
-.js .pass.rv { translate: 0 -24px; rotate: -7deg; transform-origin: 50% 0; transition: opacity 500ms var(--ease-out) var(--d), translate 900ms var(--ease-out) var(--d), rotate 1200ms cubic-bezier(.34, 1.36, .64, 1) var(--d); }
+.js .pass.rv:not(.on) { translate: 0 -24px; rotate: -7deg; }
+.js .pass.rv { transform-origin: 50% 0; transition: opacity 500ms var(--ease-out) var(--d), translate 900ms var(--ease-out) var(--d), rotate 1200ms cubic-bezier(.34, 1.36, .64, 1) var(--d); }
 .js .pass.rv.on { rotate: -2deg; }
 
 /* Playbook: the Standard rises, the old one gets stamped */
-.js .versus > .paper.rv { translate: 0 8px; }
-.js .versus > .dcard.rv { translate: 0 32px; }
+.js .versus > .paper.rv:not(.on) { translate: 0 8px; }
+.js .versus > .dcard.rv:not(.on) { translate: 0 32px; }
 .js .paper .chip { scale: 1.4; rotate: -8deg; opacity: 0; transition: scale 420ms cubic-bezier(.2, .9, .3, 1.2) calc(var(--d, 0ms) + 700ms), rotate 420ms var(--ease-out) calc(var(--d, 0ms) + 700ms), opacity 160ms linear calc(var(--d, 0ms) + 700ms); }
 .js .paper.on .chip { scale: none; rotate: -3deg; opacity: 1; }
 .paper .chip { rotate: -3deg; }
@@ -462,8 +464,9 @@ b { font-weight: 500; color: var(--text); }
 @media (hover: hover) and (pointer: fine) { .btn:hover svg { translate: 3px 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .js .rv, .js .headline.rv, .js .toc li.rv, .js .stack .sheet.rv, .js .pass.rv, .js .grp > .node.rv, .js .versus > .rv { translate: none; filter: none; rotate: none; }
-  .js .pass.rv { rotate: -2deg; }
+  html.js .rv.rv.rv.rv.rv { translate: none; filter: none; rotate: none; }
+  html.js .pass.rv.rv.rv.rv.rv { rotate: -2deg; }
+  html.js .chain .link.rv.rv.rv.rv.rv { translate: -50% -50%; }
   .js .rv { transition: opacity 300ms linear var(--d, 0ms); }
   .js .flow > .wire.rv, .js .hub > .wire.rv, .js .levels .bar.rv, .js .toc li .bars i, .js .stop::after { transform: none; }
   .js .stop::before, .js .flow > .node.main.rv, .js .chain .link.rv { scale: none; }
@@ -493,3 +496,5 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
   .hero-wave canvas, .card-wave canvas { animation-duration: 1ms; }
   .fact .ico, .gets .ico { transition: none; }
 }
+@media (prefers-reduced-motion: reduce) and (max-width: 999px) { html.js .chain .link.rv.rv.rv.rv.rv { translate: none; } }
+[data-count] { display: inline-block; min-width: 7ch; }
