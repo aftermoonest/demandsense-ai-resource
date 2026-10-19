@@ -10,20 +10,18 @@ const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 // ---------- Build order per section ----------
 // Each entry is a group of selectors revealed together; groups follow each other.
 const ORDER = [
-  ['.topbar > *'],
   ['.head > *', '.hero-copy > *'],
   ['.stack .sheet.back', '.stack .floor'],
   ['.stack .sheet.front'],
   ['.toc li'],
-  ['.cells > article', '.cells > .fact', '.spot', '.facts li', '.versus > *', '.ways > *', '.hub .tools > div'],
+  ['.cells > article', '.cells > .fact', '.tl > .stop', '.spot', '.facts li', '.versus > *', '.ways > *', '.hub .tools > div'],
   ['.chain .link', '.levels > *'],
-  ['.board-head', '.ctx > .node'],
-  ['.grp.in > .node'],
+  ['.board-head'],
+  ['.flow .node'],
   ['.flow > .links', '.hub > .links'],
-  ['.flow > .node.main', '.hub > .core'],
-  ['.grp.out > .node', '.hub > .dsc', '.board-note', '.hubcap', '.hubhelp'],
-  ['.gets li', '.stagefig', '.notes > *', '.post > *', '.steps li'],
-  ['.stop'],
+  ['.hub > .core'],
+  ['.hub > .dsc', '.board-note', '.hubcap', '.hubhelp'],
+  ['.gets li', '.notes > *', '.post > *', '.steps li'],
 ];
 const STEP = 70; // ms between items of a group
 
@@ -46,7 +44,7 @@ function prepare(section) {
 
 // Units build independently: tall blocks (boards, cell bands, lists) when they arrive themselves,
 // the rest of a section with its header. Inner units claim their elements first.
-const units = [...$$('.board, .bleed, .contrib, .rail, .hub, .versus, .ways'), ...$$('.hero, .sec')];
+const units = [...$$('.board, .bleed, .lv-bar, .contrib, .rail, .hub, .versus, .ways'), ...$$('.hero, .sec')];
 units.forEach(prepare);
 root.classList.add('js');
 
@@ -84,7 +82,7 @@ if (tabs) {
     if (!a) return;
     e.preventDefault();
     const target = document.querySelector(a.getAttribute('href'));
-    scrollTo({ top: target.getBoundingClientRect().top + scrollY - tabs.offsetHeight - 8, behavior: reduced.matches ? 'auto' : 'smooth' });
+    scrollTo({ top: target.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(target).paddingTop) - tabs.offsetHeight - 8, behavior: reduced.matches ? 'auto' : 'smooth' });
     history.replaceState(null, '', a.getAttribute('href'));
   });
   // Arrow keys move between tabs (DESIGN §12).
@@ -140,62 +138,88 @@ const countIO = new IntersectionObserver((entries) => {
 if (!reduced.matches) $$('[data-count]').forEach((el) => countIO.observe(el));
 
 // ---------- Links between blocks (boards and the stack hub) ----------
+// A flow is a row of columns; every block links to every block in the next column.
 // Measured from layout offsets (not getBoundingClientRect), so reveal transforms never skew them.
-// Side by side: curves fan into the main block and out of it. Stacked: L-shaped lines down a left spine.
+// Side by side: curves between columns. Stacked: L-shaped lines down a left spine.
+// Once built, a packet runs the flow column by column (TRAVEL each) on a LOOP while it is on screen.
+const COL = 260, TRAVEL = 900;
 function pos(el, box) {
   let x = 0, y = 0, n = el;
   while (n && n !== box) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
   return { l: x, t: y, r: x + el.offsetWidth, b: y + el.offsetHeight, y: y + el.offsetHeight / 2 };
 }
-const tip = (x, y, dir) => dir === 'd' ? `M${x - 3.5} ${y - 6}L${x} ${y}L${x + 3.5} ${y - 6}Z` : `M${x - 6} ${y - 3.5}L${x} ${y}L${x - 6} ${y + 3.5}Z`;
+const columns = (box) => $$(':scope > :not(.links, .pulse)', box).map((c) => c.matches('.col, .tools') ? [...c.children] : [c]);
 function drawLinks(box) {
   const svg = box.querySelector(':scope > .links');
-  const main = box.querySelector(':scope > .node.main, :scope > .core');
-  if (!svg || !main) return;
-  const ins = $$(':scope > .grp.in > .node, :scope > .tools > div', box);
-  const outs = $$(':scope > .grp.out > .node, :scope > .dsc', box);
-  const m = pos(main, box), W = box.offsetWidth, H = box.offsetHeight;
+  if (!svg) return;
+  const cols = columns(box);
   const stacked = getComputedStyle(box).gridTemplateColumns.trim().split(/\s+/).length === 1;
-  const base = parseFloat(svg.style.getPropertyValue('--d')) || 0;
-  const links = [];
-  if (!stacked) {
-    const curve = (x1, y1, x2, y2) => { const dx = (x2 - x1) * 0.55; return `M${x1} ${y1}C${x1 + dx} ${y1} ${x2 - dx} ${y2} ${x2} ${y2}`; };
-    ins.forEach((e, i) => { const a = pos(e, box); links.push({ d: curve(a.r, a.y, m.l - 1, m.y), end: tip(m.l - 1, m.y, 'r'), delay: i * 50 }); });
-    outs.forEach((e, i) => { const a = pos(e, box); links.push({ d: curve(m.r, m.y, a.l - 1, a.y), end: tip(a.l - 1, a.y, 'r'), delay: 700 + i * 50, out: true }); });
-  } else {
-    const x = 12, r = 8;
-    ins.forEach((e, i) => { const a = pos(e, box); links.push({ d: `M${a.l} ${a.y}H${x + r}Q${x} ${a.y} ${x} ${a.y + r}V${m.t - 1}`, end: i === ins.length - 1 ? tip(x, m.t - 1, 'd') : '', delay: i * 50 }); });
-    outs.forEach((e, i) => { const a = pos(e, box); links.push({ d: `M${x} ${m.b}V${a.y - r}Q${x} ${a.y} ${x + r} ${a.y}H${a.l - 1}`, end: tip(a.l - 1, a.y, 'r'), delay: 700 + i * 50, out: true }); });
+  const links = [], ports = new Map();
+  const port = (x, y, ld) => { const k = `${x},${y}`; if (!ports.has(k)) ports.set(k, `<circle class="tip" style="--ld:${ld}ms" cx="${x}" cy="${y}" r="2.5"/>`); };
+  cols.forEach((col, c) => col.forEach((el) => { el.style.setProperty('--col', c); }));
+  for (let c = 0; c + 1 < cols.length; c++) {
+    const ld = c * COL + 120;
+    for (const ea of cols[c]) for (const eb of cols[c + 1]) {
+      const a = pos(ea, box), b = pos(eb, box);
+      let d;
+      if (!stacked) {
+        // strict lines: 25% horizontal, 50% diagonal, 25% horizontal (45° when the rise is half the gap)
+        const x1 = a.r + 4, x2 = b.l - 4, w = x2 - x1;
+        d = `M${x1} ${a.y}h${w / 4}L${x2 - w / 4} ${b.y}H${x2}`;
+        port(x1, a.y, ld); port(x2, b.y, ld);
+      } else {
+        const x = 12, r = 8;
+        d = `M${a.l - 4} ${a.y}H${x + r}L${x} ${a.y + r}V${b.y - r}L${x + r} ${b.y}H${b.l - 4}`;
+        port(a.l - 4, a.y, ld); port(b.l - 4, b.y, ld);
+      }
+      links.push({ d, ld, c });
+    }
   }
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.innerHTML = links.map((k) => `<path pathLength="1" style="--ld:${base + k.delay}ms" d="${k.d}"/>${k.end ? `<path class="tip" style="--ld:${base + k.delay}ms" d="${k.end}"/>` : ''}`).join('');
-  // pulses ride the same paths
+  svg.setAttribute('viewBox', `0 0 ${box.offsetWidth} ${box.offsetHeight}`);
+  svg.innerHTML = links.map((k) => `<path pathLength="1" style="--ld:${k.ld}ms" d="${k.d}"/>`).join('') + [...ports.values()].join('');
+  // packets ride the same paths
   $$(':scope > .pulse', box).forEach((p) => p.remove());
   links.forEach((k) => {
     const p = document.createElement('i');
     p.className = 'pulse';
     p.style.offsetPath = `path("${k.d}")`;
-    p.style.setProperty('--pd', `${k.out ? 900 : 0}ms`);
+    p.style.setProperty('--col', k.c);
     box.append(p);
   });
 }
-function pulse(box) {
-  if (reduced.matches) return;
-  $$(':scope > .pulse', box).forEach((p) => { p.classList.remove('go'); void p.offsetWidth; p.classList.add('go'); });
-}
 const flows = $$('.flow, .hub');
+// Boards build column by column; each column's wires draw as it lands
+flows.forEach((box) => {
+  const base = parseFloat(box.querySelector(':scope > .links')?.style.getPropertyValue('--d')) || 0;
+  columns(box).forEach((col, c) => col.forEach((el, k) => { if (el.classList.contains('rv') && box.matches('.flow')) el.style.setProperty('--d', `${base + c * COL + k * 50}ms`); }));
+});
 const redraw = () => flows.forEach(drawLinks);
 redraw();
 document.fonts?.ready.then(redraw);
 let rz = 0;
 addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(redraw); });
+// The loop plays only while the flow is on screen, and only after it has built
+const playIO = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('play', e.isIntersecting && e.target.classList.contains('built'))), { threshold: 0.2 });
 flows.forEach((box) => {
   const svg = box.querySelector(':scope > .links');
-  // the first pulse runs once the links have drawn; a hover replays it
   new MutationObserver((_, mo) => {
     if (!svg.classList.contains('on')) return;
     mo.disconnect();
-    setTimeout(() => pulse(box), (parseFloat(svg.style.getPropertyValue('--d')) || 0) + 900);
+    const built = (parseFloat(svg.style.getPropertyValue('--d')) || 0) + columns(box).length * COL + 600;
+    setTimeout(() => { box.classList.add('built', 'play'); playIO.observe(box); }, built);
   }).observe(svg, { attributes: true, attributeFilter: ['class'] });
-  if (fine.matches) box.addEventListener('mouseenter', () => pulse(box));
 });
+
+
+// ---------- Sticky bar: takes the theme of the section under it ----------
+const bar = document.querySelector('.sitebar');
+if (bar) {
+  const darks = $$('.surface-black').filter((el) => el.matches('header, section'));
+  const theme = () => {
+    const y = bar.offsetHeight / 2;
+    bar.dataset.theme = darks.some((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom > y; }) ? 'dark' : 'light';
+  };
+  addEventListener('scroll', theme, { passive: true });
+  addEventListener('resize', theme);
+  theme();
+}

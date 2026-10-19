@@ -57,6 +57,7 @@ export const fragmentShader = /* glsl */ `
   uniform vec2 uResolution;
   uniform float uGrain;
   uniform float uFibers;
+  uniform float uFiberScale;
   uniform float uGlow;
   uniform float uSaturation;
   uniform float uContrast;
@@ -86,8 +87,9 @@ export const fragmentShader = /* glsl */ `
       : mix(uGradientColors[1], uGradientColors[2], (position - 0.5) * 2.0);
     vec3 color = uPaletteMode == 1 ? gradient : texture2D(uPalette, vUv).rgb;
     float broad = noise2(vUv * vec2(2.0, .8));
-    float fiber = noise2(vec2(vUv.x * (620.0 + broad * 190.0),
-                              vUv.y * 4.0 + broad * 2.0));
+    vec2 fp = vec2(vUv.x * (620.0 + broad * 190.0) * uFiberScale, vUv.y * 4.0 + broad * 2.0);
+    // Fibers thinner than a pixel alias into stair-steps: fade them to their mean where they get that fine
+    float fiber = mix(.48, noise2(fp), 1.0 - smoothstep(.35, .9, fwidth(fp.x)));
     float shape = pow(max(0.0, 4.0*vUv.x*(1.0-vUv.x)), 2.1);
     float facing = clamp(.5 + dFdy(vUv.y) * uResolution.y * uGlow * .3, 0.0, 1.0);
     color += (fiber-.48) * uFibers * shape * facing * (1.0 - color.b*.55);

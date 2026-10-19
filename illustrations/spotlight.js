@@ -1,20 +1,22 @@
 /* Followspot (iso-glow look): a small 3D model of the lamp, re-projected isometrically every frame so it
    really aims at the pool. The pool wanders over the whole section on its own and follows the pointer;
    the beam is drawn in section pixels behind the content. */
-(() => {
-  const sec = document.querySelector('.spotsec'); if (!sec) return;
+document.querySelectorAll('.spotsec').forEach((sec, n) => {
+  // area: what the beam covers (#get: its sticky stage). data-spot="front": the lamp is seen straight on (no iso),
+  // hangs from a rod that runs off the top (no pipe), and the pool rests on the [data-rest] headline instead of wandering.
+  const area = sec.querySelector('.stage') || sec, still = sec.dataset.spot === 'front';
   const beam = sec.querySelector('.beam'), lampSvg = sec.querySelector('.lampfig svg'), $ = (s) => beam.querySelector(s);
-  const cone = $('.cone'), core = $('.core'), pool = $('.pool'), ghosts = [...beam.querySelectorAll('.ghosts circle')], fr = [...beam.querySelectorAll('.fringe')], grad = $('#beam-g');
+  const cone = $('.cone'), core = $('.core'), pool = $('.pool'), ghosts = [...beam.querySelectorAll('.ghosts circle')], fr = [...beam.querySelectorAll('.fringe')], grad = $('linearGradient');
   const lit = [...sec.querySelectorAll('[data-lit]')];
 
   // ---- iso kernel ----
   const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6), R3 = Math.sqrt(3);
-  const V = [1 / R3, 1 / R3, 1 / R3]; // towards the viewer
+  const V = still ? [0, -1, 0] : [1 / R3, 1 / R3, 1 / R3]; // towards the viewer
   const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
   const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
   const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
   const norm = (a) => mul(a, 1 / Math.hypot(...a));
-  const P = (p) => [(p[0] - p[1]) * C, (p[0] + p[1]) * S - p[2]];
+  const P = still ? (p) => [p[0], -p[2]] : (p) => [(p[0] - p[1]) * C, (p[0] + p[1]) * S - p[2]];
   const f = (n) => Math.round(n * 10) / 10;
   const poly = (pts, close) => 'M' + pts.map((p) => f(p[0]) + ' ' + f(p[1])).join('L') + (close ? 'Z' : '');
   const hull = (pts) => { // monotone chain
@@ -37,7 +39,7 @@
     const front = dot(a, V) > 0, [tc, rc] = front ? prof[prof.length - 1] : prof[0];
     s += `<path class="${o.cls || ''}" d="${poly(ring(tc, rc, 0, Math.PI * 2), 1)}"/>`;
     if (o.lens && front) {
-      s += `<path class="lens halo" filter="url(#lamp-glow)" d="${poly(ring(tc + 0.5, o.lens, 0, Math.PI * 2), 1)}"/>`;
+      s += `<path class="lens halo" filter="url(#lamp-glow${n})" d="${poly(ring(tc + 0.5, o.lens, 0, Math.PI * 2), 1)}"/>`;
       s += `<path class="lens" d="${poly(ring(tc + 0.5, o.lens, 0, Math.PI * 2), 1)}"/>`;
     }
     return s;
@@ -56,17 +58,18 @@
   const HP = 92, YT = 44, LENS_T = 58;
   const BODY = [[-40, 14], [-36, 19], [-31, 19], [-31, 24], [-28, 24], [-28, 19], [-24, 19], [-24, 24], [-21, 24], [-21, 19], [-17, 19], [-17, 24], [-14, 24], [-14, 19], [-10, 19], [-10, 24], [-7, 24], [-7, 19], [26, 19], [26, 21], [33, 21], [33, 17], [53, 17], [53, 20], [LENS_T, 20]];
   lampSvg.setAttribute('viewBox', '-150 -190 300 270');
-  const defs = `<defs><filter id="lamp-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="10"/></filter>
-    <linearGradient id="pipe-fade" gradientUnits="userSpaceOnUse" x1="${f(P([-150, 0, HP])[0])}" y1="${f(P([-150, 0, HP])[1])}" x2="${f(P([150, 0, HP])[0])}" y2="${f(P([150, 0, HP])[1])}">
+  const defs = `<defs><filter id="lamp-glow${n}" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="10"/></filter>
+    <linearGradient id="pipe-fade${n}" gradientUnits="userSpaceOnUse" x1="${f(P([-150, 0, HP])[0])}" y1="${f(P([-150, 0, HP])[1])}" x2="${f(P([150, 0, HP])[0])}" y2="${f(P([150, 0, HP])[1])}">
     <stop offset="0" stop-color="var(--neutral-800)" stop-opacity="0"/><stop offset=".35" stop-color="var(--neutral-800)"/><stop offset=".65" stop-color="var(--neutral-800)"/><stop offset="1" stop-color="var(--neutral-800)" stop-opacity="0"/></linearGradient></defs>`;
-  const pipe = lathe([0, 0, HP], [1, 0, 0], [[-150, 7], [150, 7]], { cls: 'pipe' }).replaceAll('<path', '<path stroke="url(#pipe-fade)"');
+  const pipe = lathe([0, 0, HP], [1, 0, 0], [[-150, 7], [150, 7]], { cls: 'pipe' }).replaceAll('<path', `<path stroke="url(#pipe-fade${n})"`);
 
   function drawLamp(a) {
     const h = norm([a[0], a[1], 0].map((v, i) => (i < 2 && Math.hypot(a[0], a[1]) < 1e-3 ? (i ? -1 : 1) : v)));
     const uy = cross([0, 0, 1], h);
     const parts = [
-      [-1e3, box([0, 0, HP], [9, 0, 0], [0, 11, 0], [0, 0, 11]) + box([0, 0, HP - 13], [4, 0, 0], [0, 4, 0], [0, 0, 3])],
-      [-999, box([0, 0, (YT + 4 + HP - 16) / 2], [2.5, 0, 0], [0, 2.5, 0], [0, 0, (HP - 16 - YT - 4) / 2])],
+      ...(still ? [[-999, box([0, 0, (YT + 4 + 400) / 2], [2.5, 0, 0], [0, 2.5, 0], [0, 0, (400 - YT - 4) / 2])]] : [
+        [-1e3, box([0, 0, HP], [9, 0, 0], [0, 11, 0], [0, 0, 11]) + box([0, 0, HP - 13], [4, 0, 0], [0, 4, 0], [0, 0, 3])],
+        [-999, box([0, 0, (YT + 4 + HP - 16) / 2], [2.5, 0, 0], [0, 2.5, 0], [0, 0, (HP - 16 - YT - 4) / 2])]]),
       [dot([0, 0, YT], V), box([0, 0, YT], mul(uy, 36), mul(h, 6), [0, 0, 4])],
       [0, lathe([0, 0, 0], a, BODY, { lens: 15 })],
     ];
@@ -76,11 +79,11 @@
       const k = mul(uy, 36 * sg);
       parts.push([dot(k, V) + 0.1, lathe(k, mul(uy, sg), [[-2, 8], [3, 8], [3, 4], [6, 4]])]);
     }
-    lampSvg.innerHTML = defs + `<g>${pipe}</g>` + parts.sort((x, y) => x[0] - y[0]).map((p) => p[1]).join('');
+    lampSvg.innerHTML = defs + (still ? '' : `<g>${pipe}</g>`) + parts.sort((x, y) => x[0] - y[0]).map((p) => p[1]).join('');
   }
 
   // ---- light ----
-  const eR = [Math.SQRT1_2, -Math.SQRT1_2, 0], eD = norm([1, 1, -2]);
+  const eR = still ? [1, 0, 0] : [Math.SQRT1_2, -Math.SQRT1_2, 0], eD = still ? [0, 0, -1] : norm([1, 1, -2]);
   const s = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 };
   let W = 0, H = 0, ptr = null, t0 = performance.now(), piv = [0, 0];
   const zone = () => [W * 0.08, Math.max(H * 0.1, piv[1] + 200), W * 0.92, H * 0.94]; // never above the lamp: pool stays at least 200px below its pin
@@ -89,7 +92,7 @@
     return [cx + ax * (0.78 * Math.sin(k / 4.1) + 0.2 * Math.sin(k / 1.7 + 1)), cy + ay * (0.7 * Math.sin(k / 3.3 + 2) + 0.25 * Math.sin(k / 1.3))];
   }
   function render() {
-    const sb = sec.getBoundingClientRect(); W = sb.width; H = sb.height;
+    const sb = area.getBoundingClientRect(); W = sb.width; H = sb.height;
     beam.setAttribute('viewBox', `0 0 ${f(W)} ${f(H)}`);
     const m = lampSvg.getScreenCTM(); if (!m) return;
     const toSec = (p) => [m.a * p[0] + m.c * p[1] + m.e - sb.left, m.b * p[0] + m.d * p[1] + m.f - sb.top];
@@ -115,7 +118,7 @@
   let raf = 0, last = 0, vis = false;
   function tick(t) {
     const dt = Math.min((t - last) / 1000 || 0.016, 0.034); last = t;
-    let [tx, ty] = ptr || wander(t - t0);
+    let [tx, ty] = ptr || (still ? rest() : wander(t - t0));
     const ex = tx - piv[0], ey = ty - piv[1], ed = Math.hypot(ex, ey) || 1, min = Math.min(420, W * 0.3); // keep the pool off the lamp
     if (ed < min) { tx = piv[0] + ex / ed * min; ty = piv[1] + ey / ed * min; }
     const k = ptr ? 90 : 30, c = ptr ? 19 : 11;
@@ -125,7 +128,7 @@
   }
 
   // start: rest on the middle fact
-  const rest = () => { const sb = sec.getBoundingClientRect(), b = (lit[1] || sec).getBoundingClientRect(); return [b.left - sb.left + b.width / 2, b.top - sb.top + b.height * 0.35]; };
+  const rest = () => { const sb = area.getBoundingClientRect(), b = (sec.querySelector('[data-rest] .headline') || lit[1] || sec).getBoundingClientRect(); return [b.left - sb.left + b.width / 2, b.top - sb.top + b.height * (still ? 0.5 : 0.35)]; };
   [s.x, s.y] = rest(); render();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     sec.classList.add('on'); addEventListener('resize', () => { [s.x, s.y] = rest(); render(); }); return;
@@ -135,7 +138,7 @@
     vis = e.isIntersecting;
     if (vis) { sec.classList.add('on'); if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }
   }, { threshold: 0.05 }).observe(sec);
-  sec.addEventListener('pointermove', (e) => { if (e.pointerType === 'touch') return; const b = sec.getBoundingClientRect(); const [x0, y0, x1, y1] = zone(); ptr = [Math.max(x0, Math.min(x1, e.clientX - b.left)), Math.max(y0, Math.min(y1, e.clientY - b.top))]; });
+  sec.addEventListener('pointermove', (e) => { if (e.pointerType === 'touch') return; const b = area.getBoundingClientRect(); const [x0, y0, x1, y1] = zone(); ptr = [Math.max(x0, Math.min(x1, e.clientX - b.left)), Math.max(y0, Math.min(y1, e.clientY - b.top))]; });
   const home = () => { ptr = null; };
   sec.addEventListener('pointerleave', home); sec.addEventListener('pointercancel', home);
-})();
+});

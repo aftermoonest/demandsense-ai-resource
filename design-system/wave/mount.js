@@ -79,7 +79,7 @@ export function mount(host, options = {}) {
     uResolution: { value: new THREE.Vector2() },
     uPaletteMode: { value: 1 }, // gradient only: the image palette is not shipped
     uGradientColors: { value: [p.gradientColor1, p.gradientColor2, p.gradientColor3].map(c => new THREE.Color(c)) },
-    uFibers: { value: p.fibers }, uGlow: { value: p.glow }, uGrain: { value: p.grain },
+    uFibers: { value: p.fibers }, uFiberScale: { value: p.fiberScale ?? 1 }, uGlow: { value: p.glow }, uGrain: { value: p.grain },
     uSaturation: { value: p.saturation }, uContrast: { value: p.contrast }, uHue: { value: p.hue },
   };
   uniforms.uPalette.value.needsUpdate = true;
@@ -95,13 +95,16 @@ export function mount(host, options = {}) {
   canvas.style.position = 'absolute';
   const resize = () => {
     const r = host.getBoundingClientRect();
-    const w = r.width * f.w, h = r.height * f.h;
+    // frame.aspect: the view is the hero's (w / aspect tall, anchored at the top), scaled to the host width;
+    // the canvas still fills the host height so the ribbon runs on instead of being cut
+    const w = r.width * f.w, h = r.height * f.h, hv = f.aspect ? w / f.aspect : h;
     if (!w || !h) return;
-    Object.assign(canvas.style, { left: r.width * f.x + 'px', top: r.height * f.y + 'px', width: w + 'px', height: h + 'px' });
+    const top = f.aspect ? hv * f.y / f.h : r.height * f.y;
+    Object.assign(canvas.style, { left: r.width * f.x + 'px', top: top + 'px', width: w + 'px', height: h + 'px' });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     renderer.setSize(w, h, false);
     scene.scale.setScalar(f.k * w / LAB_W);
-    Object.assign(camera, { left: -w / 2, right: w / 2, top: h / 2, bottom: -h / 2, zoom: p.zoom });
+    Object.assign(camera, { left: -w / 2, right: w / 2, top: hv / 2, bottom: hv / 2 - h, zoom: p.zoom });
     camera.updateProjectionMatrix();
     uniforms.uResolution.value.set(canvas.width, canvas.height);
     render();

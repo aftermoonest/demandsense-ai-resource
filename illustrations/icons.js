@@ -51,21 +51,41 @@ const ICONS = {
       dot(s, 5 + i * 5.2, 9 + j * 5, 12.5, hi ? "dot" : "dot off", hi ? 1.6 : 0.9);
     }
   },
-  // Your name: a medal inside a laurel wreath; the wreath closes towards the viewer and opens away.
+  // Your name: a laurel wreath standing upright above a pedestal; the pedestal lights it from below.
   name(svg) {
-    const s = scene(svg, [[-26, -26, 0], [26, 26, 0], [-26, 26, 0], [26, -26, 0], [0, 0, 6]]);
-    const leaves = [];
-    for (let k = 0; k < 7; k++) {
-      const t = 0.1 + k * 0.105;
-      for (const side of [-1, 1]) {
-        const a = Math.PI / 4 + side * Math.PI * t; // round from the near point, one branch each way
-        const out = (k % 2 ? 0.5 : 0.15) * side;
-        leaves.push({ x: Math.cos(a) * 19, y: Math.sin(a) * 19, r: a + Math.PI / 2 + out });
-      }
+    const s = scene(svg, [[-20, -20, 0], [20, 20, 0], [-20, 20, 0], [20, -20, 0], [0, 0, 48]]);
+    const k = Math.SQRT1_2, ZC = 30, R = 17;
+    const Wp = (u, d, z) => s.P(u * k + d * k, -u * k + d * k, z);
+    const ring = (z, r, n = 40) => Array.from({ length: n }, (_, i) => { const a = (i / n) * Math.PI * 2; return s.P(Math.cos(a) * r, Math.sin(a) * r, z); });
+    cyl(s, 0, 0, 15, 0, 5);
+    cyl(s, 0, 0, 11, 5, 8, true);
+    // light cone from the pedestal top towards the wreath, fading out
+    const id = "hl-name-glow", defs = mk("defs", {}, svg);
+    const lg = mk("linearGradient", { id, gradientUnits: "userSpaceOnUse", x1: 0, x2: 0, y1: s.P(0, 0, 8)[1], y2: s.P(0, 0, ZC)[1] }, defs);
+    mk("stop", { offset: 0, style: "stop-color:var(--hairline-hi);stop-opacity:.45" }, lg);
+    mk("stop", { offset: 1, style: "stop-color:var(--hairline-hi);stop-opacity:0" }, lg);
+    const lo = ring(8, 10), hi = ring(ZC - 8, 15);
+    mk("path", { class: "fo", style: `fill:url(#${id})`, d: poly(HL.hull([...lo, ...hi])) }, s.g);
+    for (const a of [-0.55, -0.18, 0.18, 0.55]) line(s, [a * 14, 0, 9], [a * 17, 0, ZC - 12], "hi nf");
+    const dep = [];
+    const leaf = (cx, cz, rot, rx, ry, d) => {
+      const pts = Array.from({ length: 18 }, (_, i) => {
+        const t = (i / 18) * Math.PI * 2, lx = Math.cos(t) * rx * (1 + 0.15 * Math.sin(t)), lz = Math.sin(t) * ry;
+        return Wp(cx + lx * Math.cos(rot) - lz * Math.sin(rot), d, cz + lx * Math.sin(rot) + lz * Math.cos(rot));
+      });
+      dep.push({ d, pts });
+    };
+    for (let i = 0; i < 9; i++) for (const side of [-1, 1]) {
+      const a = -Math.PI / 2 + side * (0.2 + i * 0.27); // from the bottom, round each side, open at the top
+      const out = i % 2 ? 1 : -1;
+      const r = R + out * 1.4;
+      leaf(Math.cos(a) * r, ZC + Math.sin(a) * r, a + Math.PI / 2 + out * 0.35 * side, 5.8, 1.7, out * 0.8);
     }
-    leaves.sort((p, q) => p.x + p.y - (q.x + q.y)).forEach((l) => lozenge(s, l.x, l.y, 5, 1.5, l.r, 0, 1));
-    cyl(s, 0, 0, 10, 0, 3.5, true);
-    cyl(s, 0, 0, 6.5, 3.5, 4.5);
+    dep.sort((p, q) => p.d - q.d).forEach((l) => mk("path", { class: "sil", d: poly(l.pts) }, s.g));
+    // the medal in the middle, face to the viewer
+    const disc = (r) => Array.from({ length: 32 }, (_, i) => Wp(Math.cos((i / 32) * 6.2832) * r, 0, ZC + Math.sin((i / 32) * 6.2832) * r));
+    mk("path", { class: "sil hi", d: poly(disc(9.5)) }, s.g);
+    mk("path", { class: "nf lo", d: poly(disc(6.3)) }, s.g);
   },
   // Main sponsor: a podium, first place carries the mark.
   podium(svg) {
