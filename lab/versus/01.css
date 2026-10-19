@@ -1,0 +1,10 @@
+/* 01 Library card: double head rule, margin line, punched hole, faded "date due" stamp */
+#different .paper { position: relative; color: var(--neutral-500); box-shadow: inset 0 0 0 1px var(--neutral-100); }
+#different .paper::before { content: ''; position: absolute; top: 0; bottom: 0; left: 24px; width: 1px; background: var(--neutral-100); }
+#different .paper::after { content: ''; position: absolute; left: 50%; bottom: 16px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--neutral-25); box-shadow: inset 0 0 0 1px var(--neutral-200); }
+#different .paper .t-h4 { color: var(--neutral-500); }
+#different .paper .rows > div:first-child { border-top: 3px double var(--neutral-200); }
+#different .paper .rows > div { border-color: var(--neutral-100); }
+#different .paper .rows .lbl, #different .paper .lbl-1 { color: var(--neutral-500); }
+#different .paper .chip { background: none; color: var(--neutral-500); box-shadow: inset 0 0 0 1.5px var(--neutral-300); rotate: -4deg; opacity: .75; }
+.js #different .paper.on .chip { opacity: .75; }

@@ -1,0 +1,23 @@
+/* Full Circle hall figure (from lab/stage/05): line classes, draw-in, spot layer. Geometry lives in each NN.html.
+   Strokes stay 1px on screen at any size: stage.js sets --sw = viewBox / rendered width (non-scaling-stroke would break pathLength dashes). */
+.hall { margin: 0; touch-action: pan-y; }
+.hall svg { display: block; width: 100%; height: auto; overflow: hidden; }
+.hall :where(path, ellipse, circle, rect, line) { fill: none; stroke: var(--neutral-800); stroke-width: var(--sw, 1); stroke-linejoin: miter; stroke-linecap: butt; }
+.hall .m { stroke: var(--neutral-300); }
+.hall .f { stroke: var(--neutral-100); }
+.hall .b { stroke: var(--primary-450); }
+.hall .p { fill: var(--neutral-0); }
+.hall .h { stroke-opacity: .45; }
+.hall .pf { fill: var(--neutral-0); stroke: none; }
+.hall .bk { fill: var(--neutral-800); stroke: none; }
+.hall .bf { fill: var(--primary-450); stroke: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .hall .d { stroke-dasharray: 1 2; stroke-dashoffset: 1; }
+  .js .hall.in .d { animation: stage-draw 620ms var(--ease-out) calc(var(--i, 0) * 40ms) both; }
+  .js .hall .spotg { opacity: 0; }
+  .js .hall.in .spotg { animation: stage-fade 520ms var(--ease-out) 900ms both; }
+}
+@keyframes stage-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes stage-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 699px) { .hall .fine { display: none; } }

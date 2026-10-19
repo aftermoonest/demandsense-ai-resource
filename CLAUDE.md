@@ -98,7 +98,7 @@ Detailed guides:
 - Hero and CTA sections are black; every other section is white.
 - Headlines are one text block in two tones (black claim + gray context). No body paragraph under section headlines.
 - Structure is drawn with 1px edge-to-edge lines: horizontal dividers and vertical edge lines. Vertical lines sit outside the grid, 40px from the viewport edge, and keep at least 64px before any content (mobile: 16 + 16).
-- 12-column grid: 104px margin, 94px columns, 16px gutter, 1304 wide (8 col / 64 margin at 700–999, 4 col / 32 margin below 700). Sections are 160px apart.
+- 12-column grid: 104px margin, 94px columns, 16px gutter, 1304 wide (8 col / 64 margin at 700–999, 4 col / 32 margin below 700). Sections are 208px apart (160 at 700–999, 104 below 700).
 - Inter Medium for text, Geist Mono SemiBold uppercase for labels, buttons, and numbers.
 
 Preview the specimen: start the `design-system` server from `.claude/launch.json` and open `/specimen.html`.

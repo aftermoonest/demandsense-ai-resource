@@ -1,0 +1,14 @@
+/* 06 Carbon copy on crumpled paper: typewritten ink (02) on a sheet with grain, soft creases and uneven edges */
+@import url(02.css);
+#different .paper { isolation: isolate; clip-path: none; background: none; box-shadow: none; }
+#different .paper::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; width: auto; height: auto; box-shadow: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.008 .012' numOctaves='5' seed='3'/%3E%3CfeDiffuseLighting lighting-color='%23fff' surfaceScale='3.5'%3E%3CfeDistantLight azimuth='225' elevation='72'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E") center / cover,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .46 0 0 0 0 .5 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--neutral-25);
+  background-blend-mode: multiply, normal, normal;
+  outline: 1px solid var(--neutral-100); outline-offset: -1px;
+  filter: url(#paper-edge);
+  opacity: 1;
+}

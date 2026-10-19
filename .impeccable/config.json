@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "border-left: 6px solid var(--neutral-300)",
+        "createdAt": "2026-10-19T10:37:04.846Z",
+        "reason": "CSS triangle arrowhead on a zero-size pseudo-element, not a card side border"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-10-19T12:15:34.237Z",
+        "reason": "DESIGN.md §5: Inter is the system text face"
+      },
+      {
+        "rule": "overused-font",
+        "value": "geist mono",
+        "createdAt": "2026-10-19T12:15:34.310Z",
+        "reason": "DESIGN.md §5: Geist Mono is the system label face"
+      }
+    ]
+  }
+}

@@ -46,6 +46,13 @@ h1, h2, h3, p { margin: 0; font: inherit; }
 @media (min-width: 700px) { .overlay .grid > i:nth-child(n+5) { display: block; } .overlay .grid > i:nth-child(n+9) { display: none; } }
 @media (min-width: 1000px) { .overlay .grid > i:nth-child(n+9) { display: block; } }
 
+/* Feedback demos */
+.step-demo { position: relative; display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.step-badge { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-1); background: var(--neutral-950); color: var(--neutral-0); }
+.step-bar { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--neutral-950); animation: step-fill 5s linear infinite; }
+.halo-demo { display: block; width: 40px; height: 40px; margin: 8px; border-radius: 50%; background: var(--neutral-100); box-shadow: var(--shadow-halo); }
+@media (prefers-reduced-motion: reduce) { .step-bar { animation: none; width: 100%; } }
+
 /* Section marker */
 .marker { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text); }
 .marker::before { content: ''; width: 8px; height: 8px; margin: 4px; background: var(--accent); }
@@ -88,6 +95,20 @@ h1, h2, h3, p { margin: 0; font: inherit; }
 .tab { display: inline-flex; gap: 16px; align-items: center; height: 36px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); background: var(--neutral-50); color: var(--neutral-950); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; cursor: pointer; flex: none; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
 .tab b { font-weight: 600; color: var(--neutral-500); }
 .tab[aria-selected=true] { background: var(--neutral-950); color: var(--neutral-0); } .tab[aria-selected=true] b { color: var(--neutral-300); }
+.tab:active, .tab.is-active { background: var(--pressed); color: var(--neutral-0); } .tab:active b, .tab.is-active b { color: var(--neutral-0); }
+.tab[aria-selected=true]:active, .tab[aria-selected=true].is-active { background: var(--neutral-800); }
+.tab[disabled] { opacity: .4; cursor: not-allowed; }
+.tab:focus-visible, .tab.is-focus { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .tab[aria-selected=false]:hover { background: var(--hover-on-50); }
+  .tab[aria-selected=true]:hover { background: var(--hover-on-950); }
+}
+.tab[aria-selected=false].is-hover { background: var(--hover-on-50); }
+.tab[aria-selected=true].is-hover { background: var(--hover-on-950); }
+
+/* Mono caps sit high in the line box (ascender space, no descenders). Trim to cap height so flex centering is optical. */
+.btn, .tab, .chip, .marker, .step-badge { text-box: trim-both cap alphabetic; }
+.chip { padding-block: 6px; }
 .panel { animation: view-in 200ms var(--ease-out); }
 @keyframes view-in { from { opacity: 0; } }
 
@@ -270,6 +291,64 @@ header.surface-black > .band { position: relative; }
 
   <div class="gap"></div>
 
+  <section aria-labelledby="fig-h">
+    <div class="band"><div class="inner header">
+      <span class="marker">Figures</span>
+      <h2 class="headline t-h2" id="fig-h">One figure, one mechanism. <span class="tone-2">Outline in gray, the accent only on what changes.</span></h2>
+    </div></div>
+    <div class="gap-h"></div>
+    <div class="surface-black"><div class="band ruled"><div class="inner" style="padding-block: 80px; display: grid; gap: 80px">
+      <div class="grid" style="row-gap: 16px">
+        <article class="fig-card span-6" data-fig>
+          <button class="fig-expand" aria-label="Expand figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+          <header class="fig-head"><div class="fig-tag"><b>Rule</b>Active queue management</div><p class="fig-sub">Cap what each queue may hold, so nothing waits behind a full line.</p></header>
+          <div class="fig-stage"><div class="fig-dots pattern-on-black pattern-fade"></div>
+            <div class="slots crop" style="position: relative">
+              <div class="slot-row"><span class="fig-cap">Queue 1</span><i class="slot on"></i><i class="slot on"></i><i class="slot on"></i><i class="slot pkt" style="--i:0"></i><i class="slot pkt" style="--i:1"></i><i class="slot"></i><i class="slot"></i></div>
+              <div class="slot-row"><span class="fig-cap">Queue 2</span><i class="slot on"></i><i class="slot on"></i><i class="slot pkt" style="--i:2"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div>
+              <div class="slot-row"><span class="fig-cap">Queue 3</span><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></div>
+            </div></div>
+          <span class="fig-cap">Slots held · live packet</span>
+        </article>
+        <article class="fig-card span-6" data-fig>
+          <button class="fig-expand" aria-label="Expand figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+          <header class="fig-head"><div class="fig-tag"><b>Skill</b>Automatic congestion management</div><p class="fig-sub">Learns the load and holds the line under the limit.</p></header>
+          <div class="fig-stage"><div class="fig-dots pattern-on-black pattern-fade"></div>
+            <svg class="fig-line" viewBox="0 0 320 160" aria-hidden="true">
+              <line class="gl" x1="0" x2="320" y1="40" y2="40"/><line class="gl" x1="0" x2="320" y1="120" y2="120"/><line class="th" x1="0" x2="320" y1="56" y2="56"/>
+              <path class="ln" pathLength="1" d="M0 110 L24 96 L48 118 L72 84 L96 100 L120 40 L144 126 L168 70 L192 92 L216 20 L240 84 L264 96 L288 80 L320 90"/>
+            </svg></div>
+          <div class="delta"><div class="d-main"><span class="fig-cap">Packet loss</span><span class="d-val"><b class="t-n2">-35%</b><i class="d-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></i></span></div><div class="d-by"><span class="t-l1">Chadd Giles</span><span class="t-l2">CTO · Resound</span></div></div>
+        </article>
+      </div>
+      <div class="pipe">
+        <div><span class="pipe-h on">Trigger</span><pre>published: product
+  ST07 Winter Jacket</pre></div>
+        <div><span class="pipe-h">Function</span><pre>find every document
+that references it</pre></div>
+        <div><span class="pipe-h">Output</span><pre>3 pages rebuilt
+10k items in 30 s</pre></div>
+      </div>
+      <div class="grid" style="row-gap: 40px; align-items: start">
+        <div class="span-4 tab-index" role="tablist" aria-label="Index rail">
+          <button role="tab" aria-selected="true"><b>01</b>Rule</button><button role="tab" aria-selected="false"><b>02</b>Skill</button><button role="tab" aria-selected="false"><b>03</b>Scenario</button>
+        </div>
+        <div class="span-4" style="display: grid; gap: 24px; align-content: start">
+          <div class="tab-switch" role="tablist" aria-label="Scenario switcher"><button role="tab" aria-selected="true">Update references</button><button role="tab" aria-selected="false">Translate</button><button role="tab" aria-selected="false">Delegate</button></div>
+          <div class="prompt-chips"><button class="prompt-chip">How do I set up a rule?</button><button class="prompt-chip">What can a skill automate?</button></div>
+        </div>
+        <div class="span-4"><div class="hot-block" style="padding: 24px; display: grid; gap: 40px"><span class="t-l1">Your seat</span><span class="t-h6">The one hot block on the screen.</span></div></div>
+      </div>
+    </div></div></div>
+    <div class="gap-h"></div>
+    <div class="band"><div class="inner" style="display: grid; gap: 40px">
+      <p class="t-quote headline" data-word-reveal style="max-width: 900px">We thought we were doing everything we could, but after we started using the standard, our support calls dropped by 35%.</p>
+      <div class="stat-strip"><a class="more" href="#"><b class="t-n3">250</b><span class="t-l1">Ads analyzed</span></a><a class="more" href="#"><b class="t-n3">12</b><span class="t-l1">Practitioners</span></a><a class="more" href="#"><b class="t-n3">3</b><span class="t-l1">Part types</span></a></div>
+    </div></div>
+  </section>
+
+  <div class="gap"></div>
+
   <!-- NUMBERS: edge-to-edge band -->
   <section aria-labelledby="num-h">
     <div class="band"><div class="inner header" style="align-items: center; text-align: center">
@@ -288,6 +367,39 @@ header.surface-black > .band { position: relative; }
   </section>
 
   <div class="gap"></div>
+
+  <!-- FEEDBACK -->
+  <section class="band" aria-labelledby="fb-h">
+    <div class="inner header">
+      <span class="marker">Feedback</span>
+      <h2 class="headline t-h2" id="fb-h">Say it once, then leave. <span class="tone-2">Toast, step progress, halo, fixed layers.</span></h2>
+    </div>
+    <div class="gap-h"></div>
+    <div class="inner grid" style="row-gap: 24px; align-items: start">
+      <div class="span-4">
+        <button class="btn outlined" id="toast-btn">Show toast</button>
+        <p class="t-l1" style="margin-top: 8px">.toast · 200ms rise + fade</p>
+      </div>
+      <div class="span-4">
+        <div class="step-demo" role="group" aria-label="Step progress">
+          <span class="step-badge t-l0">01</span><span class="t-h6">Active step</span><i class="step-bar"></i>
+        </div>
+        <p class="t-l1" style="margin-top: 8px">step-fill · 2px, 5s linear</p>
+      </div>
+      <div class="span-4">
+        <span class="halo-demo"></span>
+        <p class="t-l1" style="margin-top: 8px">--shadow-halo · pinned avatar</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gap"></div>
+
+  <div class="toast" id="toast" role="status">Link copied</div>
+  <script>
+    const toast = document.getElementById('toast'); let tt;
+    document.getElementById('toast-btn').addEventListener('click', () => { toast.classList.add('visible'); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('visible'), 2000); });
+  </script>
 
   <!-- COMPONENTS -->
   <section class="band" aria-labelledby="comp-h">
@@ -314,6 +426,16 @@ header.surface-black > .band { position: relative; }
           <button class="btn outlined icon" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button>
           <button class="btn filled icon" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
           <button class="btn filled" disabled>Disabled</button>
+        </div>
+        <p class="t-l1 group-label">Tab states · default / hover / pressed / focus / disabled</p>
+        <div class="row">
+          <button class="tab" aria-selected="false" tabindex="-1"><b>01.</b>Default</button>
+          <button class="tab is-hover" aria-selected="false" tabindex="-1"><b>02.</b>Hover</button>
+          <button class="tab is-active" aria-selected="false" tabindex="-1"><b>03.</b>Pressed</button>
+          <button class="tab is-focus" aria-selected="false" tabindex="-1"><b>04.</b>Focus</button>
+          <button class="tab" aria-selected="false" disabled><b>05.</b>Disabled</button>
+          <button class="tab" aria-selected="true" tabindex="-1"><b>01.</b>Selected</button>
+          <button class="tab is-hover" aria-selected="true" tabindex="-1"><b>01.</b>Selected hover</button>
         </div>
         <p class="t-l1 group-label">Chips</p>
         <div class="row" style="gap: 8px">
@@ -388,7 +510,7 @@ for (const [label, names] of Object.entries(groups)) {
 host.firstElementChild.style.marginTop = '0';
 
 // Tabs: click + arrow keys
-const tabs = [...document.querySelectorAll('[role=tab]')];
+const tabs = [...document.querySelectorAll('.tab[role=tab]')];
 function select(t) {
   tabs.forEach(x => { const on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
   t.focus();
@@ -401,7 +523,13 @@ tabs.forEach((t, i) => {
 // Grid overlay
 const ov = document.getElementById('overlay'), gt = document.getElementById('grid-toggle');
 gt.addEventListener('click', () => { const on = ov.classList.toggle('on'); gt.setAttribute('aria-pressed', on); gt.textContent = on ? 'Hide grid' : 'Show grid'; });
+
+// Figure loops play only while on screen; square tabs just flip aria-selected here
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('in', e.isIntersecting)), { threshold: .4 });
+document.querySelectorAll('[data-fig]').forEach(f => io.observe(f));
+document.querySelectorAll('.tab-index, .tab-switch').forEach(g => g.addEventListener('click', e => { const t = e.target.closest('[role=tab]'); if (t) g.querySelectorAll('[role=tab]').forEach(x => x.setAttribute('aria-selected', x === t)); }));
 </script>
+<script src="word-reveal.js" defer></script>
 <script src="wave.js" defer></script>
 </body>
 </html>

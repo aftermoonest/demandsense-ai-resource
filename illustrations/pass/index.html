@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contributor pass · holo concepts</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(../../design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(../../design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; padding: 64px 40px 104px; background: var(--bg); color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; -webkit-font-smoothing: antialiased; }
+h1, h2, p { margin: 0; }
+header { display: grid; gap: 16px; max-width: 760px; margin-bottom: 64px; }
+.marker { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; }
+.marker::before { content: ''; width: 8px; height: 8px; margin: 4px; background: var(--accent); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(600px, 100%), 1fr)); border-top: 1px solid var(--line); }
+figure { margin: 0; display: grid; grid-template-rows: auto 1fr; border-bottom: 1px solid var(--line); }
+figcaption { display: grid; gap: 4px; padding: 24px 24px 0; }
+figcaption .n { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; color: var(--text-body); }
+figcaption p { max-width: 520px; color: var(--text-body); font-size: 14px; letter-spacing: -.03em; }
+figcaption a { justify-self: start; margin-top: 4px; color: var(--text); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; text-underline-offset: 3px; }
+iframe { display: block; width: 100%; height: 680px; border: 0; }
+.tall iframe { height: 800px; }
+@media (min-width: 1240px) { figure:nth-child(odd) { border-right: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header>
+  <p class="marker">Contributor pass</p>
+  <h1 class="t-h2">Five holo concepts <span style="color: var(--text-2)">at the real column width</span></h1>
+  <p class="t-p1" style="color: var(--text-body)">Each reads as a holographic object at rest. On a fine pointer the foil shifts and the card tilts; reduced motion keeps the foil static. Open one on its own to try it.</p>
+</header>
+<div class="grid">
+  <figure class="tall">
+    <figcaption><span class="n">01</span><h2 class="t-h5">Festival Lanyard</h2><p>A PVC badge on a black lanyard; the whole event band is iridescent foil with guilloche rings, the name and rows sit on white card stock.</p><a href="pass-1.html">Open</a></figcaption>
+    <iframe src="pass-1.html" title="Festival Lanyard pass" loading="lazy"></iframe>
+  </figure>
+  <figure>
+    <figcaption><span class="n">02</span><h2 class="t-h5">Black Card</h2><p>A metal-style black card: gold EMV chip, a full-height holo security stripe with an embossed seal, foil-stamped name over guilloche microprint.</p><a href="pass-2.html">Open</a></figcaption>
+    <iframe src="pass-2.html" title="Black Card pass" loading="lazy"></iframe>
+  </figure>
+  <figure>
+    <figcaption><span class="n">03</span><h2 class="t-h5">Clear Laminate</h2><p>A paper insert inside a clear sleeve; a holographic security overlay of interlocking rosettes covers it, with a diffraction-grating window.</p><a href="pass-3.html">Open</a></figcaption>
+    <iframe src="pass-3.html" title="Clear Laminate pass" loading="lazy"></iframe>
+  </figure>
+  <figure>
+    <figcaption><span class="n">04</span><h2 class="t-h5">Ticket Stub</h2><p>A paper ticket with wave microprint and a star-edged holo seal; below the notched perforation the tear-off stub is printed on foil.</p><a href="pass-4.html">Open</a></figcaption>
+    <iframe src="pass-4.html" title="Ticket Stub pass" loading="lazy"></iframe>
+  </figure>
+  <figure>
+    <figcaption><span class="n">05</span><h2 class="t-h5">Prism Foil</h2><p>A full-foil collector card: the whole sheet is a prism hologram whose starburst follows the pointer; the rows sit on a matte printed panel.</p><a href="pass-5.html">Open</a></figcaption>
+    <iframe src="pass-5.html" title="Prism Foil pass" loading="lazy"></iframe>
+  </figure>
+</div>
+</body>
+</html>

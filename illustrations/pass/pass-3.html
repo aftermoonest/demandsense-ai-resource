@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pass 3 · Clear Laminate</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(../../design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(../../design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+@property --mx { syntax: '<number>'; inherits: true; initial-value: .3; }
+@property --my { syntax: '<number>'; inherits: true; initial-value: .25; }
+@property --tx { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --ty { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 80px 16px; background: var(--bg); color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; -webkit-font-smoothing: antialiased; }
+p, dl, dd { margin: 0; }
+.lbl { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; }
+.lbl-1 { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; }
+
+:root {
+  --h1: color-mix(in oklab, var(--chart-6) 65%, var(--neutral-0));
+  --h2: color-mix(in oklab, var(--chart-9) 65%, var(--neutral-0));
+  --h3: color-mix(in oklab, var(--chart-8) 60%, var(--neutral-0));
+  --h4: color-mix(in oklab, var(--chart-7) 60%, var(--neutral-0));
+  --h5: color-mix(in oklab, var(--chart-10) 55%, var(--neutral-0));
+  --h6: color-mix(in oklab, var(--chart-1) 42%, var(--neutral-0));
+  --h7: color-mix(in oklab, var(--primary-300) 65%, var(--neutral-0));
+  --foil: linear-gradient(115deg, var(--h1), var(--h2), var(--h3), var(--h4), var(--h5), var(--h6), var(--h7), var(--h1), var(--h2), var(--h3), var(--h4));
+  --rosette: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='-48 -48 96 96' overflow='visible'%3E%3Cg fill='none' stroke='black' stroke-width='.6'%3E%3Cellipse rx='34' ry='9' transform='rotate%280%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%2815%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%2830%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%2845%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%2860%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%2875%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%2890%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%28105%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%28120%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%28135%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%28150%29'/%3E%3Cellipse rx='34' ry='9' transform='rotate%28165%29'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.hit { width: min(504px, 100%); }
+/* Physical object: a clear PVC sleeve (14px corners) holding a paper insert (DS radius 4) */
+.card { position: relative; padding: 44px 12px 12px; border-radius: 14px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--neutral-100) 55%, transparent), color-mix(in srgb, var(--neutral-50) 35%, transparent));
+  box-shadow: inset 0 0 0 1px var(--neutral-200), inset 0 0 0 2px color-mix(in srgb, var(--neutral-0) 70%, transparent), 0 1px 1px color-mix(in srgb, var(--neutral-950) 5%, transparent), 0 18px 32px -22px color-mix(in srgb, var(--neutral-950) 22%, transparent);
+  transform: perspective(1100px) rotateX(calc(var(--ty) * -8deg)) rotateY(calc(var(--tx) * 12deg));
+  transition: --mx 700ms var(--ease-out), --my 700ms var(--ease-out), --tx 600ms var(--ease-out), --ty 600ms var(--ease-out); }
+.slot { position: absolute; top: 16px; left: 50%; translate: -50% 0; width: 72px; height: 12px; border-radius: var(--radius-pill); background: var(--neutral-0); box-shadow: inset 0 0 0 1px var(--neutral-200), inset 0 1px 2px color-mix(in srgb, var(--neutral-950) 12%, transparent); }
+
+.insert { position: relative; display: grid; gap: 24px; padding: 28px; border-radius: var(--radius-4); background: var(--neutral-0); box-shadow: 0 0 0 1px var(--line-card); }
+.head { display: flex; justify-content: space-between; align-items: start; gap: 24px; }
+.head .event { display: grid; gap: 4px; }
+.head .name { font: 500 28px/1.1 var(--font-sans); letter-spacing: -.04em; }
+.head .lbl-1 { color: var(--text-body); }
+/* Clear window with a diffraction-grating hologram: tight rings lit by a turning rainbow */
+.window { position: relative; flex: none; width: 88px; aspect-ratio: 1; border-radius: var(--radius-2); overflow: hidden;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--neutral-950) 18%, transparent) 0 1px, transparent 1px 3px),
+    radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), var(--neutral-0), transparent 55%),
+    conic-gradient(from calc(var(--mx) * 300deg + var(--my) * 120deg), var(--h1), var(--h2), var(--h3), var(--h4), var(--h5), var(--h6), var(--h7), var(--h1));
+  box-shadow: inset 0 0 0 1px var(--neutral-200); }
+.window::after { content: ''; position: absolute; inset: 22px; border-radius: 50%; background: conic-gradient(from calc(var(--mx) * -360deg), var(--h5), var(--h7), var(--h2), var(--h3), var(--h5)); mix-blend-mode: multiply; opacity: .7;
+  mask: repeating-conic-gradient(#000 0 6deg, transparent 6deg 12deg); }
+.role { color: var(--text-body); }
+.who { font: 500 32px/1.1 var(--font-sans); letter-spacing: -.04em; margin-top: 8px; }
+dl { display: grid; }
+dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+dt { font-size: 14px; letter-spacing: -.03em; } dd { color: var(--text-body); }
+.foot { font: 500 12px/1.4 var(--font-sans); letter-spacing: -.03em; color: var(--text-body); }
+.foot b { font-weight: 500; color: var(--text); }
+
+/* Holographic laminate: a tiled security rosette printed in foil, over the whole sleeve */
+.lam { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; mix-blend-mode: multiply; opacity: .55;
+  background: var(--foil); background-size: 300% 300%; background-position: calc(var(--mx) * 100%) calc(var(--my) * 100%);
+  -webkit-mask: var(--rosette) 0 0 / 96px 96px, var(--rosette) 48px 48px / 96px 96px; mask: var(--rosette) 0 0 / 96px 96px, var(--rosette) 48px 48px / 96px 96px; }
+/* Gloss on the film */
+.gloss { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; overflow: hidden; }
+.gloss::before { content: ''; position: absolute; inset: -40% -60%; translate: calc((var(--mx) - .5) * 40%) 0; rotate: 20deg;
+  background: linear-gradient(90deg, transparent 38%, color-mix(in srgb, var(--neutral-0) 18%, transparent) 46%, transparent 52%, color-mix(in srgb, var(--neutral-0) 10%, transparent) 56%, transparent 60%); }
+
+@media (prefers-reduced-motion: reduce) { .card { transform: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="hit">
+  <div class="card" aria-hidden="true">
+    <i class="slot"></i>
+    <div class="insert">
+      <div class="head">
+        <div class="event"><span class="name">Full Circle</span><span class="lbl-1">4 Nov 2026</span></div>
+        <i class="window"></i>
+      </div>
+      <div>
+        <p class="lbl-1 role">Contributor · The B2B AI Standard</p>
+        <p class="who">[Your name]</p>
+      </div>
+      <dl>
+        <div><dt>Named on stage</dt><dd class="lbl">Main room</dd></div>
+        <div><dt>500-600 marketers</dt><dd class="lbl">Audience</dd></div>
+        <div><dt>Launch posts and ads</dt><dd class="lbl">Paid by us</dd></div>
+      </dl>
+      <p class="foot">Stage access through <b>DemandSense, main sponsor</b>. No fee for contributors.</p>
+    </div>
+    <i class="lam"></i><i class="gloss"></i>
+  </div>
+</div>
+<script>
+// Foil and tilt follow the pointer; the untransformed wrapper is the hit area so the tilt doesn't feed back
+const hit = document.querySelector('.hit'), card = hit.querySelector('.card');
+const fine = matchMedia('(hover: hover) and (pointer: fine)'), still = matchMedia('(prefers-reduced-motion: reduce)');
+if (fine.matches) {
+  hit.addEventListener('pointermove', (e) => {
+    if (still.matches) return;
+    const r = hit.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.style.cssText = `--mx:${x.toFixed(3)};--my:${y.toFixed(3)};--tx:${(x - .5).toFixed(3)};--ty:${(y - .5).toFixed(3)}`;
+  });
+  hit.addEventListener('pointerleave', () => { card.style.cssText = ''; });
+}
+</script>
+</body>
+</html>

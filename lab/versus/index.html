@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Versus lab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(../../design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; }
+@font-face { font-family: 'Geist Mono'; src: url(../../design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; }
+body { margin: 0; background: #fff; color: #0a0a0a; font: 500 15px/1.5 'Inter', sans-serif; }
+.wrap { max-width: 1304px; margin: 0 auto; padding: 64px 16px 160px; }
+h1 { font-size: 40px; letter-spacing: -.02em; margin: 0 0 8px; } h1 span { color: #737373; }
+.lbl { font: 600 12px/1.4 'Geist Mono', monospace; text-transform: uppercase; color: #737373; }
+nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 64px; }
+nav a { font: 600 12px 'Geist Mono', monospace; text-transform: uppercase; color: inherit; text-decoration: none; padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 6px; transition: border-color 150ms ease; }
+@media (hover: hover) { nav a:hover { border-color: #0a0a0a; } }
+article { border-top: 1px solid #e5e5e5; padding: 40px 0 96px; scroll-margin-top: 16px; }
+article header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 24px; }
+article h2 { font-size: 28px; letter-spacing: -.01em; margin: 0; }
+article p.what { margin: 0 0 24px; max-width: 72ch; }
+.frames { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; align-items: start; }
+.desk { aspect-ratio: 1512 / 900; position: relative; overflow: hidden; border-radius: 8px; border: 1px solid #e5e5e5; }
+.desk iframe { position: absolute; top: 0; left: 0; width: 1512px; height: 900px; border: 0; transform-origin: 0 0; }
+.phone { height: 560px; border-radius: 8px; overflow: hidden; border: 1px solid #e5e5e5; }
+.phone iframe { width: 390px; height: 840px; border: 0; transform: scale(.6667); transform-origin: 0 0; }
+@media (max-width: 899px) { .frames { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="lbl">DemandSense · Lab</p>
+  <h1>Typical playbook card <span>— old and set, not alarming</span></h1>
+  <p class="lbl">Copy stays as on the live page. Only the left card's look changes; the right card has the chip, no square, smaller wave.</p>
+  <nav id="nav"></nav>
+  <div id="list"></div>
+</div>
+<script>
+const items = [
+  ['00', 'Current', 'Live left card for reference.'],
+  ['01', 'Library card', 'A ruled catalogue card with a punched hole; "Past due" is a faded rubber stamp, tilted. Reads as something filed away long ago.'],
+  ['02', 'Carbon copy', 'Typewritten in mono with soft, faded ink, dashed rules and a dog-eared corner. A document nobody has retyped since.'],
+  ['03', 'Archive folder', 'The card becomes a filed folder with a tab, muted fill and a light grain. Shelved, not wrong.'],
+  ['04', 'Yellowed print', 'Warm aged paper with darker edges and sepia ink. The most literal "old"; it leaves the cool palette on purpose, so it needs your OK.'],
+  ['05', 'Set in stone', 'An engraved plaque: double rule, carved spaced capitals. Fixed forever, which is the point against "Updated".'],
+  ['06', 'Crumpled carbon copy', 'Carbon copy (02) typed on a real sheet: paper grain, soft creases lit from the top left, and slightly uneven, torn-looking edges. No dog-ear; the crumple carries the age.'],
+];
+const list = document.getElementById('list'), nav = document.getElementById('nav');
+for (const [id, title, what] of items) {
+  const src = id === '00' ? 'base.html' : `base.html?v=${id}`;
+  const el = document.createElement('article');
+  el.id = 'v' + id;
+  el.innerHTML = `<header><h2><span class="lbl">${id}</span> ${title}</h2><a class="lbl" href="${src}" target="_blank">Open ↗</a></header>
+    <p class="what">${what}</p>
+    <div class="frames"><div class="desk"><iframe loading="lazy" src="${src}" title="Variant ${id} desktop"></iframe></div>
+    <div class="phone"><iframe loading="lazy" src="${src}" title="Variant ${id} mobile"></iframe></div></div>`;
+  list.append(el);
+  const a = document.createElement('a'); a.href = '#v' + id; a.textContent = `${id} ${title}`; nav.append(a);
+}
+const fit = () => document.querySelectorAll('.desk').forEach(d => d.firstElementChild.style.transform = `scale(${d.clientWidth / 1512})`);
+addEventListener('resize', fit); new ResizeObserver(fit).observe(document.body);
+</script>
+</body>
+</html>

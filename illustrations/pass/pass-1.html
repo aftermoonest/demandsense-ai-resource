@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pass 1 · Festival Lanyard</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(../../design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(../../design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+@property --mx { syntax: '<number>'; inherits: true; initial-value: .3; }
+@property --my { syntax: '<number>'; inherits: true; initial-value: .25; }
+@property --tx { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --ty { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 80px 16px; background: var(--bg); color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; -webkit-font-smoothing: antialiased; }
+p, dl, dd { margin: 0; }
+.lbl { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; }
+.lbl-1 { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; }
+
+/* Iridescent foil built from chart primitives, lifted to pastel so black ink stays ≥ 10:1 */
+:root {
+  --h1: color-mix(in oklab, var(--chart-6) 65%, var(--neutral-0));
+  --h2: color-mix(in oklab, var(--chart-9) 65%, var(--neutral-0));
+  --h3: color-mix(in oklab, var(--chart-8) 60%, var(--neutral-0));
+  --h4: color-mix(in oklab, var(--chart-7) 60%, var(--neutral-0));
+  --h5: color-mix(in oklab, var(--chart-10) 55%, var(--neutral-0));
+  --h6: color-mix(in oklab, var(--chart-1) 42%, var(--neutral-0));
+  --h7: color-mix(in oklab, var(--primary-300) 65%, var(--neutral-0));
+  --foil: linear-gradient(115deg, var(--h1), var(--h2), var(--h3), var(--h4), var(--h5), var(--h6), var(--h7), var(--h1), var(--h2), var(--h3), var(--h4));
+  --white-a: color-mix(in srgb, var(--neutral-0) 55%, transparent);
+}
+
+.col { width: min(504px, 100%); padding-top: 120px; }
+/* Physical object: PVC badge, 12px corners (3mm on a 54mm card) */
+.card { position: relative; border-radius: 12px; background: var(--neutral-0); rotate: -2deg; transform-origin: 50% -120px;
+  box-shadow: inset 0 0 0 1px var(--line-card), 0 1px 1px color-mix(in srgb, var(--neutral-950) 6%, transparent), 0 16px 32px -20px color-mix(in srgb, var(--neutral-950) 25%, transparent);
+  transform: perspective(1100px) rotateX(calc(var(--ty) * -8deg)) rotateY(calc(var(--tx) * 12deg));
+  transition: --mx 700ms var(--ease-out), --my 700ms var(--ease-out), --tx 600ms var(--ease-out), --ty 600ms var(--ease-out); }
+
+/* Lanyard: black strap through a swivel clip into the punched slot */
+.strap { position: absolute; left: 50%; bottom: 100%; width: 28px; height: 150px; translate: -50% -26px; background:
+  repeating-linear-gradient(90deg, transparent 0 3px, color-mix(in srgb, var(--neutral-0) 6%, transparent) 3px 4px), var(--neutral-950);
+  mask: linear-gradient(transparent, #000 45%); }
+.clip, .tongue { position: absolute; left: 50%; translate: -50% 0; z-index: 3; background: linear-gradient(90deg, var(--neutral-300), var(--neutral-50) 40%, var(--neutral-200) 60%, var(--neutral-500)); box-shadow: inset 0 0 0 1px var(--neutral-500); }
+.clip { top: -30px; width: 26px; height: 30px; border-radius: 4px 4px 2px 2px; }
+.tongue { top: -2px; width: 12px; height: 25px; border-radius: 1px 1px 6px 6px; }
+
+.band { position: relative; overflow: hidden; display: grid; gap: 40px; padding: 48px 32px 28px; border-radius: 12px 12px 0 0; color: var(--neutral-950);
+  background:
+    radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), var(--white-a), transparent 50%),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--neutral-0) 50%, transparent) 0 1px, transparent 1px 3px),
+    linear-gradient(105deg, transparent 18%, var(--neutral-0) 26%, transparent 34%, transparent 52%, var(--neutral-0) 58%, transparent 66%),
+    linear-gradient(105deg, var(--neutral-200), var(--neutral-0) 30%, var(--neutral-100) 50%, var(--neutral-0) 70%, var(--neutral-200)),
+    var(--foil);
+  background-size: 100% 100%, auto, 220% 100%, 180% 100%, 320% 320%;
+  background-position: 0 0, 0 0, calc(100% - var(--mx) * 100%) 0, calc(var(--mx) * 80%) 0, calc(var(--mx) * 100%) calc(var(--my) * 100%);
+  background-blend-mode: soft-light, overlay, soft-light, multiply, normal; }
+/* Guilloche rosettes stamped into the foil */
+.band::before { content: ''; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light; opacity: .9;
+  background:
+    repeating-radial-gradient(circle at 88% 120%, transparent 0 5px, var(--neutral-0) 5px 6px),
+    repeating-radial-gradient(circle at 70% 160%, transparent 0 7px, var(--neutral-950) 7px 7.6px);
+  mask: linear-gradient(100deg, transparent 30%, #000); }
+/* Fine diffraction bands that slide against the main foil */
+.band::after { content: ''; position: absolute; inset: 0 -200px 0 0; pointer-events: none; mix-blend-mode: color; opacity: .45; translate: calc(var(--mx) * -160px) 0;
+  background: repeating-linear-gradient(-60deg, var(--h1) 0, var(--h3) 14px, var(--h5) 28px, var(--h7) 42px, var(--h1) 56px); }
+.band > .slot { position: absolute; top: 16px; left: 50%; translate: -50% 0; width: 64px; height: 10px; border-radius: var(--radius-pill); background: var(--bg); box-shadow: inset 0 1px 1px color-mix(in srgb, var(--neutral-950) 35%, transparent), 0 1px 0 var(--white-a); }
+.band > * { position: relative; z-index: 1; }
+.event { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
+.event .name { font: 500 40px/1 var(--font-sans); letter-spacing: -.05em; }
+.event .lbl-1 { padding: 4px 8px; border-radius: var(--radius-2); background: var(--neutral-950); color: var(--neutral-0); }
+
+.body { display: grid; gap: 24px; padding: 28px 32px 32px; }
+.role { color: var(--text-body); }
+.who { font: 500 32px/1.1 var(--font-sans); letter-spacing: -.04em; margin-top: 8px; }
+dl { display: grid; }
+dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+dt { font-size: 14px; letter-spacing: -.03em; } dd { color: var(--text-body); }
+.foot { font: 500 12px/1.4 var(--font-sans); letter-spacing: -.03em; color: var(--text-body); padding-top: 16px; border-top: 1px dashed var(--line-card); }
+.foot b { font-weight: 500; color: var(--text); }
+
+@media (prefers-reduced-motion: reduce) { .card { transform: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="col"><div class="hit">
+  <div class="card" aria-hidden="true">
+    <i class="strap"></i><i class="clip"></i><i class="tongue"></i>
+    <div class="band">
+      <i class="slot"></i>
+      <div class="event"><span class="name">Full Circle</span><span class="lbl-1">4 Nov 2026</span></div>
+      <p class="lbl-1">Contributor · The B2B AI Standard</p>
+    </div>
+    <div class="body">
+      <p class="who">[Your name]</p>
+      <dl>
+        <div><dt>Named on stage</dt><dd class="lbl">Main room</dd></div>
+        <div><dt>500-600 marketers</dt><dd class="lbl">Audience</dd></div>
+        <div><dt>Launch posts and ads</dt><dd class="lbl">Paid by us</dd></div>
+      </dl>
+      <p class="foot">Stage access through <b>DemandSense, main sponsor</b>. No fee for contributors.</p>
+    </div>
+  </div>
+</div></div>
+<script>
+// Foil and tilt follow the pointer; an untransformed wrapper is the hit area so the tilt doesn't feed back into the maths
+const hit = document.querySelector('.hit'), card = hit.querySelector('.card');
+const fine = matchMedia('(hover: hover) and (pointer: fine)'), still = matchMedia('(prefers-reduced-motion: reduce)');
+if (fine.matches) {
+  hit.addEventListener('pointermove', (e) => {
+    if (still.matches) return;
+    const r = hit.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.style.cssText = `--mx:${x.toFixed(3)};--my:${y.toFixed(3)};--tx:${(x - .5).toFixed(3)};--ty:${(y - .5).toFixed(3)}`;
+  });
+  hit.addEventListener('pointerleave', () => { card.style.cssText = ''; });
+}
+</script>
+</body>
+</html>

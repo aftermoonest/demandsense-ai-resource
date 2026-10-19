@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Made-of lab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../landing.css">
+<style>
+/* Lab chrome */
+.tag { display: block; margin-bottom: 16px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; color: var(--text-2); }
+.tag b { color: var(--text); font-weight: 600; }
+.part { padding: 104px 0 0; text-align: center; }
+.part h1 { font: 500 40px/1.1 var(--font-sans); letter-spacing: -.04em; } .part p { color: var(--text-2); margin-top: 8px; }
+.sec { padding-top: 104px; }
+.sec .chain .yp { display: block; }
+
+/* Cells reach the edge lines: first cell's left / last cell's right sit 64px out (edge-inset) */
+@media (min-width: 1000px) {
+  .plate .yp { margin-bottom: -40px; padding: 24px 72px 32px; margin-inline: -72px; }
+  .plate article:first-child .yp { margin-left: calc(-1 * var(--edge-inset)); padding-left: var(--edge-inset); }
+  .plate article:last-child .yp { margin-right: calc(-1 * var(--edge-inset)); padding-right: var(--edge-inset); }
+}
+@media (max-width: 999px) { .plate .yp { margin-inline: calc(-1 * var(--edge-inset)); margin-bottom: -32px; padding: 24px var(--edge-inset); } }
+
+/* A · Black slab: each "your part" is a black plate from divider to divider, standing on the bottom rule */
+.vA .yp { background: var(--neutral-950); }
+.vA .yp .t-p2 { color: var(--neutral-0); }
+.vA .yp .t-p2::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 8px; background: var(--accent); vertical-align: 2px; }
+
+/* B · Black band: the three parts get their own black row, dividers run through it */
+.band { --x: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); margin-inline: var(--x); background: var(--neutral-950); border-image: none; border: 0; }
+.band > .wrap { max-width: none; padding-inline: var(--edge-inset); }
+.band .cells > * + * { border-left-color: var(--neutral-800); }
+.band .cells > * { padding-block: 24px 32px; }
+.band p { color: var(--neutral-0); }
+.band .t-p2 b { color: var(--accent); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; margin-right: 8px; }
+@media (min-width: 1000px) { .band .cells > * { padding-inline: 72px; } .band .cells > :first-child { padding-left: 0; } .band .cells > :last-child { padding-right: 0; } }
+.vB .chain > article { grid-row: 1 / span 2 !important; }
+
+/* C · Type only: no box. The line is set one step up, black, with a mono plus in accent */
+.vC .yp .t-p2 { font: 500 18px/1.35 var(--font-sans); letter-spacing: -.04em; }
+.vC .yp .t-p2::before { content: '+'; display: inline-block; width: 18px; font: 600 16px/1 var(--font-mono); color: var(--accent); }
+
+/* D · Dot plate: the board canvas (12px dot grid) marks the empty seat, text sits on it */
+.vD .yp { background: var(--bg-muted) radial-gradient(circle, var(--neutral-300) 1px, transparent 1.5px) 6px 6px / 12px 12px; border-top: 1px solid var(--line); }
+.vD .yp .t-p2 { display: inline; padding: 2px 4px; background: var(--neutral-0); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* E · Lit divider: no plate; the stretch of the bottom rule under each part turns orange, 2px */
+.vE .yp { position: relative; }
+.vE .yp .t-p2 { font: 500 18px/1.35 var(--font-sans); letter-spacing: -.04em; }
+.vE .yp::after { content: ''; position: absolute; left: 0; right: 0; bottom: -41px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 700ms var(--ease-out); }
+.vE.in .yp::after { transform: none; }
+.vE.in article:nth-child(3) .yp::after { transition-delay: 150ms; } .vE.in article:nth-child(5) .yp::after { transition-delay: 300ms; }
+@media (min-width: 1000px) {
+  .vE .yp::after { left: -72px; right: -72px; }
+  .vE article:first-child .yp::after { left: calc(-1 * var(--edge-inset)); } .vE article:last-child .yp::after { right: calc(-1 * var(--edge-inset)); }
+}
+
+/* ---------- Levels ---------- */
+:root { --lv: linear-gradient(90deg, var(--chart-1), var(--brand-third) 50%, var(--brand-first)); }
+.lv { display: grid; gap: 2px; }
+.lv b { font-size: 16px; } .lv span { color: var(--text-body); font-size: 14px; }
+.lv .over { margin-bottom: 8px; }
+.cols > * { padding-block: 24px 0; }
+@media (min-width: 1000px) { .cols > * { padding-inline: 72px; } .cols > :first-child { padding-left: 0; } .cols > :last-child { padding-right: 0; } }
+.need { display: flex; gap: 4px; margin-top: 12px; } .need .kd { padding: 4px 6px; }
+
+/* L1 · The bottom divider is the bar: 4px gradient, drawn left to right; levels below on the columns */
+.L1 .bar { height: 4px; background: var(--lv); transform: scaleX(0); transform-origin: left; transition: transform 1400ms var(--ease-in-out); }
+.L1 .bleed { border-bottom: 0; }
+.L1.in .bar { transform: none; }
+.bar-x { position: relative; }
+.bar-x .bar { margin-inline: calc(-1 * var(--edge-inset)); }
+
+/* L2 · Distribution: one row per level; its bar covers the parts that level needs, colour fixed by column */
+.dist { display: grid; gap: 8px; padding-block: 32px 0; }
+.row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; position: relative; height: 40px; }
+.row .fill { position: absolute; inset: 0; background: var(--lv); border-radius: 2px; clip-path: inset(0 100% 0 0); transition: clip-path 900ms var(--ease-out); }
+.L2.in .row:nth-child(1) .fill { clip-path: inset(0 66.67% 0 0); }
+.L2.in .row:nth-child(2) .fill { clip-path: inset(0 33.33% 0 0); transition-delay: 150ms; }
+.L2.in .row:nth-child(3) .fill { clip-path: inset(0 0 0 0); transition-delay: 300ms; }
+.row .who { position: relative; padding-left: 12px; color: var(--neutral-0); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; }
+.row .note { position: relative; grid-column: 3; justify-self: end; padding-right: 12px; color: var(--text-body); font-size: 14px; }
+.row:nth-child(3) .note { color: var(--neutral-0); }
+.dist + .bleed-b { margin-top: 32px; }
+
+/* L3 · Ramp: a gradient wedge rises across the three columns and stands on the bottom divider */
+.ramp { position: relative; height: 120px; margin-inline: calc(-1 * var(--edge-inset)); }
+.ramp i { position: absolute; inset: 0; background: var(--lv); clip-path: polygon(0 100%, 100% 100%, 100% 100%); transition: clip-path 1200ms var(--ease-in-out); }
+.L3.in .ramp i { clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+.ramp-cols { position: absolute; inset: 0 var(--edge-inset); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ramp-cols > * + * { border-left: 1px solid color-mix(in srgb, var(--neutral-0) 50%, transparent); }
+.L3 .bleed.top { border-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) { .bar, .row .fill, .ramp i, .vE .yp::after { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="part"><h1>What the Standard is made of</h1><p>Part 1 · "Your part" without the label. Part 2 · For every level as a distribution.</p></header>
+<div id="list"></div>
+
+<template id="cells">
+  <div class="wrap cells chain">
+    <article class="r">
+      <h3 class="headline t-h4">Rule <span class="tone-2">Says what good looks like.</span></h3>
+      <div class="ex"><span class="over">Example</span><p class="t-p2 body">Judge frequency over 90 days. Low reach, not high frequency, is the usual problem.</p></div>
+      <div class="yp"><p class="t-p2">your view on a rule, next to your skill or scenario.</p></div>
+    </article>
+    <span class="link" aria-hidden="true"><span class="lbl">Checked by</span><svg viewBox="0 0 28 28"><path fill="currentColor" d="M17.5019 23.3333L15.6292 22.4499L18.4757 15.1907H2.33333V12.8093H18.4757L15.6292 5.55007L17.5019 4.66667C19.824 9.54458 22.7828 12.5021 25.6667 13.2702V14.7298C22.7828 15.4979 19.824 18.4554 17.5019 23.3333Z"/></svg></span>
+    <article class="s">
+      <h3 class="headline t-h4">Skill <span class="tone-2">Checks an account against a rule.</span></h3>
+      <div class="ex"><span class="over">Example</span><p class="t-p2 body">frequency-check reads 90 days of campaigns and flags the 2 of 4 outside their band.</p></div>
+      <div class="yp"><p class="t-p2">a skill you built, published under your name.</p></div>
+    </article>
+    <span class="link" aria-hidden="true"><span class="lbl">Runs inside</span><svg viewBox="0 0 28 28"><path fill="currentColor" d="M17.5019 23.3333L15.6292 22.4499L18.4757 15.1907H2.33333V12.8093H18.4757L15.6292 5.55007L17.5019 4.66667C19.824 9.54458 22.7828 12.5021 25.6667 13.2702V14.7298C22.7828 15.4979 19.824 18.4554 17.5019 23.3333Z"/></svg></span>
+    <article class="c">
+      <h3 class="headline t-h4">Scenario <span class="tone-2">Does a whole job, with skills inside.</span></h3>
+      <div class="ex"><span class="over">Example</span><p class="t-p2 body">A weekly waste sweep runs six checks and writes the fix list for the week.</p></div>
+      <div class="yp"><p class="t-p2">the workflow you run, as a plugin under your name.</p></div>
+    </article>
+  </div>
+</template>
+
+<script>
+const cells = document.getElementById('cells').innerHTML;
+const head = (id, name, note) => `<div class="wrap"><span class="tag"><b>${id}</b> · ${name} — ${note}</span></div>`;
+const noYp = cells.replace(/<div class="yp">[\s\S]*?<\/div>/g, '');
+const band = `<div class="bleed band"><div class="wrap cells">
+  <p class="t-p2">your view on a rule, next to your skill or scenario.</p>
+  <p class="t-p2">a skill you built, published under your name.</p>
+  <p class="t-p2">the workflow you run, as a plugin under your name.</p></div></div>`;
+const ends = (mid = '') => `<div class="wrap cells cols">
+  <div class="lv"><span class="over">For every level</span><b>Business owner</b><span>Signs off the budget</span><div class="need"><span class="kd r">Rule</span></div></div>
+  <div class="lv">${mid}</div>
+  <div class="lv" style="text-align:right;justify-items:end"><span class="over" style="visibility:hidden">.</span><b>Specialist</b><span>In Campaign Manager every day</span><div class="need"><span class="kd r">Rule</span><span class="kd r">Skill</span><span class="kd r">Scenario</span></div></div></div>`;
+
+const V = [
+  ['A', 'vA plate', 'Black slab', 'each part ends in a black plate, divider to divider, standing on the bottom rule', `<div class="bleed mt">${cells}</div>`],
+  ['B', 'vB', 'Black band', 'the three parts move to their own black row; dividers run through it', `<div class="bleed mt">${noYp}</div>${band}`],
+  ['C', 'vC', 'Type only', 'no box: one size up, black, mono plus in accent', `<div class="bleed mt">${cells}</div>`],
+  ['D', 'vD plate', 'Dot plate', 'the board canvas marks the empty seat, divider to divider', `<div class="bleed mt">${cells}</div>`],
+  ['E', 'vE', 'Lit divider', 'no plate: the bottom rule under each part draws in orange', `<div class="bleed mt">${cells}</div>`],
+  ['L1', 'vC L1', 'Divider = bar', 'the bottom divider becomes a 4px gradient bar; levels sit on the columns below', `<div class="bleed mt">${cells}</div><div class="wrap bar-x"><div class="bar"></div></div>${ends()}`],
+  ['L2', 'vC L2', 'Distribution', 'one row per level, the bar covers the parts that level needs; middle row is a proposal (not on the live page)', `<div class="bleed mt">${cells}</div><div class="wrap dist">
+    <div class="row"><i class="fill"></i><span class="who">Business owner</span><span class="note">Signs off the budget</span></div>
+    <div class="row"><i class="fill"></i><span class="who">Marketing lead</span><span class="note">Runs the team</span></div>
+    <div class="row"><i class="fill"></i><span class="who">Specialist</span><span class="note">In Campaign Manager every day</span></div></div><div class="bleed bleed-b"></div>`],
+  ['L3', 'vC L3', 'Ramp', 'a gradient wedge rises across the columns and stands on the divider; more parts as you go right', `<div class="bleed mt top">${cells}</div><div class="wrap"><div class="ramp"><i></i><div class="ramp-cols"><span></span><span></span><span></span></div></div></div><div class="bleed" style="border-top:0"></div>${ends()}`],
+];
+document.getElementById('list').innerHTML = V.map(([id, cls, name, note, body]) =>
+  `<section class="sec ${cls}" id="${id}">${head(id, name, note)}${body}</section>`).join('') + '<div style="height:160px"></div>';
+
+const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add('in')), { threshold: 0.3 });
+document.querySelectorAll('.sec').forEach((s) => io.observe(s));
+</script>
+</body>
+</html>

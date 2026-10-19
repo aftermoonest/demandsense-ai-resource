@@ -1,0 +1,7 @@
+/* 05 Set in stone: an engraved plaque, double rule, everything in carved capitals */
+#different .paper { background: var(--neutral-50); color: var(--neutral-500); box-shadow: inset 0 0 0 1px var(--neutral-200), inset 0 0 0 8px var(--neutral-50), inset 0 0 0 9px var(--neutral-200); }
+#different .paper .t-h4 { font-family: var(--font-mono); font-weight: 600; font-size: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--neutral-500); }
+#different .paper dd { color: var(--neutral-500); }
+#different .paper .rows > div { border-color: var(--neutral-200); }
+#different .paper .rows .lbl, #different .paper .lbl-1 { color: var(--neutral-500); letter-spacing: .08em; }
+#different .paper .chip { background: var(--neutral-100); color: var(--neutral-500); letter-spacing: .08em; }

@@ -1,0 +1,6 @@
+/* 04 Yellowed print: warm aged paper, foxing at the edges. Leaves the cool palette on purpose */
+#different .paper { --old: color-mix(in srgb, var(--neutral-0) 90%, #c9a86a); position: relative; background: radial-gradient(120% 90% at 50% 40%, var(--old) 55%, color-mix(in srgb, var(--old) 85%, #a8864a)); color: #6b5e48; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--old) 70%, #8a7550); }
+#different .paper .t-h4 { color: #8a7a5e; }
+#different .paper .rows > div { border-color: color-mix(in srgb, var(--old) 75%, #8a7550); }
+#different .paper .rows .lbl, #different .paper .lbl-1 { color: #8a7a5e; }
+#different .paper .chip { background: none; color: #8a7a5e; box-shadow: inset 0 0 0 1.5px #a8946e; rotate: -3deg; }

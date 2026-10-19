@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pass 2 · Black Card</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(../../design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(../../design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+@property --mx { syntax: '<number>'; inherits: true; initial-value: .3; }
+@property --my { syntax: '<number>'; inherits: true; initial-value: .25; }
+@property --tx { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --ty { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 80px 16px; background: var(--neutral-0); color: var(--neutral-950); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; -webkit-font-smoothing: antialiased; }
+p, dl, dd { margin: 0; }
+.lbl { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; }
+.lbl-1 { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; }
+
+:root {
+  --h1: color-mix(in oklab, var(--chart-6) 65%, var(--neutral-0));
+  --h2: color-mix(in oklab, var(--chart-9) 65%, var(--neutral-0));
+  --h3: color-mix(in oklab, var(--chart-8) 60%, var(--neutral-0));
+  --h4: color-mix(in oklab, var(--chart-7) 60%, var(--neutral-0));
+  --h5: color-mix(in oklab, var(--chart-10) 55%, var(--neutral-0));
+  --h6: color-mix(in oklab, var(--chart-1) 42%, var(--neutral-0));
+  --h7: color-mix(in oklab, var(--primary-300) 65%, var(--neutral-0));
+  --foil: linear-gradient(115deg, var(--h1), var(--h2), var(--h3), var(--h4), var(--h5), var(--h6), var(--h7), var(--h1), var(--h2), var(--h3), var(--h4));
+  --gold: color-mix(in oklab, var(--chart-8) 40%, var(--neutral-300));
+}
+
+.hit { width: min(504px, 100%); }
+/* Physical object: a metal-core card, 20px corners (ISO 3.2mm scaled) */
+.card { position: relative; overflow: hidden; display: grid; gap: 24px; padding: 32px 112px 32px 32px; border-radius: 20px;
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500), 0 1px 2px color-mix(in srgb, var(--neutral-950) 20%, transparent), 0 20px 36px -24px color-mix(in srgb, var(--neutral-950) 50%, transparent);
+  transform: perspective(1100px) rotateX(calc(var(--ty) * -8deg)) rotateY(calc(var(--tx) * 12deg));
+  transition: --mx 700ms var(--ease-out), --my 700ms var(--ease-out), --tx 600ms var(--ease-out), --ty 600ms var(--ease-out); }
+/* Guilloche microprint: two families of fine rings, only visible as a texture */
+.card::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-radial-gradient(circle at -10% 110%, transparent 0 5px, var(--neutral-850) 5px 6px),
+    repeating-radial-gradient(circle at 60% -40%, transparent 0 7px, var(--neutral-900) 7px 8px);
+  mask: radial-gradient(120% 90% at 0 100%, #000, transparent 75%); }
+.card > * { position: relative; }
+
+/* Holographic security stripe, full height */
+.stripe { position: absolute; top: 0; bottom: 0; right: 32px; width: 48px; overflow: hidden;
+  background:
+    radial-gradient(circle at 50% calc(var(--my) * 100%), color-mix(in srgb, var(--neutral-0) 60%, transparent), transparent 40%),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--neutral-0) 50%, transparent) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, var(--neutral-200), var(--neutral-0) 30%, var(--neutral-100) 50%, var(--neutral-0) 70%, var(--neutral-200)),
+    var(--foil);
+  background-size: 100% 100%, auto, 100% 180%, 320% 320%;
+  background-position: 0 0, 0 0, 0 calc(var(--my) * 80%), calc(var(--mx) * 100%) calc(var(--my) * 100%);
+  background-blend-mode: soft-light, overlay, multiply, normal;
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--neutral-0) 50%, transparent), inset -1px 0 0 color-mix(in srgb, var(--neutral-950) 30%, transparent); }
+.stripe::after { content: ''; position: absolute; inset: 0 0 -160px; mix-blend-mode: color; opacity: .5; translate: 0 calc(var(--my) * -140px);
+  background: repeating-linear-gradient(-60deg, var(--h1) 0, var(--h3) 10px, var(--h5) 20px, var(--h7) 30px, var(--h1) 40px); }
+/* Embossed seal pressed into the stripe */
+.stripe i { position: absolute; left: 50%; top: 64%; width: 36px; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: repeating-radial-gradient(circle, transparent 0 2px, color-mix(in srgb, var(--neutral-950) 22%, transparent) 2px 2.6px), conic-gradient(from calc(var(--mx) * 360deg), var(--h1), var(--h3), var(--h5), var(--h7), var(--h1));
+  box-shadow: inset 0 1px 1px color-mix(in srgb, var(--neutral-0) 80%, transparent), inset 0 -1px 1px color-mix(in srgb, var(--neutral-950) 35%, transparent); }
+
+.top { display: flex; justify-content: space-between; color: var(--neutral-300); }
+/* EMV-style chip, gold metal */
+.chip { width: 52px; height: 40px; border-radius: 6px; overflow: hidden;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--gold) 70%, var(--neutral-0)), var(--gold) 45%, color-mix(in oklab, var(--gold) 70%, var(--neutral-950)));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--gold) 55%, var(--neutral-950)), inset 0 1px 0 color-mix(in oklab, var(--gold) 40%, var(--neutral-0)); }
+.chip svg { display: block; width: 100%; height: 100%; }
+.chip path { fill: none; stroke: color-mix(in oklab, var(--gold) 50%, var(--neutral-950)); stroke-width: 1; }
+
+.role { color: var(--neutral-300); }
+/* Foil-stamped name */
+.who { width: fit-content; margin-top: 8px; font: 500 32px/1.1 var(--font-sans); letter-spacing: -.04em; color: transparent;
+  background: radial-gradient(circle at calc(var(--mx) * 100%) 50%, color-mix(in srgb, var(--neutral-0) 70%, transparent), transparent 60%), var(--foil);
+  background-size: 100% 100%, 400% 100%; background-position: 0 0, calc(var(--mx) * 100%) 0; -webkit-background-clip: text; background-clip: text; }
+dl { display: grid; }
+dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--neutral-800); }
+dt { font-size: 14px; letter-spacing: -.03em; color: var(--neutral-0); } dd { color: var(--neutral-300); }
+.foot { font: 500 12px/1.4 var(--font-sans); letter-spacing: -.03em; color: var(--neutral-300); }
+.foot b { font-weight: 500; color: var(--neutral-0); }
+
+@media (prefers-reduced-motion: reduce) { .card { transform: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="hit">
+  <div class="card surface-black" aria-hidden="true">
+    <div class="stripe"><i></i></div>
+    <div class="top"><span class="lbl">Full Circle</span><span class="lbl">4 Nov 2026</span></div>
+    <div class="chip"><svg viewBox="0 0 52 40"><path d="M0 14h16M0 26h16M36 14h16M36 26h16M16 0v40M36 0v40M16 20h20M26 0v8M26 32v8"/><path d="M16 8h20v24H16z"/></svg></div>
+    <div>
+      <p class="lbl-1 role">Contributor · The B2B AI Standard</p>
+      <p class="who">[Your name]</p>
+    </div>
+    <dl>
+      <div><dt>Named on stage</dt><dd class="lbl">Main room</dd></div>
+      <div><dt>500-600 marketers</dt><dd class="lbl">Audience</dd></div>
+      <div><dt>Launch posts and ads</dt><dd class="lbl">Paid by us</dd></div>
+    </dl>
+    <p class="foot">Stage access through <b>DemandSense, main sponsor</b>. No fee for contributors.</p>
+  </div>
+</div>
+<script>
+// Foil and tilt follow the pointer; the untransformed wrapper is the hit area so the tilt doesn't feed back
+const hit = document.querySelector('.hit'), card = hit.querySelector('.card');
+const fine = matchMedia('(hover: hover) and (pointer: fine)'), still = matchMedia('(prefers-reduced-motion: reduce)');
+if (fine.matches) {
+  hit.addEventListener('pointermove', (e) => {
+    if (still.matches) return;
+    const r = hit.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.style.cssText = `--mx:${x.toFixed(3)};--my:${y.toFixed(3)};--tx:${(x - .5).toFixed(3)};--ty:${(y - .5).toFixed(3)}`;
+  });
+  hit.addEventListener('pointerleave', () => { card.style.cssText = ''; });
+}
+</script>
+</body>
+</html>

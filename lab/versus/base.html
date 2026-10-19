@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Versus lab base</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../landing.css">
+<script>
+document.documentElement.classList.add('js');
+const v = new URLSearchParams(location.search).get('v');
+if (v) document.write(`<link rel="stylesheet" href="${v.replace(/\W/g, '')}.css">`);
+</script>
+<script src="../../design-system/wave.js" defer></script>
+</head>
+<body>
+<!-- Paper edge for variant 06: displaces the plate's outline a few px so it reads torn/crumpled -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="paper-edge" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter></svg>
+<main>
+<!-- 9 · Not another playbook -->
+<section class="sec" id="different">
+  <div class="wrap head">
+    <p class="marker">Why it is different</p>
+    <h2 class="headline t-h2">Not another playbook</h2>
+  </div>
+  <div class="wrap grid versus mt">
+    <div class="paper c-6">
+      <span class="chip">Past due</span>
+      <div><h3 class="t-h4">A typical playbook</h3><p class="lbl-1 mt-8">Published once</p></div>
+      <dl class="rows t-p2">
+        <div><dt class="lbl">Whose view</dt><dd>One company's advice.</dd></div>
+        <div><dt class="lbl">When it applies</dt><dd>The same rules for everyone.</dd></div>
+        <div><dt class="lbl">What you do</dt><dd>Read it.</dd></div>
+        <div><dt class="lbl">How long</dt><dd>Frozen on the day it is published.</dd></div>
+      </dl>
+    </div>
+    <div class="dcard surface-black c-6">
+      <div class="card-wave" data-wave='{"frame":{"x":0.5,"y":0.45,"w":0.65,"h":0.6}}'></div>
+      <span class="chip">Up to date</span>
+      <div><h3 class="t-h4">The Standard</h3><p class="lbl-1 mt-8">Updated as practitioners add to it</p></div>
+      <dl class="rows t-p2">
+        <div><dt class="lbl">Whose view</dt><dd>The LinkedIn® default next to named practitioners, with sources, and when practitioners adjust it.</dd></div>
+        <div><dt class="lbl">When it applies</dt><dd>Each rule says when it changes for you, and ABM lists, cold ICP and retargeting each get their own view.</dd></div>
+        <div><dt class="lbl">What you do</dt><dd>Check your own account against it, in your own AI, with free skills.</dd></div>
+        <div><dt class="lbl">How long</dt><dd>Updated with new rules, skills, scenarios and contributors, and later with results from live accounts.</dd></div>
+      </dl>
+      <div class="actions"><a class="btn brand" href="mailto:znak@demandsense.com">Bring your work <svg viewBox="0 0 28 28" aria-hidden="true"><path fill="currentColor" d="M17.5019 23.3333L15.6292 22.4499L18.4757 15.1907H2.33333V12.8093H18.4757L15.6292 5.55007L17.5019 4.66667C19.824 9.54458 22.7828 12.5021 25.6667 13.2702V14.7298C22.7828 15.4979 19.824 18.4554 17.5019 23.3333Z"/></svg></a></div>
+    </div>
+  </div>
+</section>
+</main>
+<script src="../../landing.js" defer></script>
+<script>addEventListener('load', () => document.querySelector('.versus').scrollIntoView({ block: 'center' }));</script>
+</body>
+</html>

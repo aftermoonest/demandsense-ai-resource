@@ -12,6 +12,7 @@ Single source of truth for the AI Resource landing page and anything built in th
 | Figma report `516:88440` | Black hero, sidebar + main grid, edge lines, section headers, data components |
 | Figma `mobile-blockers` (`801:16043`) | The only 375px comps: mobile margins and edge lines |
 | `../DS Report/prototype/dist/*.css` | Shipped motion tokens, breakpoints, mobile behavior |
+| https://www.sanity.io/ and https://www.bequant.com/ (2026-10-19 study, `docs/proposals-sanity-bequant.md`) | Figure system §8.15: figure card, slots, type chip, corner marks, pipeline frame, index rail, prompt chips, word reveal |
 | https://the-ai-standard.vercel.app/ | Content structure we keep. Its visual style (navy glass, glows, Geist sans, gradients) is **replaced** by this system |
 
 **Visual reference = Figma, not stored images.** Open a node with `https://www.figma.com/design/jiNJOOlaeRo2jTiNU64MQh/DS-Report?node-id=<id with - instead of :>` or `get_screenshot` via Figma MCP.
@@ -76,6 +77,19 @@ The headline is one continuous text block with two color spans. Same size, same 
 - No body paragraph under the section headline. If one line of support is unavoidable (form card: "Pick the two your buyers mention most"), use `p1` in `neutral/800`, 8px below.
 - Quotes use the same trick inverted: gray sentence, black highlights on the key phrases.
 - Max line: 650px for hero and section headlines, 514px in report headers.
+- The two tones stay on one line flow: never force the gray span onto its own line (no `display: block` on `.tone-2`); it wraps only when the width runs out ("Rule Says what good looks like").
+- **No full stop at the very end of any text**: headlines, body, captions, list items, buttons. The last sentence of a block ends bare. Periods between sentences inside a block stay; `?` and `!` stay.
+
+### 3.1 Section header split *(landing, decided 2026-10-19)*
+
+Every section's main header (the top-level headline and its body) divides the content width into two halves:
+
+- **Left:** section marker (overline) above the headline.
+- **Right:** the body, which is the support copy for the headline. This is the one place a section body is allowed; it replaces the "one support line under the headline" case above.
+- Headlines run **at least two lines** at every breakpoint (shorten the max line or balance with `text-wrap: balance` so a one-line headline never occurs). Exception: short explainer headlines ("How a rule works") stay on one line.
+- A section with no body leaves the right half empty; it does not centre or widen the headline.
+- Applies only to the main section header, not to card, feature or sub-block headlines.
+- Mobile (<700px): stacks, marker → headline → body, 16 gaps.
 
 ---
 
@@ -225,7 +239,7 @@ Spacing scale (4px base): 2 · 4 · 6 · 8 · 12 · 16 · 24 · 32 · 40 · 64 �
 | Gap | Desktop | Where it comes from |
 |---|---|---|
 | Hero → first section | 128 | `spaceholder/128` |
-| Section → section (landing) | 160 | `spaceholder/160` |
+| Section → section (landing) | 208 (tablet 160, mobile 104) | `--section-gap` |
 | Section → section (report main column) | 128 band, divider line at 64 | `divider` 1172×128 |
 | Chess row → chess row | 128 | report-features stack gap |
 | Report hero rows (title / insights / gauges / cards) | 40 above + 40 below each full-bleed line | report hero |
@@ -510,6 +524,40 @@ Layers: `--z-raised` 1 · `--z-sticky` 10 · `--z-overlay` 50 · `--z-tip` 60 ·
 - **Bleed** (`--bleed`): `edge + max(0, (100vw − 1512) / 2)`. Used with negative margins to push a band (ad rows, wide tables) from the main column to the viewport edge on any screen width.
 - **Print** (report is printed): hide nav, skip link, toast, dialogs and `[data-action]`; kill transitions and show every reveal in its end state (`opacity: 1; transform: none`, including charts); force colors with `print-color-adjust: exact`; the report scales to `zoom: .65` at 1172 wide; dividers do not break pages (`break-after: avoid`).
 
+### 8.15 Figures and infographics *(from the Sanity + Bequant study, approved 2026-10-19)*
+
+Code: `tokens.css` (section "Figures and infographics"), `word-reveal.js`. Visual check: specimen → Figures.
+
+**Principles**
+1. One figure = one mechanism. Build it from 3–5 repeated primitives (slot, packet, line, node). A concept that needs a label inside the drawing is the wrong concept.
+2. Monochrome outline (`neutral/500`, 1px) plus **one accent on what changes**: primary blue (`--primary-450`; `--primary-300` on black). Nothing else gets a color. Orange stays for "your part" in UI, not in drawings.
+   Corners are tight (radius about 0.5–1.2 world units, cylinders stay round) and parts carry real detail: lattice, fins, rails, fixtures. Edgy, not soft (Oleksii, 19 Oct).
+3. The stage sits in a card: title row above, mono caption (l2) below. Text never lives inside the drawing.
+4. The loop shows before → after, ≤ 8s, starts only while the figure is on screen (`.in` set by IntersectionObserver), plays once or loops quietly. Reduced motion: end state, no movement.
+5. A number backs the figure (`delta`).
+6. Show the real artifact (actual rule text, actual code, actual UI) rather than an icon standing for it.
+
+**Parts**
+
+| Part | Class | Spec |
+|---|---|---|
+| Figure card | `.fig-card` | `--bg-subtle` (on black `neutral/900`), 1px `--line-card`, radius 4, pad 24, gap 16, no shadow. Stage min-height 200 with 1px guides at top and bottom; optional dot cell (`.fig-dots` + `.pattern-on-black .pattern-fade`, dot `neutral/800`) |
+| Type chip | `.fig-tag > b` | Filled chip (§8.5: pad 4/8, radius 2, `--bg-muted`), Geist Mono 600 12 uppercase `--text`; name Inter 16 `--text`. `RULE Active queue management`. Replaces colour-coding of types in figure titles. Never square brackets |
+| Expand | `.fig-expand` | 32px icon-only ghost, top-right, `aria-label`, opens a native `<dialog>` with the large figure. Only when the card size makes it unreadable |
+| Corner marks | `.crop` | Four 8px corners, 1px `neutral/500`, 8px outside the box. Marks the figure in focus; one per card |
+| Slot row | `.slots` `.slot-row` `.slot` | 28×36, radius 4, 1px outline. `.on` = held (`--text` 15%), `.hot` = live (accent fill). Row label l2 at 56px on the left. `.pkt` slots pulse empty → accent → empty, 6s, staggered by `--i` × 240ms |
+| Line chart | `.fig-line` | One accent line 1.5px, dotted threshold `neutral/500` (`2 4`), quiet 1px guides. Line draws in 1.6s (`stroke-dashoffset`, `pathLength=1`; with `step-fill`, the only non-transform motion) |
+| Delta | `.delta` | l2 caption over `n2` value + 24px circle with arrow (`success/300` outline, an icon, never a fill). Right of a 1px vertical line: name l1, company l2 `--text-meta` |
+| Pipeline frame | `.pipe` | Three ruled cells (1px verticals, horizontals top and bottom), pad 24. Header l1; the active cell gets an 8px accent square. Real code or UI inside (mono 12/1.6). Stacks under 1000px. For the worked example and the question → skill → rule → answer flow |
+| Index rail | `.tab-index` | Vertical, numbered `01 RULE`, `role=tab`. Active = solid `neutral/950` block with white text, radius 0 (on black: white block). Inactive `--text-body`. Square family: the pill tab (§8.4) stays the default; use the rail where tabs stack beside a panel |
+| Scenario switcher | `.tab-switch` | Underline tabs, mono l1, radius 0. Active: `--bg-muted` plate + 2px bottom bar in `--text`. Switches which scenario a diagram plays |
+| Hot block | `.hot-block` | The one accent-filled element on a screen: fill `--accent`, text `neutral/950`, radius 4. Never two on screen, never on a figure card. Approved for the landing; for a single "seat" or primary call-out |
+| Prompt chips | `.prompt-chips` `.prompt-chip` | Suggested questions, right-aligned in a column, gap 8. `--bg-muted`, radius 2, pad 4/8, l1 `--text-body`. Hover `--text`; tap on touch |
+| Stat strip | `.stat-strip` | Optional, bottom of hero. n3 value, l1 caption, `→` at the end of the caption for linked stats. 3 columns, gap 40; 1 column on mobile |
+| Word reveal | `[data-word-reveal]` + `word-reveal.js` | Words go `--text-2` → `--text` as the block scrolls through the viewport (progress = scroll position, 150ms colour change per word). Reduced motion: all words at full colour. Markup inside (highlights) is kept. Use on quotes and one thesis sentence per section, not on lists |
+
+**Rejected (do not add):** square brackets anywhere in UI chrome (type tags, action labels `[ CLICK TO CHAT ]`), meta-left list rows, pixel-mosaic photo filter (S9, parked), dotted row dividers, accent-coloured category line above a headline. Mega headline (96–112px) and a 100vh hero are parked. Stat strip stays optional.
+
 ---
 
 ## 9. Page patterns
@@ -560,7 +608,7 @@ Two 6-col halves, 128 between rows. Copy half: marker → 24 two-tone headline (
 | Closing CTA "Take your seat" | Black CTA band with form or email action |
 | Footer disclaimer | Site footer + l2 LinkedIn® trademark line |
 
-Type badges for Rule / Skill / Scenario: same shape as status chips (pad 4/8, radius 2, l1), filled `neutral/950` / `neutral/50` / outlined. Do not reuse the old blue/teal/violet coding; if color is needed, take chart/6, chart/9, chart/1 and keep it inside the badge.
+Type badges for Rule / Skill / Scenario: same shape as status chips (pad 4/8, radius 2, l1), all three grey (`--bg-muted` fill, `--text`; on black `neutral/800`). No type colours: the word names the type. In figure titles use the type chip (§8.15).
 
 ---
 
@@ -606,6 +654,8 @@ Shipped patterns to reuse:
 - Toast and tooltip: 8–16px rise + fade.
 - Count-up numbers with tabular figures.
 - Build-ins start when the block enters the viewport, run once.
+
+Figure loops and scroll word reveal: §8.15.
 
 Reveal on view (`.motion-ready` gate, so no-JS shows everything): list items rise 8px + fade 300ms, stagger `--stagger-row` 30ms; chart bars `--stagger-bar` 40ms; pinned avatars `scale(.7 → 1)` + fade, stagger `--stagger-pin` 80ms, then drop to `--t-fast` once built. Keyframes: `view-in` (opacity), `bar-refill` (was `lvl-refill`: `scaleX(.2 → 1)` + fade), `step-fill` (2px progress, the one place `width` animates). Toast: §8.13.
 
@@ -663,8 +713,8 @@ Don't
 
 Agreed with Oleksii for the landing rebuild (spec: `docs/superpowers/specs/2026-10-19-landing-rebuild-design.md`). They override §2, §3, §8.1 and §8.12 on the landing only.
 
-- **Surfaces.** Besides hero and CTA, the key-promise section ("What you build with") is black. White sections may hold **dark cards** (`.surface-black`, radius 4, no shadow): "The Standard" card and the two "Two ways in" cards.
+- **Surfaces.** Besides hero and CTA, the key-promise section ("What you build with") is black. White sections may hold **dark cards** (`.surface-black`, radius 4, no shadow): "The Standard" card and the "Build a scenario with us" card. Its pair, "Send a skill", is a white card (1px `neutral/75` border, mock on `neutral/50`).
 - **Headline + body.** Section headers may carry one body paragraph: marker → 16 → two-tone headline → 24 → p1 `neutral/800`, max 650. Temporary: the Vercel copy has long leads; revisit later.
 - **Primary CTA on dark.** Blue filled `primary/450`, white label, not darkened (label contrast 4.16, below AA for 14px; accepted).
-- **Wave in cards.** Every dark card hosts its own live `[data-wave]`, framed `{x:0, y:0, w:1.4, h:1.2–1.3}` so the ribbon fills the card with no canvas edge showing. Skill card = fine/thin texture, Scenario card = heavy texture (tuned via `fibers` and scale overrides). The black key section has no wave.
+- **Wave in cards.** Every dark card hosts its own live `[data-wave]`, framed `{x:0, y:0, w:1.4, h:1.2–1.3}` so the ribbon fills the card with no canvas edge showing. Update: the dark cards ("The Standard", "Build a scenario with us") carry the hero wave scaled to the card width: hero frame `{x:.1296, y:-.0219, w:.8705, h:1.0219}` plus `aspect:1.288` (hero canvas w/h at 1440×952) and `k:1.507` (hero scale +10%), `fiberScale:0.5` (the card ribbon is ~0.49× the hero one; this keeps fibres as wide in pixels as in the hero, finer ones alias into stair-steps), default settings, 50% opacity like the hero, no fade; the canvas fills the card height, the view stays anchored at the top. The white Skill card has no wave. The black key section has no wave.
 - **Sticky tabs.** Rule / Skill / Scenario explainers share one sticky pill-tab bar that follows scroll on every breakpoint; tabs also jump to their panel.
