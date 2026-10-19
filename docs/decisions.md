@@ -42,7 +42,7 @@ Made while you were away (2026-10-19). Each one is reversible; say "revert N" or
 ## Round 3 (your review of 19 Oct)
 
 27. **Hero = anatomy figure: the Standard as a modular rack.** Five practitioner modules sit in one case, patched together: rules are reference gauges (a dial), the skill reads the rule (input, sense knob, 4 band lamps with 2 of 4 lit, output), scenarios are wide modules with three inputs, a status window and trims. Slot 06 is empty: bus header waiting, orange rim, one orange cable from scenario 05 hanging into it. Hover lifts a module and names it in the caption line (verbatim list from the site); hovering the seat lowers a ghost module into it; clicking it (or Enter) writes to us. Idle tour cycles the modules. The old sheet stack stays only in the closing section.
-28. **Type colours** come from DESIGN §9.5 (Rule chart/6 blue, Skill chart/9 teal, Scenario chart/1 violet): badges, tinted board canvases, the level track, link pulses. Orange stays reserved for "your part".
+28. ~~**Type colours** come from DESIGN §9.5 (Rule chart/6 blue, Skill chart/9 teal, Scenario chart/1 violet): badges, tinted board canvases, the level track, link pulses. Orange stays reserved for "your part".~~ Replaced 2026-10-19: badges, "your part" plates, board canvases and the level track are grey; boards follow §8.15 (bracket tag, monochrome, accent only on the travelling packet).
 29. **One link system** for boards and the Build-with hub: curves fanning into the main block (desktop), L-lines on a left spine (mobile), drawn on reveal; a pulse runs each link once and again on hover.
 30. **Build with** follows the original layout: a stack of tool cards fanning into "Your scenario", then DemandSense.
 31. **Pass badge** gets a holographic foil (chart colours, colour-dodge) and a tilt that follow the pointer.
@@ -61,3 +61,4 @@ Made while you were away (2026-10-19). Each one is reversible; say "revert N" or
 - Button labels on "Build with", "The Standard" card and both "Two ways in" cards all say "Bring your work" (not on the Vercel site).
 - Figma still draws band rules edge-to-edge (DESIGN §7 updated, comps not).
 
+33. **Your part** in the made-of cards is a signature line: the DS underline field (§8.2) with a gray [Your name] placeholder and a blinking orange caret (approved 19 Oct).
