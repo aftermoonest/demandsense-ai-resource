@@ -174,13 +174,13 @@ b { font-weight: 500; color: var(--text); }
 
 .board { border-radius: var(--radius-4); box-shadow: inset 0 0 0 1px var(--line-card); background: var(--bg-subtle); }
 .board-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 16px 24px; border-bottom: 1px solid var(--line-card); }
-.board-head .t-h6 { margin-right: auto; }
+.board-head .t-h6, .board-head .fig-tag { margin-right: auto; }
 .board-head code { font: 500 12px/1.4 var(--font-mono); color: var(--text-body); letter-spacing: 0; overflow-wrap: anywhere; min-width: 0; }
 @media (max-width: 699px) { .board-head { padding-inline: 16px; } }
 /* Canvas: 12px dot grid (DESIGN §8.11 pitch ×2), nodes sit opaque on top */
-.board-body { padding: 40px; display: grid; gap: 40px; background-image: radial-gradient(circle, var(--neutral-100) 1px, transparent 1.5px); background-size: 12px 12px; background-position: 6px 6px; }
-.ctx { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-width: calc((100% - 128px) / 3 * 2 + 64px); }
-.node { position: relative; display: grid; gap: 4px; padding: 12px 16px; border-radius: var(--radius-4); background: var(--neutral-0); box-shadow: inset 0 0 0 1px var(--neutral-50); font-size: 14px; letter-spacing: -.03em; }
+.board-body { --plate: var(--bg-muted); padding: 40px; display: grid; gap: 40px; background: var(--plate) radial-gradient(circle, var(--neutral-200) 1px, transparent 1.5px) 6px 6px / 12px 12px; }
+.node { position: relative; display: grid; gap: 4px; padding: 12px 16px; border-radius: var(--radius-4); background: var(--neutral-0); box-shadow: inset 0 0 0 1px var(--line-card); font-size: 14px; letter-spacing: -.03em; }
+.node code { font: 500 13px/1.4 var(--font-mono); letter-spacing: 0; }
 .node .lbl { color: var(--text-body); }
 .node.you .lbl::before, .node.you .lbl-1::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--accent); vertical-align: 1px; }
 .node.you { box-shadow: inset 0 0 0 1px var(--accent); }
@@ -194,8 +194,6 @@ b { font-weight: 500; color: var(--text); }
 /* Mobile: blocks stack, joined by L-shaped lines (GitHub style), free space on the right */
 @media (max-width: 999px) {
   .board-body { padding: 24px; gap: 24px; }
-  .ctx { grid-template-columns: 1fr; max-width: none; }
-  .flow { grid-template-columns: minmax(0, 1fr); gap: 0; padding-right: 32px; }
   .board-note { grid-template-columns: 1fr; padding-inline: 24px; }
 }
 
@@ -360,12 +358,10 @@ b { font-weight: 500; color: var(--text); }
 .js .rv-ico.on svg ellipse { opacity: 1; }
 
 /* Boards: wires draw from the inputs to the main node and on to the outputs */
-.js .flow > .node.main.rv { translate: none; scale: .96; transition: opacity 500ms var(--ease-out) var(--d), scale 500ms var(--ease-out) var(--d); }
-.js .flow > .node.main.rv.on { scale: none; }
-.js .grp.in > .node.rv:not(.on) { translate: -12px 0; }
-.js .hub .tools > .rv:not(.on) { translate: -12px 0; }
-.js .grp.out > .node.rv:not(.on) { translate: 12px 0; }
-@media (max-width: 999px) { .js .grp.in > .node.rv, .js .grp.out > .node.rv:not(.on) { translate: 0 12px; } }
+.js .flow .node.main.rv { translate: none; scale: .96; transition: opacity 500ms var(--ease-out) var(--d), scale 500ms var(--ease-out) var(--d); }
+.js .flow .node.main.rv.on { scale: none; }
+.js .flow .node.rv:not(.on, .main), .js .hub .tools > .rv:not(.on) { translate: -12px 0; }
+@media (max-width: 999px) { .js .flow .node.rv:not(.on, .main) { translate: 0 12px; } }
 
 
 
@@ -417,8 +413,8 @@ b { font-weight: 500; color: var(--text); }
   html.js .pass.rv.rv.rv.rv.rv { rotate: -2deg; }
   .js .rv { transition: opacity 300ms linear var(--d, 0ms); }
   .js .toc li .bars i, .js .stop::after, .js .lv-track i { transform: none; }
-  .js .stop::before, .js .flow > .node.main.rv, .js .chain .link.rv { scale: none; }
-  .links path { stroke-dashoffset: 0 !important; transition: none !important; } .pulse { display: none; }
+  .js .stop::before, .js .flow .node.main.rv, .js .chain .link.rv { scale: none; }
+  .links path, .links .tip { stroke-dashoffset: 0 !important; opacity: 1 !important; transition: none !important; } .pulse { display: none; } .play .node::after { animation: none; }
   .js .rv-ico svg :is(path, polygon) { stroke-dasharray: none; stroke-dashoffset: 0; fill-opacity: 1; transition: none; }
   .js .rv-ico svg ellipse, .js .stop > *, .js .paper .chip { opacity: 1; translate: none; scale: none; transition: none; }
   .tab-ind, .stack .sheet, .btn svg { transition: none; }
@@ -439,8 +435,8 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .hero-wave canvas, .card-wave canvas { animation: wave-in 1600ms var(--ease-out) both; }
 @keyframes wave-in { from { opacity: 0; } }
 /* Icons answer a hover on their row or cell with a small lift */
-.fact .ico, .gets .ico { transition: translate 300ms var(--ease-out); }
-@media (hover: hover) and (pointer: fine) { .fact:hover .ico, .gets li:hover .ico { translate: 0 -3px; } }
+.gets .ico { transition: translate 300ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .gets li:hover .ico { translate: 0 -3px; } }
 @media (prefers-reduced-motion: reduce) {
   .hero-wave canvas, .card-wave canvas { animation-duration: 1ms; }
   .fact .ico, .gets .ico { transition: none; }
@@ -455,12 +451,9 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 /* =====================================================================
    Round 3: infographics system
    ===================================================================== */
-/* Type colours (DESIGN §9.5: chart/6, chart/9, chart/1, inside badges and data only) */
-:root { --type-r: var(--chart-6); --type-s: var(--chart-9); --type-c: var(--chart-1); }
-.r { --tint: var(--type-r); } .s { --tint: var(--type-s); } .c { --tint: var(--type-c); }
-.kd.r, .surface-black .kd.r { background: var(--type-r); color: var(--neutral-950); box-shadow: none; }
-.kd.s, .surface-black .kd.s { background: var(--type-s); color: var(--neutral-950); box-shadow: none; }
-.kd.c, .surface-black .kd.c { background: var(--type-c); color: var(--neutral-0); box-shadow: none; }
+/* Type badges are grey: the type is in the word, colour stays for data */
+.kd.r, .kd.s, .kd.c { background: var(--bg-muted); color: var(--text); box-shadow: none; }
+.surface-black .kd.r, .surface-black .kd.s, .surface-black .kd.c { background: var(--neutral-800); color: var(--neutral-0); }
 
 /* Overline: the section-marker voice at label size, used for Example / Your part / For every level */
 .over { display: inline-flex; align-items: center; gap: 6px; font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text-body); }
@@ -470,7 +463,7 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 /* Made-of: each part ends in a "your part" panel; connectors sit on the dividers, mid-height */
 .chain > article { gap: 16px; }
 .chain .ex { display: grid; gap: 8px; margin-top: 8px; }
-.chain .yp { display: grid; gap: 8px; margin-top: auto; padding: 16px; border-radius: var(--radius-4); background: var(--brand-first-10); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); }
+.chain .yp { display: grid; gap: 8px; margin-top: auto; padding: 16px; border-radius: var(--radius-4); background: var(--bg-muted); }
 .chain .yp .t-p2 { color: var(--text); }
 .chain { align-items: stretch; }
 .chain .link { position: absolute; z-index: 1; top: 50%; translate: -50% -50%; display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-pill); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); white-space: nowrap; border: 0; }
@@ -488,7 +481,8 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .levels::before { content: ''; position: absolute; z-index: -1; inset: 40px var(--margin) 0; border-radius: var(--radius-4); background: var(--bg-muted); }
 .levels > .over { grid-column: 1 / -1; }
 .lv-track { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
-.lv-track i { height: 6px; background: var(--tint); transform-origin: left; }
+.lv-track i { height: 6px; background: var(--neutral-300); transform-origin: left; }
+.lv-track i:nth-child(2) { background: var(--neutral-500); } .lv-track i:nth-child(3) { background: var(--neutral-950); }
 .lv-track i:first-child { border-radius: var(--radius-pill) 0 0 var(--radius-pill); }
 .lv-track i:last-child { border-radius: 0 var(--radius-pill) var(--radius-pill) 0; }
 .lv-end { display: grid; gap: 2px; }
@@ -498,35 +492,39 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .js .lv-track i:nth-child(2) { transition-delay: 500ms; } .js .lv-track i:nth-child(3) { transition-delay: 1000ms; }
 @media (max-width: 699px) { .levels { grid-template-columns: 1fr 1fr; } .lv-end:last-child { grid-column: 2; } }
 
-/* Flows (boards and the stack hub): blocks in three columns, links drawn by landing.js */
-.flow, .hub { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr) 96px minmax(0, 1fr); align-items: center; }
-.flow > .grp.in, .hub > .tools { grid-column: 1; }
-.flow > .node.main, .hub > .core { grid-column: 3; }
-.flow > .grp.out, .hub > .dsc { grid-column: 5; }
-.grp { position: relative; display: grid; gap: 8px; }
+/* Flows (boards and the stack hub): blocks in columns, links drawn by landing.js.
+   A board is a row of columns (as many as its steps); the hub keeps three fixed tracks. */
+.flow { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); column-gap: 56px; align-items: center; }
+.col { display: grid; gap: 16px; }
+.hub { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr) 96px minmax(0, 1fr); align-items: center; }
+.hub > .tools { grid-column: 1; } .hub > .core { grid-column: 3; } .hub > .dsc { grid-column: 5; }
 .links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
 .links path { fill: none; stroke: var(--neutral-300); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .surface-black .links path { stroke: var(--neutral-800); }
-.links .tip { fill: var(--neutral-300); stroke: none; }
-.surface-black .links .tip { fill: var(--neutral-500); }
-.flow > :not(.links), .hub > :not(.links) { position: relative; z-index: 1; }
-.js .links path:not(.tip) { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 800ms var(--ease-in-out) var(--ld, 0ms); }
-.js .links .tip { opacity: 0; transition: opacity 200ms linear calc(var(--ld, 0ms) + 700ms); }
-.js .links.on path:not(.tip) { stroke-dashoffset: 0; } .js .links.on .tip { opacity: 1; }
-/* A pulse travels each link once the flow is built, coloured by the board's type */
-.pulse { position: absolute; z-index: 2; top: 0; left: 0; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--tint, var(--accent)); offset-rotate: 0deg; opacity: 0; pointer-events: none; }
-.pulse.go { animation: pulse 1400ms var(--ease-in-out) var(--pd, 0ms) both; }
-@keyframes pulse { 0% { offset-distance: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+/* Ports: a small open ring where a link meets a block */
+.links .tip { fill: var(--plate, var(--bg)); stroke: var(--neutral-500); stroke-width: 1; }
+.flow > :not(.links, .pulse), .hub > :not(.links, .pulse) { position: relative; z-index: 1; }
+.js .links path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 500ms var(--ease-in-out) calc(var(--d, 0ms) + var(--ld, 0ms)); }
+.js .links .tip { opacity: 0; transition: opacity 200ms linear calc(var(--d, 0ms) + var(--ld, 0ms)); }
+.js .links.on path { stroke-dashoffset: 0; } .js .links.on .tip { opacity: 1; }
+/* The loop (DESIGN §8.15): a packet runs the flow column by column, 900ms a hop, every 6s while on screen.
+   Each block it reaches flashes an accent ring. Accent = the one thing that changes. */
+.pulse { position: absolute; z-index: 2; top: 0; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); offset-rotate: 0deg; opacity: 0; pointer-events: none; }
+.play > .pulse { animation: packet 6s var(--ease-in-out) calc(var(--c, 0) * 900ms) infinite; }
+@keyframes packet { 0% { offset-distance: 0%; opacity: 0; } 2%, 13% { opacity: 1; } 15% { offset-distance: 100%; opacity: 0; } 100% { offset-distance: 100%; opacity: 0; } }
+.flow .node::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); opacity: 0; pointer-events: none; }
+.play .node::after { animation: hit 6s var(--ease-out) calc(var(--c, 0) * 900ms) infinite; }
+@keyframes hit { 0% { opacity: 0; } 3% { opacity: 1; } 20%, 100% { opacity: 0; } }
 @media (max-width: 999px) {
-  .flow, .hub { grid-template-columns: minmax(0, 1fr); gap: 0; padding-right: 32px; }
-  .flow > .grp.in, .flow > .grp.out, .hub > .tools, .hub > .dsc { grid-column: 1; padding-left: 32px; }
-  .flow > .node.main, .hub > .core { grid-column: 1; margin-block: 32px; }
+  .flow { grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); row-gap: 32px; padding-right: 32px; }
+  .flow > .col { padding-left: 32px; }
+  .hub { grid-template-columns: minmax(0, 1fr); gap: 0; padding-right: 32px; }
+  .hub > .tools, .hub > .dsc { grid-column: 1; padding-left: 32px; }
+  .hub > .core { grid-column: 1; margin-block: 32px; }
 }
 
-/* Boards: canvas tinted by type, a lighter shade of the old one */
-.board-body { background-color: color-mix(in srgb, var(--tint) 5%, var(--neutral-0)); }
-.board .node.main { box-shadow: inset 0 2px 0 var(--tint); }
-.board .node.main .lbl { color: color-mix(in srgb, var(--tint) 70%, var(--neutral-0)); }
+/* Boards: corner marks frame the main block (no type tint) */
+.board .node.main code { color: var(--neutral-0); }
 
 /* Build with: tools as a stack of cards (as the original), links fan into "your scenario" */
 .hub .tools { display: grid; gap: 8px; border: 0; grid-template-columns: 1fr; }
@@ -545,7 +543,6 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .pass > :not(.holo) { position: relative; z-index: 1; }
 @media (hover: hover) and (pointer: fine) { .pass:hover .holo { opacity: .55; } }
 @media (prefers-reduced-motion: reduce) { .pass { transform: none; transition: none; } .pass .holo { display: none; } }
-.hub { --tint: var(--neutral-0); }
 .js .links.rv:not(.on) { translate: none; }
 /* chain: room on both sides of each divider for its connector chip */
 @media (min-width: 1000px) { .cells.chain > article { padding-inline: 72px; } .cells.chain > article:first-child { padding-left: 0; } .cells.chain > article:last-child { padding-right: 0; } }
