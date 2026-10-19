@@ -1,0 +1,6 @@
+{
+  "title": "The sheet, done properly",
+  "what": "Exactly the locked contents: The B2B AI Standard, Open for votes, Rules, skills and scenarios, rows 01 to 05 and row 06 Your part (the only orange, a mailto link). The form adds only paper: the sheet is now the top page of a thick tear-off pad with fine page lines on its fore-edge, two earlier drafts fanned out behind, a perforation, a margin rule, a dog-eared corner and a soft sheen.",
+  "why": "The Standard is a working document, not a product: a pad of drafts that keeps growing as people add to it. The visible thickness says many pages and versions already exist, the drafts behind say it is revised in the open, and the torn-off-pad cues make row 06 read as a blank seat on the next page you can fill.",
+  "how": "Pure CSS 3D: the top sheet sits on a 40px pad whose right and bottom faces are real 3D planes with hairline page lines falling off to black; each draft has its own thin edge, and the corner fold reveals the page beneath. On load the pad settles, the drafts fan out from behind it and the rows write in with their placeholder lines (about 1.1s); the pad leans toward the pointer and the sheen follows it. Reduced motion shows the final state with no tilt; on mobile the pad lies flat, its thickness drawn as an oblique edge, the drafts peek above, and row 06 stays a 44px+ tap target."
+}

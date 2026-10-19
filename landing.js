@@ -13,7 +13,7 @@ const ORDER = [
   ['.topbar > *'],
   ['.head > *', '.hero-copy > *'],
   ['.stack .sheet.back', '.stack .floor'],
-  ['.stack .sheet.front', '.rack'],
+  ['.stack .sheet.front'],
   ['.toc li'],
   ['.cells > article', '.cells > .fact', '.spot', '.facts li', '.versus > *', '.ways > *', '.hub .tools > div'],
   ['.chain .link', '.levels > *'],

@@ -548,25 +548,125 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
   .cells.chain .yp { margin-top: 0; align-content: start; }
 }
 
-/* ---------- Hero: the Standard as a modular rack (anatomy figure, illustrations/rack) ----------
-   The kit's palette mapped to DS neutrals on black; its one lit accent is primary blue (illustrations' accent). */
-.rack.iso { --anatomy-paper: var(--neutral-1000); --anatomy-face: var(--neutral-950); --anatomy-top: var(--neutral-900);
-  --anatomy-shade-0: var(--neutral-1000); --anatomy-shade-1: color-mix(in srgb, var(--neutral-900) 40%, var(--neutral-1000)); --anatomy-shade-2: color-mix(in srgb, var(--neutral-900) 70%, var(--neutral-1000)); --anatomy-shade-3: var(--neutral-900);
-  --anatomy-lit-top: var(--neutral-850); --anatomy-lit-shade: var(--neutral-900);
-  --anatomy-hi: var(--neutral-200); --anatomy-mid: var(--neutral-500); --anatomy-lo: var(--neutral-800); --anatomy-faint: var(--neutral-850); --anatomy-lit: var(--primary-300);
-  --anatomy-halo: var(--neutral-1000); --anatomy-dot: var(--neutral-300);
-  position: relative; display: grid; gap: 16px; margin: 0 -12% 0 -4%; background: none; }
-.rk { outline-offset: 8px; touch-action: pan-y; }
-.rk [data-module] .iso-solid > .iso-top { fill: var(--neutral-800); }
-.rk [data-module] .iso-solid > .iso-fill { fill: var(--neutral-900); }
-.rk-cable-body { fill: none; stroke: var(--neutral-1000); stroke-width: 3.4; stroke-linecap: round; }
-.rk-cable-core { stroke-width: 1.6 !important; stroke-linecap: round; }
-.rk [data-rim] { transition: stroke-width var(--t-fast) ease; }
-.rk [data-rim][data-on] { stroke-width: 1.8; }
-.rack-cap { display: flex; justify-content: space-between; gap: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
-.rack-cap .lbl { color: var(--text-2); } .rack-cap .rack-read { color: var(--text); text-align: right; }
-@media (max-width: 999px) { .rack { max-width: 640px; } }
-@media (max-width: 999px) { .rack.iso { margin: 0; } }
+/* ---------- Hero: the Standard on a clipboard (lab/hero/04) ---------- */
+/* 04 Clipboard: the Standard is a sheet held on a board by a stationery clip.
+   Drawn flat on purpose: the tilt is a 2D matrix (the orthographic projection of base's rotateY/rotateX/rotateZ),
+   so Chrome paints it straight with antialiasing. Any 3D transform makes it a GPU texture, and 1px lines step. */
+.cb { padding: 14px 0 0; }
+/* Desktop: the board grows 15% into the free space left of the column; right edge stays on the content edge */
+@media (min-width: 1200px) { .cb { zoom: 1.15; margin-left: -66px; } }
+@media (min-width: 1400px) { .cb { zoom: 1.26; margin-left: -104px; } }
+.cb { perspective: none; }
+.cb > *, .cb-rig > * { transform-style: flat; }
+.cb-rig { --Y: calc(-16deg + var(--ry)); --X: calc(6deg + var(--rx)); --Z: 1.5deg; position: relative; padding: 44px 16px 24px;
+  transform: matrix(calc(cos(var(--Y)) * cos(var(--Z)) + sin(var(--Y)) * sin(var(--X)) * sin(var(--Z))), calc(cos(var(--X)) * sin(var(--Z))),
+    calc(sin(var(--Y)) * sin(var(--X)) * cos(var(--Z)) - cos(var(--Y)) * sin(var(--Z))), calc(cos(var(--X)) * cos(var(--Z))), 0, 0); }
+.cb .sheet { will-change: auto; }
+
+/* Board: the face, and one solid edge behind it (offset down-right) for its thickness */
+.cb-face, .cb-edge { position: absolute; inset: 0; border-radius: 12px; }
+.cb-edge { transform: translate(6px, 7px); background: linear-gradient(90deg, var(--neutral-950), var(--neutral-900)); box-shadow: inset 0 0 0 1px var(--neutral-800); }
+.cb-face { background: linear-gradient(165deg, var(--neutral-850), var(--neutral-900) 45%, var(--neutral-950)); box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); }
+/* rounded-over rim of the board */
+.cb-face::before { content: ''; position: absolute; inset: 5px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--neutral-850); }
+
+/* Paper: two sheets underneath peek out at the bottom-right edge */
+.cb-under { position: absolute; inset: 44px 16px 24px; border-radius: var(--radius-2); background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--neutral-800); }
+.cb-under.u2 { transform: translate(5px, 7px) rotate(.9deg); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+.cb-under.u1 { transform: translate(2px, 4px) rotate(.4deg); }
+.cb .sheet.front { border-radius: var(--radius-2); padding: 32px 24px 24px; transform: none; box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); }
+
+/* List: one hairline per row, badges in their own column so titles line up, no placeholder bars */
+.cb .toc li > * { grid-template-columns: 20px minmax(0, 1fr) 124px; gap: 16px; padding: 12px 0; }
+.cb .toc .t { gap: 0; }
+.cb .toc .tt { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: center; }
+.cb .toc .kd { justify-self: start; }
+.cb .toc .who { border-left: 0; padding-left: 0; }
+.cb .toc .open { padding: 12px 16px; margin-inline: -16px; }
+/* 06: a badge still waiting for its kind */
+.cb .kd.wait { box-shadow: inset 0 0 0 1px var(--accent); color: var(--accent); background: none; transition: background-color var(--t-fast) ease, color var(--t-fast) ease; }
+@media (hover: hover) and (pointer: fine) { .cb .toc .open:hover .kd.wait { background-color: var(--accent); color: var(--neutral-1000); } }
+.cb .toc .open:focus-visible .kd.wait { background-color: var(--accent); color: var(--neutral-1000); }
+
+/* "Open for votes" as a stamped mark: outlined twice, a little off-square */
+.cb .sheet-head { align-items: center; margin-bottom: 12px; }
+.cb .stamp { padding: 5px 8px; border: 1px solid currentColor; border-radius: var(--radius-2); outline: 1px solid currentColor; outline-offset: 2px; color: var(--neutral-300); rotate: -4deg; text-box: trim-both cap alphabetic; }
+
+/* Clip: fixed riveted plate + hinge, and the lever (spring plate) that presses the sheet */
+.cb-clip, .cb-lever { position: absolute; top: -14px; left: 0; right: 0; width: 240px; height: 88px; margin-inline: auto; overflow: visible; pointer-events: none; }
+.cb-lever { --open: 0deg; transform-origin: 50% 48%; transform: scale(1, cos(var(--open))); }
+.cb-rig svg * { vector-effect: non-scaling-stroke; stroke-width: 1px; }
+.cb-clip .plate { fill: url(#cbPlate); stroke: var(--neutral-500); }
+.cb-rig .hi { fill: none; stroke: var(--neutral-300); opacity: .7; }
+.cb-clip .rivet circle { fill: var(--neutral-850); stroke: var(--neutral-500); }
+.cb-clip .rivet .pin { fill: var(--neutral-500); stroke: var(--neutral-300); }
+.cb-rig .roll { fill: url(#cbRoll); stroke: var(--neutral-500); }
+.cb-clip .coil { fill: none; stroke: var(--neutral-800); }
+.cb-lever .lever { fill: url(#cbLever); stroke: var(--neutral-500); stroke-linejoin: round; }
+.cb-lever .rib { fill: none; stroke: var(--neutral-800); stroke-linejoin: round; }
+.cb-lever .hole { fill: var(--neutral-1000); stroke: var(--neutral-500); }
+.cb-lever .hole-lip { fill: none; stroke: var(--neutral-800); }
+
+/* ---------- Enter: board settles, sheet slides under the open clip, clip snaps, stamp lands, rows write in ---------- */
+.js .cb { opacity: 0; transition: opacity 360ms var(--ease-out); }
+.js .cb-rig { translate: 0 -28px 48px; transition: translate 560ms var(--ease-out); }
+.js .cb .cb-lever { --open: 58deg; transition: --open 0s; }
+.js .cb .stamp { opacity: 0; scale: 1.35; transition: opacity 160ms ease-out 780ms, scale 220ms var(--ease-out) 780ms; }
+.js .hero.in .cb { opacity: 1; }
+.js .hero.in .cb-rig { translate: none; }
+.js .hero.in .cb .stamp { opacity: 1; scale: 1; }
+/* the lever is animated through a registered property so the tilt transform stays one declaration */
+@property --open { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.js .hero.in .cb .cb-lever { --open: 0deg; transition: --open 280ms cubic-bezier(.3, 1.5, .5, 1) 560ms; }
+
+/* sheet slides up under the lip; rows write left to right (base gives them .rv/.on) */
+.js .cb .sheet.front.rv { --d: 160ms !important; transition: opacity 400ms var(--ease-out) var(--d), translate 520ms var(--ease-out) var(--d); }
+.js .cb .sheet.front.rv:not(.on) { translate: 0 18px; }
+.js .cb .toc li.rv { transition: opacity 300ms var(--ease-out) var(--d), clip-path 440ms var(--ease-out) var(--d); }
+.js .cb .toc li.rv:not(.on) { translate: none; clip-path: inset(0 100% 0 0); }
+.js .cb .toc li.rv.on { clip-path: inset(-8px -20px); }
+.js .cb .toc li:nth-child(1) { --d: 560ms !important; }
+.js .cb .toc li:nth-child(2) { --d: 605ms !important; }
+.js .cb .toc li:nth-child(3) { --d: 650ms !important; }
+.js .cb .toc li:nth-child(4) { --d: 695ms !important; }
+.js .cb .toc li:nth-child(5) { --d: 740ms !important; }
+.js .cb .toc li:nth-child(6) { --d: 785ms !important; }
+.js .cb .toc li .bars i { transition-duration: 480ms; transition-delay: calc(var(--d) + 180ms); }
+.js .cb .toc li .bars i + i { transition-delay: calc(var(--d) + 240ms); }
+
+/* ---------- Row 06: lift a hair towards the reader on hover/focus ---------- */
+.cb .toc .open { transition: background-color var(--t-fast) ease, box-shadow var(--t-fast) ease, translate var(--t-fast) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .cb .toc .open:hover { translate: 0 -2px; } }
+.cb .toc .open:focus-visible { translate: 0 -2px; }
+
+/* ---------- Mobile: flat board, edge drawn as offset outlines below ---------- */
+@media (max-width: 699px) {
+  .cb { padding: 24px 0 16px; }
+  .cb-rig { transform: none; transform-style: flat; padding: 40px 10px 20px; }
+  .cb-edge { transform: translateY(5px); }
+  .cb-under { inset: 40px 10px 20px; }
+  .cb .sheet.front { padding: 32px 16px 16px; transform: none; }
+  .cb-clip, .cb-lever { width: 200px; height: 73px; top: -6px; }
+  .js .cb-rig { translate: 0 -16px; }
+  .cb .toc .open { min-height: 44px; padding-inline: 8px; margin-inline: -8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .cb, .js .cb-rig, .js .cb .stamp, .js .cb .cb-lever, .js .cb .sheet.front.rv, .js .cb .toc li.rv, .cb .toc .open { transition: none; }
+  .js .cb { opacity: 1; }
+  .js .cb-rig { translate: none; }
+  .js .cb .cb-lever { --open: 0deg; }
+  .js .cb .stamp { opacity: 1; scale: 1; }
+  .js .cb .sheet.front.rv, .js .cb .toc li.rv { opacity: 1; translate: none; clip-path: none; }
+  .cb .toc .open:hover, .cb .toc .open:focus-visible { translate: none; }
+}
+/* Narrow column: practitioner drops under the title */
+@media (max-width: 1199px) { .cb .toc li > * { grid-template-columns: 20px minmax(0, 1fr); row-gap: 8px; } .cb .toc .who { grid-column: 2; } }
+
+/* Type badges keep their colours on the clipboard for now (the rest of the page is grey) */
+.cb .kd.r { background: var(--chart-6); color: var(--neutral-950); }
+.cb .kd.s { background: var(--chart-9); color: var(--neutral-950); }
+.cb .kd.c { background: var(--chart-1); color: var(--neutral-0); }
 /* Icons scale their own strokes: non-scaling strokes break the pathLength draw-on at large sizes */
 .ico .hl :is(path, polygon, ellipse, line) { vector-effect: none; stroke-width: .9; }
 .gets .ico .hl :is(path, polygon, ellipse, line) { stroke-width: 2.2; }

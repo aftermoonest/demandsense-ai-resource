@@ -1,0 +1,71 @@
+/* 09 Holo edge: the Standard as a thick pad of pages. Its cut edges and the two drafts behind it
+   carry the contributor pass's foil, in its cool half (orange stays with row 06). --sx (-1..1, 09.js) moves the foil. */
+.stack { --sx: 0; --depth: 30px;
+  --foil: linear-gradient(105deg, transparent 28%, var(--chart-6) 38%, var(--chart-9) 46%, var(--primary-200) 54%, var(--chart-3) 63%, transparent 74%);
+  --tilt: rotateY(calc(-19deg + var(--ry))) rotateX(calc(7deg + var(--rx))) rotateZ(1.5deg); }
+
+/* Thickness: four faces folded back from the sheet's edges, ruled with page lines */
+.sheet.front { box-shadow: inset 0 0 0 1px var(--line); }
+.slab { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+.slab .f { position: absolute; overflow: hidden; background: var(--neutral-950); }
+.slab .f.r, .slab .f.l { top: 0; bottom: 0; width: var(--depth);
+  background-image: repeating-linear-gradient(90deg, var(--neutral-800) 0 1px, transparent 1px 3px); }
+.slab .f.t, .slab .f.b { left: 0; right: 0; height: var(--depth);
+  background-image: repeating-linear-gradient(180deg, var(--neutral-800) 0 1px, transparent 1px 3px); }
+.slab .f.r { right: 0; transform-origin: 100% 50%; transform: rotateY(-90deg); }
+.slab .f.l { left: 0; transform-origin: 0 50%; transform: rotateY(90deg); }
+.slab .f.b { bottom: 0; transform-origin: 50% 100%; transform: rotateX(90deg); }
+.slab .f.t { top: 0; transform-origin: 50% 0; transform: rotateX(-90deg); }
+
+/* Foil: an oversized band slid with transform, never by background-position */
+.slab b, .foil b { position: absolute; inset: 0 -100%; background: var(--foil); transform: translateX(calc(var(--sx) * 22%)); }
+.slab b { opacity: .7; }
+.slab .f.t b, .slab .f.b b { background: linear-gradient(90deg, transparent 10%, var(--chart-6) 30%, var(--chart-9) 42%, var(--primary-200) 55%, var(--chart-3) 70%, transparent 90%); transform: translateX(calc(var(--sx) * -22%)); }
+
+/* Drafts: foil laminate under a black face, showing only where the sheet in front leaves it open */
+.sheet.back { overflow: hidden; }
+.foil { position: absolute; inset: 0; opacity: .2; }
+.sheet.b2 .foil { opacity: .13; }
+.sheet.b2 .foil b { transform: translateX(calc(var(--sx) * 30% + 12%)); }
+.sheet.back::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); }
+.sheet.b2::after { box-shadow: inset 0 0 0 1px var(--neutral-850), inset 0 1px 0 var(--neutral-800); }
+.dl { position: absolute; top: 10px; right: 16px; display: grid; justify-items: end; gap: 4px; width: 40%; }
+.dl i { display: block; height: 1px; width: 100%; background: var(--neutral-800); }
+.dl i + i { width: 46%; }
+
+/* Foil hairline along the sheet's top edge, where the light catches the cut */
+.sheet.front::before { content: ''; position: absolute; inset: 0 12px auto; height: 1px; opacity: .8; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--neutral-500) 20%, var(--chart-6) 55%, var(--primary-200) 75%, var(--chart-3) 90%, transparent); }
+.sheet.b1 { transform: var(--tilt) translate3d(22px, -26px, -60px); }
+.sheet.b2 { transform: var(--tilt) translate3d(44px, -52px, -120px); }
+
+/* Corner registration ticks on the front sheet */
+.sheet.front::after { content: ''; position: absolute; inset: 8px; pointer-events: none; --k: var(--neutral-800);
+  background:
+    linear-gradient(var(--k) 0 0) 0 0 / 8px 1px, linear-gradient(var(--k) 0 0) 0 0 / 1px 8px,
+    linear-gradient(var(--k) 0 0) 100% 0 / 8px 1px, linear-gradient(var(--k) 0 0) 100% 0 / 1px 8px,
+    linear-gradient(var(--k) 0 0) 0 100% / 8px 1px, linear-gradient(var(--k) 0 0) 0 100% / 1px 8px,
+    linear-gradient(var(--k) 0 0) 100% 100% / 8px 1px, linear-gradient(var(--k) 0 0) 100% 100% / 1px 8px;
+  background-repeat: no-repeat; }
+
+/* Enter: the sheet settles, then its pages stack up behind it (faces fold out from 0 depth) and the foil sweeps once */
+.js .slab .f { transition: scale 700ms var(--ease-out), opacity 300ms var(--ease-out); transition-delay: 380ms; }
+.js .stack .sheet.front:not(.on) .slab .f { opacity: 0; }
+.js .stack .sheet.front:not(.on) .slab .f:is(.r, .l) { scale: 0 1; }
+.js .stack .sheet.front:not(.on) .slab .f:is(.t, .b) { scale: 1 0; }
+.js .stack .sheet.front.on .slab b, .js .stack .sheet.back.on .foil b { animation: sweep 1000ms var(--ease-out) 300ms both; }
+@keyframes sweep { from { translate: -18% 0; } to { translate: 0 0; } }
+
+/* Mobile: flat, the pad edge drawn in 2D below and right of the sheet */
+@media (max-width: 699px) {
+  .slab { inset: auto; }
+  .slab .f { display: none; }
+  .sheet.back { transform: none; }
+  .sheet.b1 { translate: 6px 6px; } .sheet.b2 { translate: 12px 12px; }
+  .stack { padding-right: 12px; padding-bottom: 68px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .stack .sheet.front .slab .f { opacity: 1; scale: none; transition: none; }
+  .slab b, .foil b { animation: none !important; transform: none; }
+}

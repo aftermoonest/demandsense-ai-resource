@@ -1,0 +1,130 @@
+/* 01 — The sheet, done properly.
+   The Standard is the top sheet of a tear-off pad: real thickness (a fore-edge of fine page lines on the
+   right and bottom), two earlier drafts fanned out behind, each with its own thin edge.
+   Paper details only: perforation, margin rule, dog-eared corner, a sheen that follows the pointer. */
+
+.pile {
+  --rx: 0deg; --ry: 0deg; --mx: 0;
+  --tilt: rotateY(calc(-17deg + var(--ry))) rotateX(calc(10deg + var(--rx))) rotateZ(1.5deg);
+  --t: 40px;   /* pad thickness (depth of the fore-edge) */
+  --f: 24px;   /* dog-ear */
+  position: relative; display: grid; perspective: 2000px; perspective-origin: 75% 85%;
+  margin: 0 -8px 0 -48px; padding: 24px 0 48px;
+}
+.pile > * { grid-area: 1 / 1; transform-style: preserve-3d; }
+.pile .floor { position: absolute; inset: auto -12% -2% -4%; height: 64%; transform: rotateX(72deg) rotateZ(-14deg); transform-origin: 50% 100%; pointer-events: none; }
+
+/* ---------- The pad: top sheet + thickness ---------- */
+.block { position: relative; z-index: 3; transform: var(--tilt); transition: transform 600ms var(--ease-out); }
+.edge { position: absolute; pointer-events: none; }
+/* Fore-edge: one hairline per page, the nearest page catches the light, depth falls off to black */
+.edge.er { top: 0; left: 100%; width: var(--t); height: 100%; transform-origin: 0 50%; transform: rotateY(90deg);
+  background:
+    linear-gradient(90deg, var(--neutral-1000-0) 30%, var(--neutral-1000)),
+    linear-gradient(90deg, var(--neutral-300) 0 1px, transparent 1px),
+    repeating-linear-gradient(90deg, var(--neutral-500) 0 1px, var(--neutral-900) 1px 3px); }
+.edge.eb { left: 0; top: 100%; width: 100%; height: var(--t); transform-origin: 50% 0; transform: rotateX(-90deg);
+  background:
+    linear-gradient(var(--neutral-1000-0) 30%, var(--neutral-1000)),
+    linear-gradient(var(--neutral-300) 0 1px, transparent 1px),
+    repeating-linear-gradient(var(--neutral-500) 0 1px, var(--neutral-900) 1px 6px); }
+/* The page beneath shows where the top sheet's corner is turned */
+.under { position: absolute; inset: 0; border-radius: var(--radius-4); background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--neutral-800); transform: translateZ(-2px); }
+
+.pile .sheet.front { position: relative; isolation: isolate; z-index: auto; transform: none; background: none; box-shadow: none; padding: 32px 32px 32px 44px; transition: none; will-change: auto; }
+.paper { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: var(--radius-4);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--f)), calc(100% - var(--f)) 100%, 0 100%);
+  background: radial-gradient(120% 100% at 0% 0%, var(--neutral-900), var(--neutral-1000) 72%);
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); }
+.paper > i { position: absolute; display: block; pointer-events: none; }
+/* Tear-off perforation across the top */
+.perf { left: 0; right: 0; top: 12px; height: 2px; background: radial-gradient(circle, var(--neutral-800) .8px, transparent 1.2px) 0 50% / 6px 2px repeat-x; }
+/* Margin rule: a double hairline down the left */
+.rule { top: 24px; bottom: 0; left: 16px; width: 4px; border-inline: 1px solid var(--neutral-850); }
+/* Sheen: a soft band of light that slides with the pointer */
+.sheen { inset: -10% -60%; background: linear-gradient(105deg, transparent 38%, color-mix(in srgb, var(--neutral-0) 5%, transparent) 50%, transparent 62%); transform: translateX(calc(var(--mx) * 14%)); }
+/* Dog-ear: the folded flap, its two paper edges lit, the crease a hairline */
+.fold { position: absolute; right: 0; bottom: 0; z-index: 1; width: var(--f); height: var(--f); pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  background:
+    linear-gradient(135deg, transparent calc(50% - .5px), var(--neutral-500) 50%, transparent calc(50% + .5px)),
+    linear-gradient(135deg, var(--neutral-800), var(--neutral-900) 50%);
+  box-shadow: inset 1px 1px 0 var(--neutral-500); border-top-left-radius: 1px; }
+
+/* ---------- Earlier drafts, fanned out behind ---------- */
+.draft { position: relative; pointer-events: none; transition: transform 600ms var(--ease-out); }
+.draft .paper { z-index: 0; clip-path: none; background: linear-gradient(200deg, var(--neutral-900), var(--neutral-1000) 60%); box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); }
+.draft .edge { --t: 5px; }
+.draft .edge.er { background: repeating-linear-gradient(90deg, var(--neutral-800) 0 1px, var(--neutral-1000) 1px 2.5px); }
+.draft .edge.eb { background: repeating-linear-gradient(var(--neutral-800) 0 1px, var(--neutral-1000) 1px 2.5px); }
+.draft .perf { background-image: radial-gradient(circle, var(--neutral-850) .8px, transparent 1.2px); }
+.d1 { z-index: 2; transform: var(--tilt) translate3d(12px, -30px, -56px) rotateZ(-1.8deg); }
+.d2 { z-index: 1; transform: var(--tilt) translate3d(26px, -58px, -112px) rotateZ(-3.6deg); }
+.d2 .paper { background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--neutral-850), inset 0 1px 0 var(--neutral-800); }
+
+/* ---------- Contents: a touch roomier than base ---------- */
+.pile .sheet-head { padding-top: 4px; }
+.pile .headline { margin: 16px 0 20px; }
+
+/* Your part: colour on ease, the label steps forward */
+.pile .toc .open .tt { transition: translate var(--t-fast) var(--ease-out), color var(--t-fast) ease; }
+@media (hover: hover) and (pointer: fine) { .pile .toc .open:hover .tt { translate: 4px 0; } }
+.pile .toc .open:focus-visible .tt { translate: 4px 0; }
+
+/* ---------- Enter: the pad settles, drafts fan out from behind it, rows write in ---------- */
+/* base.js reveal hides list rows until .on; the pad runs its own timeline instead */
+.js .pile .toc li.rv { opacity: 1; translate: none; transition: none; }
+/* Opacity would flatten the 3D faces, so the planes move and their children fade */
+.js .pile .block { animation: settle 720ms var(--ease-out) both; }
+.js .pile .block > * { animation: fade 480ms var(--ease-out) both; }
+.js .pile .draft { animation: fan 820ms var(--ease-out) both; }
+.js .pile .draft > * { animation: fade 360ms var(--ease-out) both; animation-delay: inherit; }
+.js .pile .d1 { animation-delay: 160ms; --fx: -12px; --fy: 30px; --fr: 1.8deg; }
+.js .pile .d2 { animation-delay: 240ms; --fx: -26px; --fy: 58px; --fr: 3.6deg; }
+.js .pile .floor { animation: fade 900ms var(--ease-out) both; }
+.js .pile .sheen { animation: sweep 1100ms var(--ease-out) 200ms both; }
+.js .pile .sheet-head, .js .pile .headline { animation: write 520ms var(--ease-out) both; }
+.js .pile .sheet-head { animation-delay: 260ms; } .js .pile .headline { animation-delay: 320ms; }
+.js .pile .toc li { animation: write 480ms var(--ease-out) both; }
+.js .pile .toc li:nth-child(1) { animation-delay: 400ms; } .js .pile .toc li:nth-child(2) { animation-delay: 450ms; }
+.js .pile .toc li:nth-child(3) { animation-delay: 500ms; } .js .pile .toc li:nth-child(4) { animation-delay: 550ms; }
+.js .pile .toc li:nth-child(5) { animation-delay: 600ms; } .js .pile .toc li:nth-child(6) { animation-delay: 680ms; }
+.js .pile .toc li .bars i { transition: none; animation: draw 600ms var(--ease-out) both; animation-delay: inherit; }
+.js .pile .toc li .bars i + i { animation-duration: 760ms; }
+.js .pile .fold { animation: fold 500ms var(--ease-out) 760ms both; transform-origin: 0 0; }
+
+@keyframes settle { from { translate: 0 40px; } to { translate: none; } }
+@keyframes fan { from { translate: var(--fx) var(--fy); rotate: var(--fr); } to { translate: none; rotate: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweep { from { translate: -40% 0; opacity: 0; } 40% { opacity: 1; } to { translate: none; opacity: 1; } }
+@keyframes write { from { opacity: 0; translate: -10px 0; } to { opacity: 1; translate: none; } }
+@keyframes draw { from { transform: scaleX(0); } to { transform: none; } }
+@keyframes fold { from { opacity: 0; scale: .2; } to { opacity: 1; scale: none; } }
+
+/* ---------- Sizes ---------- */
+@media (max-width: 999px) { .pile { --tilt: rotateY(calc(-10deg + var(--ry))) rotateX(calc(8deg + var(--rx))) rotateZ(1deg); max-width: 600px; margin: 0 auto; } }
+/* Mobile: flat and readable; thickness becomes the drafts peeking out under the right and bottom edges */
+@media (max-width: 699px) {
+  /* the pad's thickness drawn in oblique projection: the same fore-edge, no 3D */
+  .pile { --tilt: none; --t: 8px; perspective: none; padding: 16px 24px 8px 0; }
+  .block, .draft { transform: none; }
+  .pile .floor, .draft .edge { display: none; }
+  .edge.er { transform: skewY(45deg); transform-origin: 0 0; }
+  .edge.eb { transform: skewX(45deg); transform-origin: 0 0; }
+  .d1 { transform: translate(8px, -8px); } .d2 { transform: translate(16px, -16px); }
+  .js .pile .d1 { --fx: -8px; --fy: 8px; --fr: 0deg; } .js .pile .d2 { --fx: -16px; --fy: 16px; --fr: 0deg; }
+  .pile .sheet.front { padding: 24px 16px 24px 28px; }
+  .rule { left: 12px; width: 3px; }
+  .pile .toc .open { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .pile *, .js .pile .block, .js .pile .draft { animation: none !important; }
+  .block, .draft, .pile .toc .open .tt { transition: none; }
+}
+
+/* At 1x the oblique page lines alias into a twisted pattern; soften them */
+@media (max-resolution: 1.5dppx) {
+  .edge.er { background: linear-gradient(90deg, var(--neutral-1000-0) 30%, var(--neutral-1000)), linear-gradient(90deg, var(--neutral-300) 0 1px, transparent 1px), repeating-linear-gradient(90deg, var(--neutral-800) 0 1px, var(--neutral-900) 1px 4px); }
+  .edge.eb { background: linear-gradient(var(--neutral-1000-0) 30%, var(--neutral-1000)), linear-gradient(var(--neutral-300) 0 1px, transparent 1px), repeating-linear-gradient(var(--neutral-800) 0 1px, var(--neutral-900) 1px 6px); }
+}

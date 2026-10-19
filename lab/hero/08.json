@@ -1,0 +1,6 @@
+{
+  "title": "Ring binder",
+  "what": "Exactly the locked content: the head, the two-tone title and rows 01–06, with only row 06 \"Your part\" in orange. The form adds only physical binder parts with no words: punched holes with reinforcement rings, four wire rings, a ring plate with rivets, a back board, a deep stack of page edges and two blank divider tabs.",
+  "why": "A ring binder is a reference that is never finished: you open the rings and add a page. That is the Standard. It is open and built by many hands, and the empty, orange row 06 is the page you can add.",
+  "how": "One 3D unit tilted by the base pointer parallax. Layers sit at real depths: board and its thickness face, plate, eight page layers stepping down and right so their edges show, the front sheet, and rings drawn as tubes (two hairlines around a dark core, with the part under the pages shown only past their edge). Everything is neutral tokens, inset 1px lines and a soft tone gradient on the board, with no shadows. Enter order: the board settles, the rings draw closed, the pages drop onto them deepest first, then the front sheet lands and the rows write in (base). Reduced motion shows the final state. Under 700px the tilt flattens, the parts shrink and row 06 stays a full-width link."
+}

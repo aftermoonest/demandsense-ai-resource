@@ -1,0 +1,149 @@
+/* 06 · Exploded layers: the Standard taken apart into plates on two threading lines.
+   Every plate shares one footprint; only depth (z) separates them. base.js drives --rx/--ry on .stack. */
+.stack.x6 {
+  --t: 8px;      /* plate thickness */
+  --ph: 64px;    /* row plate height */
+  --hh: 104px;   /* head plate height */
+  --dz: 118px;   /* row to row */
+  --dh: 136px;   /* head to row 01 */
+  --lift: 34px;  /* row 06 raised out of its slot */
+  --z6: calc(var(--top) - var(--dh) - 5 * var(--dz) - var(--lift)); /* row 06's slot */
+  --top: calc((var(--dh) + 5 * var(--dz) + var(--lift)) / 2);
+  --rod-x: 16px;
+  height: 660px; padding: 0; perspective: 3200px; perspective-origin: 50% 40%;
+}
+.x6 .rig {
+  position: absolute; left: 0; right: 0; top: 50%; height: 0;
+  transform-style: preserve-3d;
+  transform: translateX(-24px) rotateY(calc(var(--ry) * .5)) rotateX(calc(44deg + var(--rx))) rotateZ(-6deg) scale(.96);
+}
+
+/* ---------- Plates ---------- */
+.x6 .plates { position: absolute; inset: 0; transform-style: preserve-3d; }
+.x6 .plate {
+  --h: var(--ph);
+  --z: calc(var(--top) - var(--dh) - (var(--i) - 1) * var(--dz));
+  --zc: calc((3 - var(--i)) * var(--t)); /* collapsed: one slab around the centre */
+  position: absolute; left: 0; right: 0; top: calc(var(--h) / -2); height: var(--h);
+  transform-style: preserve-3d; transform: translateZ(var(--z));
+  transition: transform 220ms var(--ease-out);
+}
+.x6 .plate.cap { --h: var(--hh); --z: var(--top); --zc: calc(3 * var(--t)); }
+.x6 .plate.p6 { --z: calc(var(--z6) + var(--lift)); }
+/* the empty slot row 06 was lifted from */
+.x6 .plates::after { content: ''; position: absolute; left: 0; right: 0; top: calc(var(--ph) / -2); height: var(--ph); border: 1px dashed var(--neutral-500); border-radius: var(--radius-4); transform: translateZ(var(--z6)); pointer-events: none; }
+
+/* thickness: a front edge hanging from the near side, a side edge from the left */
+.x6 .plate::before, .x6 .plate::after { content: ''; position: absolute; pointer-events: none; background: linear-gradient(var(--neutral-850), var(--neutral-950)); box-shadow: inset 0 0 0 1px var(--neutral-800); }
+.x6 .plate::before { left: 0; right: 0; top: 100%; height: var(--t); transform-origin: 50% 0; transform: rotateX(-90deg); border-radius: 0 0 var(--radius-2) var(--radius-2); }
+.x6 .plate::after { right: 100%; top: 0; bottom: 0; width: var(--t); transform-origin: 100% 50%; transform: rotateY(-90deg); background: var(--neutral-950); }
+
+.x6 .face {
+  position: absolute; inset: 0; display: grid; align-content: center;
+  padding: 0 28px 0 36px; border-radius: var(--radius-4);
+  background: linear-gradient(170deg, var(--neutral-900), var(--neutral-1000) 55%);
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500);
+  color: var(--text);
+}
+/* threading holes, both ends on the centre line */
+.x6 .face::before, .x6 .face::after { content: ''; position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: var(--neutral-1000); box-shadow: 0 0 0 1px var(--neutral-500); pointer-events: none; }
+.x6 .face::before { left: var(--rod-x); }
+.x6 .face::after { left: calc(100% - var(--rod-x)); }
+
+.x6 .cap .face { align-content: space-between; padding-block: 18px 16px; }
+.x6 .sheet-head { display: flex; justify-content: space-between; gap: 16px; }
+.x6 .sheet-head .lbl { color: var(--text-2); }
+
+/* rows: as base, number / title + text lines / who */
+.x6 li .face { grid-template-columns: 20px minmax(0, 1fr) minmax(0, 132px); gap: 12px; align-items: center; }
+.x6 .n { font: 600 12px/1.4 var(--font-mono); letter-spacing: 0; font-variant-numeric: tabular-nums; color: var(--text-meta); }
+.x6 .t { display: grid; gap: 8px; min-width: 0; }
+.x6 .tt { display: flex; align-items: center; gap: 8px; white-space: nowrap; min-width: 0; }
+.c-5:has(> .x6) { min-width: 0; }
+.x6 .bars { position: relative; display: grid; gap: 4px; }
+.x6 .bars i { display: block; width: var(--w); height: 1px; background: var(--neutral-800); transform-origin: left; }
+.x6 .bars i:first-child { background: var(--neutral-500); }
+.x6 .bars .ghost { width: 72%; height: 0; border-top: 1px dashed var(--accent); background: none; }
+.x6 .who { display: grid; gap: 2px; padding-left: 12px; border-left: 1px solid var(--line); font-size: 14px; }
+.x6 .who .lbl { color: var(--text-2); }
+
+/* ---------- Row 06: the plate that is yours, outlined and lifted ---------- */
+.x6 .p6::before { background: linear-gradient(var(--brand-first-25), var(--neutral-1000)); box-shadow: inset 0 0 0 1px var(--accent); }
+.x6 .p6::after { background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--brand-first-25); }
+.x6 .open { background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--accent); transition: background-color var(--t-fast) ease; }
+.x6 .open .tt { color: var(--accent); }
+.x6 .open .face::before, .x6 .open::before, .x6 .open::after { box-shadow: 0 0 0 1px var(--accent); }
+.x6 .open .who { border-left-color: var(--brand-first-25); }
+.x6 .open .bars::after { content: ''; position: absolute; left: 0; top: 0; width: 72%; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease-out); }
+.x6 .open:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.x6 .p6:has(.open:focus-visible) { --lift: 50px; }
+.x6 .p6:has(.open:focus-visible) .open { background: var(--brand-first-10); }
+.x6 .open:focus-visible .bars::after { transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .x6 .p6:hover { --lift: 50px; }
+  .x6 .p6:hover .open { background: var(--brand-first-10); }
+  .x6 .p6:hover .bars::after { transform: none; }
+}
+
+/* ---------- Threading lines: dash-dot centre lines through every hole ---------- */
+.x6 .rod {
+  --len: calc(2 * var(--top) + 120px);
+  position: absolute; left: calc(var(--rod-x) - .5px); top: 0; width: 1px; height: var(--len);
+  transform-origin: 50% 0; transform: translateZ(calc(var(--top) + 48px)) rotateX(-90deg);
+  background: repeating-linear-gradient(var(--neutral-500) 0 10px, transparent 10px 13px, var(--neutral-500) 13px 15px, transparent 15px 18px);
+  -webkit-mask-image: linear-gradient(transparent, #000 32px, #000 calc(100% - 40px), transparent);
+          mask-image: linear-gradient(transparent, #000 32px, #000 calc(100% - 40px), transparent);
+}
+.x6 .rod.r { left: calc(100% - var(--rod-x) - .5px); }
+
+/* the floor the stack came apart over, in the same plane */
+.x6 .floor { position: absolute; inset: auto; left: -14%; right: -14%; top: -150px; height: 300px; transform: translateZ(calc(var(--top) * -1 - 36px)); opacity: .9; }
+
+/* ---------- Enter: one slab, then the plates separate; rows write in after their plate ---------- */
+.x6 .plate { --d: calc(120ms + var(--i) * 60ms); }
+.js .x6 .plate { animation: x6-open 760ms var(--ease-out) var(--d) backwards; }
+.js .x6 .face > *, .js .x6 .cap .face > * { animation: x6-write 420ms var(--ease-out) calc(var(--d) + 340ms) backwards; }
+.js .x6 .bars i { animation: x6-bar 700ms var(--ease-out) calc(var(--d) + 420ms) backwards; }
+.js .x6 .bars i + i { animation-delay: calc(var(--d) + 500ms); }
+.js .x6 .rod { animation: x6-fade 600ms var(--ease-out) 380ms backwards; }
+@keyframes x6-open { from { transform: translateZ(var(--zc)); } }
+@keyframes x6-write { from { opacity: 0; transform: translateX(-6px); } }
+@keyframes x6-bar { from { transform: scaleX(0); } }
+@keyframes x6-fade { from { opacity: 0; } }
+
+/* ---------- Narrower columns: the "who" drops under the title ---------- */
+@media (max-width: 1199px) {
+  .stack.x6 { --ph: 84px; --dz: 124px; height: 700px; }
+  .x6 li .face { grid-template-columns: 20px minmax(0, 1fr); row-gap: 8px; }
+  .x6 .who { grid-column: 2; border-left: 0; padding-left: 0; }
+  .x6 .bars i:not(.ghost) { display: none; }
+}
+
+/* ---------- Mobile: flat plates in a column, the threading lines show in the gaps ---------- */
+@media (max-width: 699px) {
+  .stack.x6 { height: auto; perspective: none; }
+  .x6 .rig { position: relative; top: 0; height: auto; transform: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; transform-style: flat; }
+  .x6 .plates { position: static; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; transform-style: flat; }
+  .x6 .plate, .x6 .plate.cap { position: relative; top: 0; width: 100%; height: auto; transform: none; transform-style: flat; }
+  .x6 .plate.p6 { transform: translateY(-4px); }
+  .x6 .plates::after { display: none; }
+  .x6 .face { position: relative; padding: 14px 16px 14px 32px; }
+  .x6 .cap .face { gap: 16px; }
+  .x6 .face::after { display: none; }
+  .x6 .face::before { left: 14px; }
+  .x6 .plate::before { transform: none; height: 4px; }
+  .x6 .plate::after { display: none; }
+  .x6 .rod { --rod-x: 14px; left: calc(var(--rod-x) - .5px); top: -16px; bottom: -16px; height: auto; transform: none; }
+  .x6 .rod.r { display: none; }
+  .x6 .open { min-height: 44px; }
+  .x6 .tt { white-space: normal; flex-wrap: wrap; }
+  .x6 .floor { display: none; }
+  @keyframes x6-open { from { transform: translateY(calc(var(--i) * -18px)); } }
+  .x6 .plate.p6:has(.open:focus-visible) { transform: translateY(-8px); }
+  @media (hover: hover) { .x6 .plate.p6:hover { transform: translateY(-8px); } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .x6 .plate, .js .x6 .face > *, .js .x6 .bars i, .js .x6 .rod { animation: none; }
+  .x6 .plate, .x6 .open .bars::after { transition: none; }
+}

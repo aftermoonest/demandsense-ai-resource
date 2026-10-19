@@ -1,0 +1,82 @@
+/* 07 "Print proof": the Standard as a printer's proof, still being made.
+   Paper = trim + slug; crop marks, registration targets and fold ticks live in the slug.
+   A soft horizontal fold splits the sheet into two facets; a ream edge and two earlier drafts sit behind. */
+.stack { --slug: 20px; --fold: 47%; }
+
+/* Paper: two facets. Upper is the deepest black, lower a step lighter, the ridge catches a little light. */
+.sheet.front {
+  padding: calc(var(--slug) + 24px);
+  background: linear-gradient(var(--neutral-1000) 0 calc(var(--fold) - 40px), var(--neutral-950) calc(var(--fold) - .5px), var(--neutral-900) calc(var(--fold) + .5px), var(--neutral-950) calc(var(--fold) + 56px) 100%);
+}
+.sheet.front > :not(.proof) { position: relative; z-index: 1; }
+.proof { position: absolute; inset: 0; pointer-events: none; }
+.proof > * { position: absolute; }
+
+/* Marks: hairlines only, ink = mid grey, never the accent */
+.mk { display: block; overflow: visible; fill: none; stroke: var(--neutral-500); stroke-width: 1; }
+.mk path, .mk circle { vector-effect: non-scaling-stroke; }
+.crop { width: var(--slug); height: var(--slug); }
+.crop.tl { left: 0; top: 0; }
+.crop.tr { right: 0; top: 0; scale: -1 1; }
+.crop.bl { left: 0; bottom: 0; scale: 1 -1; }
+.crop.br { right: 0; bottom: 0; scale: -1 -1; }
+.reg { width: 16px; height: 16px; left: calc(50% - 8px); }
+.reg.t { top: 2px; } .reg.b { bottom: 2px; }
+.fm { width: var(--slug); height: 2px; top: calc(var(--fold) - 1px); stroke-dasharray: 3 2; stroke: var(--neutral-300); }
+.fm.l { left: 0; } .fm.r { right: 0; }
+.steps { left: calc(var(--slug) + 24px); bottom: 7px; display: flex; }
+.steps i { width: 6px; height: 6px; background: var(--c); }
+.steps i:nth-child(1) { --c: var(--neutral-900); } .steps i:nth-child(2) { --c: var(--neutral-850); } .steps i:nth-child(3) { --c: var(--neutral-800); } .steps i:nth-child(4) { --c: var(--neutral-500); } .steps i:nth-child(5) { --c: var(--neutral-300); }
+.crease { left: 1px; right: 1px; top: calc(var(--fold) - .5px); height: 1px; background: linear-gradient(90deg, var(--neutral-900), var(--neutral-850) 12%, var(--neutral-850) 88%, var(--neutral-900)); }
+/* The lower facet before it opens; only exists during the enter */
+.flap { display: none; }
+
+/* Drafts behind: earlier proofs, marks only */
+.sheet.back .mk { stroke: var(--neutral-800); }
+.sheet.b2 .mk { stroke: var(--neutral-850); }
+.sheet.back .crop.tr { position: absolute; }
+.sheet.back .reg { position: absolute; }
+
+/* Ream edge: two plies just under the front sheet */
+.sheet.ply { box-shadow: inset 0 0 0 1px var(--neutral-850); background: var(--neutral-1000); }
+.sheet.p1 { z-index: 1; transform: var(--tilt) translate3d(-3px, 4px, -3px); }
+.sheet.p2 { z-index: 1; transform: var(--tilt) translate3d(-6px, 8px, -6px); box-shadow: inset 0 0 0 1px var(--neutral-900); }
+
+@media (max-width: 699px) {
+  .stack { --slug: 16px; }
+  .sheet.front { padding: calc(var(--slug) + 14px); }
+  .steps { left: calc(var(--slug) + 14px); bottom: 5px; }
+  .reg { width: 12px; height: 12px; left: calc(50% - 6px); }
+  /* base flattens with transform: none; offsets go back in as plain 2D transforms */
+  .sheet.b1 { transform: translate(4px, -6px); } .sheet.b2 { transform: translate(8px, -12px); }
+  .sheet.p1 { transform: translate(-2px, 3px); } .sheet.p2 { transform: translate(-4px, 6px); }
+}
+
+/* ---------- Enter: drafts settle, the sheet lands folded and opens flat, marks draw, rows write in ---------- */
+.js .stack .sheet.rv { transition: opacity 360ms var(--ease-out) var(--d), translate 700ms var(--ease-out) var(--d), transform 600ms var(--ease-out); }
+.js .stack .sheet.ply.rv:not(.on) { translate: 0 -10px; }
+.js .stack .sheet.front.rv:not(.on) { translate: 0 20px; }
+.js .sheet.front .flap {
+  display: block; left: 0; right: 0; top: var(--fold); bottom: 0; z-index: 2;
+  border-radius: 0 0 var(--radius-4) var(--radius-4);
+  background: linear-gradient(var(--neutral-900), var(--neutral-950) 56px);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transform-origin: 50% 0; transform: translateZ(1px) rotateX(172deg);
+  transition: transform 640ms cubic-bezier(.45, 0, .2, 1) var(--d), opacity 160ms ease calc(var(--d) + 600ms); /* on-screen swing: ease-in-out, lands softly */
+}
+.js .sheet.front.on .flap { transform: translateZ(1px); opacity: 0; }
+.js .proof .mk :is(path, circle) { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 480ms var(--ease-out) var(--md, 0ms); }
+.js .proof .crease, .js .proof .steps { opacity: 0; transition: opacity 400ms var(--ease-out) var(--md, 0ms); }
+.js .proof .crease { transform: scaleX(.2); transition-property: opacity, transform; }
+.js .sheet.front.on .proof .mk :is(path, circle) { stroke-dashoffset: 0; }
+.js .sheet.front.on .proof :is(.crease, .steps) { opacity: 1; transform: none; }
+.js .stack .toc li.rv { transition-duration: 420ms; }
+.js .stack .toc li .bars i { transition: transform 520ms var(--ease-out) calc(var(--d, 0ms) + 120ms); }
+.js .stack .toc li .bars i + i { transition-delay: calc(var(--d, 0ms) + 180ms); }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .sheet.front .flap { display: none; }
+  .js .proof .mk :is(path, circle) { stroke-dashoffset: 0; transition: none; }
+  .js .proof :is(.crease, .steps) { opacity: 1; transform: none; transition: none; }
+  .js .stack .sheet.rv { transition: opacity 300ms linear var(--d); }
+}

@@ -1,0 +1,146 @@
+/* Variant 10: extruded rows. The document is a base plate; rows 01-05 are tiles standing out of it,
+   row 06 is the empty socket a sixth tile would drop into. Real CSS 3D: faces are planes in one
+   preserve-3d context, so the plate hides what sits below it (tiles rise through it, the socket is a hole).
+   View: rotateZ(-) then rotateX(+), so bottom and left faces of solids and the top/right walls of the hole face us.
+   No opacity/clip/mask on any element that holds 3D children (they would flatten). */
+.ex {
+  --P: 24px;   /* plate padding */
+  --S: 60px;   /* row height */
+  --E: 14px;   /* tile extrusion */
+  --D: 14px;   /* socket depth */
+  --T: 18px;   /* plate thickness */
+  padding: 0 0 8px; /* the tilt makes the plate ~80px shorter than its layout box */
+  perspective: 1800px;
+  animation: ex-fade 500ms var(--ease-out) both;
+}
+.ex .plate {
+  position: relative; padding: var(--P); transform-style: preserve-3d;
+  transform: translateX(-16px) scale(.92) rotateY(var(--ry)) rotateX(calc(34deg + var(--rx))) rotateZ(-12deg);
+  animation: ex-settle 700ms var(--ease-out) both;
+}
+.ex .plate > :not(i, ol) { position: relative; transform: translateZ(1px); }
+
+/* Plate: top with a hole where row 06 sits, two edge faces, corner marks */
+.ex .plate-top {
+  position: absolute; inset: 0; border-radius: var(--radius-4);
+  background: linear-gradient(160deg, var(--neutral-900), var(--neutral-1000) 60%);
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500);
+  -webkit-mask: linear-gradient(#000 0 0) 0 0 / 100% 100% no-repeat, linear-gradient(#000 0 0) var(--P) calc(100% - var(--P)) / calc(100% - 2 * var(--P)) var(--S) no-repeat;
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.ex .face { position: absolute; display: block; backface-visibility: hidden; }
+.ex .fb { /* bottom edge: hinged on the plate's bottom edge, folded back under it */
+  left: 0; right: 0; top: 100%; height: var(--T); transform-origin: top; transform: rotateX(-90deg);
+  background: linear-gradient(var(--neutral-800), var(--neutral-900)); border-radius: 0 0 var(--radius-2) var(--radius-2);
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 calc(var(--T) / 2) 0 -6px var(--neutral-850);
+}
+.ex .fl { /* left edge: darker, it faces away from the light */
+  top: 0; bottom: 0; right: 100%; width: var(--T); transform-origin: right; transform: rotateY(-90deg);
+  background: linear-gradient(90deg, var(--neutral-950), var(--neutral-900)); box-shadow: inset 0 0 0 1px var(--neutral-800);
+}
+/* thin lamination line along both edges */
+.ex .fb::after, .ex .fl::after { content: ''; position: absolute; background: var(--neutral-850); }
+.ex .fb::after { left: 0; right: 0; top: 50%; height: 1px; }
+.ex .fl::after { top: 0; bottom: 0; left: 50%; width: 1px; }
+.ex .mark { position: absolute; width: 8px; height: 8px; border: 0 solid var(--neutral-500); transform: translateZ(1px); }
+.ex .mark.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+.ex .mark.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+.ex .mark.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
+.ex .mark.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+.ex .sheet-head { display: flex; justify-content: space-between; gap: 16px; padding-inline: 4px; }
+.ex .sheet-head .lbl { color: var(--text-2); }
+.ex .headline { margin: 12px 4px 36px; } /* the tiles stand 14px tall and lean back over this gap */
+
+/* Tiles */
+.ex .tiles { display: grid; gap: 14px; transform-style: preserve-3d; }
+.ex .tiles li { position: relative; height: var(--S); transform-style: preserve-3d; transform: translateZ(var(--E)); }
+.ex .tiles li > :is(div, a) {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr) minmax(0, 128px); gap: 12px; align-items: center;
+  height: 100%; padding: 0 12px; box-sizing: border-box; border-radius: var(--radius-2);
+}
+.ex .tiles li > div {
+  background: var(--neutral-1000);
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500);
+}
+/* tile sides: bottom catches light, left is in shade */
+.ex .tiles li:not(.socket)::before, .ex .tiles li:not(.socket)::after { content: ''; position: absolute; backface-visibility: hidden; }
+.ex .tiles li:not(.socket)::before {
+  left: 1px; right: 1px; top: 100%; height: var(--E); transform-origin: top; transform: rotateX(-90deg);
+  background: linear-gradient(var(--neutral-800), var(--neutral-900)); box-shadow: inset 0 1px 0 var(--neutral-500), inset 0 -1px 0 var(--neutral-800);
+}
+.ex .tiles li:not(.socket)::after {
+  top: 1px; bottom: 1px; right: 100%; width: var(--E); transform-origin: right; transform: rotateY(-90deg);
+  background: linear-gradient(90deg, var(--neutral-950), var(--neutral-850)); box-shadow: inset 0 0 0 1px var(--neutral-800);
+}
+.ex .n { font: 600 12px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-meta); }
+.ex .t { display: grid; gap: 8px; min-width: 0; }
+.ex .tt { display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; }
+.ex .bars { display: grid; gap: 4px; }
+.ex .bars i { display: block; width: var(--w); height: 1px; background: var(--neutral-800); transform-origin: left; }
+.ex .bars i:first-child { background: var(--neutral-500); }
+.ex .who { display: grid; gap: 2px; padding-left: 12px; border-left: 1px solid var(--neutral-800); font-size: 14px; line-height: 1.3; }
+.ex .who .lbl { color: var(--text-2); }
+
+/* Row 06: the socket. Rim at plate level, walls down to a recessed floor where the text sits */
+.ex .tiles .socket { margin-top: 14px; transform: translateZ(1px); border-radius: var(--radius-2); box-shadow: 0 0 0 1px var(--accent); }
+.ex .wall { position: absolute; display: block; backface-visibility: hidden; }
+.ex .wt { left: 0; right: 0; top: 0; height: var(--D); transform-origin: top; transform: rotateX(-90deg); background: linear-gradient(var(--neutral-850), var(--neutral-800)); box-shadow: inset 0 -1px 0 var(--neutral-500); }
+.ex .wr { top: 0; bottom: 0; right: 0; width: var(--D); transform-origin: right; transform: rotateY(-90deg); background: linear-gradient(270deg, var(--neutral-950), var(--neutral-850)); box-shadow: inset 1px 0 0 var(--neutral-800); }
+.ex .open {
+  position: relative; transform: translateZ(calc(-1 * var(--D))); color: var(--text);
+  background: var(--neutral-950);
+  transition: background-color var(--t-fast) ease, transform 240ms var(--ease-out);
+}
+.ex .open .tt { color: var(--accent); }
+.ex .open .who { border-left-color: var(--neutral-800); }
+.ex .open .bars i { width: 72%; height: 0; border-top: 1px dashed var(--accent); background: none; position: relative; }
+.ex .open .bars i::after { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 400ms var(--ease-out); }
+.ex .open:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; background-color: var(--neutral-900); transform: translateZ(calc(-1 * var(--D) + 5px)); }
+/* hover/focus: the floor lifts a little and the empty line writes itself in */
+@media (hover: hover) and (pointer: fine) {
+  .ex .open:hover { background-color: var(--neutral-900); transform: translateZ(calc(-1 * var(--D) + 5px)); }
+  .ex .open:hover .bars i::after { transform: none; }
+}
+.ex .open:focus-visible .bars i::after { transform: none; }
+
+/* Enter: the plate settles, tiles rise through it one by one, the text writes in on top, the socket rim draws last */
+@keyframes ex-fade { from { opacity: 0; } }
+@keyframes ex-settle { from { translate: 0 28px; } }
+@keyframes ex-rise { from { translate: 0 0 calc(-1 * var(--E) - 4px); } }
+@keyframes ex-write { from { opacity: 0; translate: -6px 0; } }
+@keyframes ex-bar { from { transform: scaleX(0); } }
+@keyframes ex-rim { from { box-shadow: 0 0 0 1px transparent; } }
+.ex .tiles li:not(.socket) { animation: ex-rise 420ms var(--ease-out) calc(220ms + var(--i) * 90ms) both; }
+.ex .tiles li > :is(div, a) > * { animation: ex-write 360ms var(--ease-out) calc(380ms + var(--i) * 90ms) both; }
+.ex .bars i { animation: ex-bar 600ms var(--ease-out) calc(440ms + var(--i) * 90ms) both; }
+.ex .tiles .socket { animation: ex-rim 300ms ease calc(760ms) both; }
+
+@media (max-width: 1199px) { .ex .bars i:not(.open i) { display: none; } }
+/* narrow column (1000-1199): the seat moves under the title so nothing overlaps */
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .ex { --S: 72px; }
+  .ex .tiles li > :is(div, a) { grid-template-columns: 22px minmax(0, 1fr); row-gap: 6px; align-content: center; }
+  .ex .tiles li > div .bars { display: none; }
+  .ex .who { grid-column: 2; display: flex; align-items: baseline; gap: 8px; padding-left: 0; border-left: 0; }
+}
+
+/* Mobile: flat, readable list on the plate; the socket keeps its rim */
+@media (max-width: 699px) {
+  .ex { padding: 8px 0 0; }
+  .ex .plate, .ex .tiles li, .ex .open, .ex .plate > * { transform: none !important; }
+  .ex .face, .ex .wall, .ex .tiles li::before, .ex .tiles li::after { display: none; }
+  .ex .plate { --P: 16px; animation: none; }
+  .ex .plate-top { -webkit-mask: none; mask: none; }
+  .ex .tiles li { height: auto; animation-name: ex-write !important; }
+  .ex .tiles { gap: 8px; }
+  .ex .tiles li > div { box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500), 0 2px 0 var(--neutral-800); } /* a 2px face: the tile's edge, flattened */
+  .ex .tiles li > :is(div, a) { grid-template-columns: 20px minmax(0, 1fr); row-gap: 6px; padding: 12px; min-height: 44px; }
+  .ex .tiles li > div .bars { display: none; }
+  .ex .tt { white-space: normal; flex-wrap: wrap; }
+  .ex .who { grid-column: 2; border-left: 0; padding-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex, .ex *, .ex *::before, .ex *::after { animation: none !important; transition: none !important; }
+}

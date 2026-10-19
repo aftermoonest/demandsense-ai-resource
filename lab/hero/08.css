@@ -1,0 +1,112 @@
+/* 08 Ring binder: the Standard as a loose-leaf binder. A back board with a ring plate, a deep stack
+   of punched pages (edges show right and bottom, blank divider tabs), the front sheet on four rings.
+   The whole binder is one 3D unit tilted by base.js (--rx/--ry); layers sit at real depths. */
+
+.c-5 .stack {
+  --gut: 60px;   /* sheet margin that holds the punched holes */
+  --hx: 26px;    /* hole centre from the sheet's left edge */
+  --spine: 72px; /* board past the pages on the left: the ring plate lives here */
+  --tilt: rotateY(calc(-18deg + var(--ry))) rotateX(calc(10deg + var(--rx))) rotateZ(1.5deg);
+  padding: 48px 0 64px;
+}
+.binder { position: relative; transform: var(--tilt); transform-style: preserve-3d; }
+.binder > * { transform-style: preserve-3d; }
+
+/* The front sheet carries no tilt of its own: the binder does */
+.binder .sheet.front { transform: translateZ(0); padding-left: var(--gut); }
+
+/* ---------- Back board ---------- */
+.cover { position: absolute; inset: -18px -36px -34px calc(-1 * var(--spine)); }
+.cover::before, .cover .board { content: ''; position: absolute; inset: 0; border-radius: var(--radius-8); }
+/* board thickness: a second face a few px under, offset so its edge shows under tilt */
+.cover::before { transform: translate3d(3px, 4px, -30px); background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+.cover .board {
+  display: block; transform: translateZ(-26px);
+  background: linear-gradient(160deg, var(--neutral-900), var(--neutral-950) 55%, var(--neutral-1000));
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500);
+}
+/* spine crease and the board's turned-in edge */
+.cover .board::before { content: ''; position: absolute; top: 0; bottom: 0; left: 14px; width: 1px; background: linear-gradient(var(--neutral-1000-0), var(--neutral-800) 12%, var(--neutral-800) 88%, var(--neutral-1000-0)); }
+.cover .board::after { content: ''; position: absolute; inset: 8px 8px 8px 22px; border-radius: var(--radius-4); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+/* ring plate: the strip the rings are fixed to, with a rivet at each end */
+.cover .plate {
+  position: absolute; top: 12px; bottom: 18px; left: calc(var(--spine) - 46px); width: 28px;
+  transform: translateZ(-23px); border-radius: var(--radius-4);
+  background: linear-gradient(90deg, var(--neutral-850), var(--neutral-900) 40%, var(--neutral-950));
+  box-shadow: inset 0 0 0 1px var(--neutral-800), inset 1px 0 0 var(--neutral-500);
+}
+.cover .plate::before, .cover .plate::after { content: ''; position: absolute; left: 9px; width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--neutral-500), inset 0 -2px 0 var(--neutral-1000); }
+.cover .plate::before { top: 8px; }
+.cover .plate::after { bottom: 8px; }
+
+/* ---------- Page stack: edges right and bottom, two blank divider tabs ---------- */
+.pages { position: absolute; inset: 0; }
+.pg {
+  position: absolute; inset: 0; border-radius: var(--radius-4); background: var(--neutral-1000);
+  box-shadow: inset 0 0 0 1px var(--neutral-800);
+  transform: translate3d(calc(var(--i) * 2px), calc(var(--i) * 2.4px), calc(var(--i) * -2.6px));
+}
+.pg:nth-child(odd) { box-shadow: inset 0 0 0 1px var(--neutral-850); }
+.pg:first-child { box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 -1px 0 var(--neutral-500); }
+.pg:nth-child(3)::after, .pg:nth-child(6)::after {
+  content: ''; position: absolute; right: -13px; width: 14px; height: 52px; border-radius: 0 var(--radius-4) var(--radius-4) 0;
+  background: var(--neutral-950); box-shadow: inset -1px 0 0 var(--neutral-500), inset 0 1px 0 var(--neutral-800), inset 0 -1px 0 var(--neutral-800);
+}
+.pg:nth-child(3)::after { top: 26%; }
+.pg:nth-child(6)::after { top: 52%; }
+
+/* ---------- Punched holes in the front sheet ---------- */
+.holes { position: absolute; inset: 0 auto 0 0; width: var(--gut); pointer-events: none; }
+.holes::after { content: ''; position: absolute; top: 16px; bottom: 16px; right: 12px; width: 1px; background: var(--neutral-850); } /* margin rule */
+.holes i { position: absolute; left: calc(var(--hx) - 6px); width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: var(--neutral-900); box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 2px 0 var(--neutral-1000); }
+.holes i::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--neutral-850); } /* reinforcement ring */
+.holes i:nth-child(1) { top: 9%; } .holes i:nth-child(2) { top: 36%; } .holes i:nth-child(3) { top: 64%; } .holes i:nth-child(4) { top: 91%; }
+
+/* ---------- Rings: wire drawn as a tube (two hairlines, dark core); the part under the pages shows only past their edge ---------- */
+.rings { position: absolute; inset: 0; pointer-events: none; transform: translateZ(2px); }
+.rings-def { position: absolute; }
+.ring { position: absolute; left: calc(var(--hx) - 78px); top: calc(var(--y) - 24px); width: 96px; height: 48px; overflow: visible; fill: none; stroke-linecap: round; }
+#ring08 .b { stroke: var(--neutral-300); stroke-width: 4.5; }
+#ring08 .c { stroke: var(--neutral-950); stroke-width: 2.5; }
+#ring08 .h { stroke: var(--neutral-500); stroke-width: 1; }
+#ring08 .under .b { stroke: var(--neutral-800); }
+#ring08 .under .c { stroke: var(--neutral-1000); }
+
+/* ---------- Row 06 keeps base styling; just a little more air from the margin rule ---------- */
+.binder .toc .open { margin-left: -16px; padding-left: 16px; }
+
+/* ---------- Enter: board, then rings close, then pages drop onto them (deepest first), then the front sheet ---------- */
+.js .hero:not(.in) .cover, .js .hero:not(.in) .pg { opacity: 0; }
+.cover { transition: opacity 500ms var(--ease-out) 420ms, translate 600ms var(--ease-out) 420ms; }
+.js .hero:not(.in) .cover { translate: 0 0 -40px; }
+.ring { stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 520ms var(--ease-out) calc(500ms + var(--r) * 60ms); }
+.js .hero:not(.in) .ring { stroke-dashoffset: 1; }
+.pg { transition: opacity 360ms var(--ease-out) calc(560ms + (8 - var(--i)) * 28ms), translate 460ms var(--ease-out) calc(560ms + (8 - var(--i)) * 28ms); }
+.js .hero:not(.in) .pg { translate: 0 -18px 28px; }
+.js .binder .sheet.front.rv:not(.on) { translate: 0 -22px 36px; }
+.js .binder .sheet.front.rv { transition: opacity 360ms var(--ease-out) var(--d), translate 560ms var(--ease-out) var(--d); }
+
+/* ---------- Narrow: flatten the tilt, keep binder parts as a flat drawing ---------- */
+@media (max-width: 999px) { .c-5 .stack { padding-left: calc(var(--spine) - 16px); padding-right: 24px; } }
+@media (max-width: 699px) {
+  .c-5 .stack { --gut: 38px; --hx: 16px; --spine: 40px; perspective: none; padding: 24px 12px 40px 28px; }
+  .ring { width: 72px; height: 36px; left: calc(var(--hx) - 58.5px); top: calc(var(--y) - 18px); }
+  .binder { transform: none; }
+  .binder .sheet.front { padding: 16px 16px 16px var(--gut); }
+  .cover { inset: -12px -20px -24px calc(-1 * var(--spine)); }
+  .cover .plate { left: calc(var(--spine) - 34px); width: 20px; }
+  .cover .plate::before, .cover .plate::after { left: 5px; }
+  .cover .board::after { left: 14px; }
+  .cover .board::before { left: 8px; }
+  .pg { transform: translate(calc(var(--i) * 1.25px), calc(var(--i) * 1.5px)); }
+  .pg:nth-child(3)::after, .pg:nth-child(6)::after { right: -9px; width: 10px; height: 40px; }
+  .holes::after { right: 8px; }
+  .holes i { width: 10px; height: 10px; margin-top: -5px; left: calc(var(--hx) - 5px); }
+  .binder .toc .open { margin-left: -12px; padding-left: 12px; margin-right: -12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover, .pg, .ring, .js .binder .sheet.front.rv { transition: none; }
+  html.js .hero.hero .cover, html.js .hero.hero .pg { opacity: 1; translate: none; }
+  html.js .hero.hero .ring { stroke-dashoffset: 0; }
+}

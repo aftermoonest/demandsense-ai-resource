@@ -1,0 +1,83 @@
+/* Variant 03: the Standard as a sheet in an open document folder.
+   The folder (back board with its tab, front pocket lip) lands, drafts and the sheet rise out of
+   the pocket, rows write in. One 3D rig carries the tilt; layers sit at their own depth. */
+
+.stack { --tilt: rotateY(calc(-17deg + var(--ry))) rotateX(calc(7deg + var(--rx))) rotateZ(1deg); padding: 16px 0 32px; }
+.rig { position: relative; transform: var(--tilt); transform-style: preserve-3d; padding-top: 76px; }
+.rig > * { transform-style: preserve-3d; }
+
+/* Back board: tab on top, board thickness as an offset edge */
+.fd { --fd-edge: var(--neutral-800); }
+.fd-back { position: absolute; inset: 28px 0 0; border-radius: var(--radius-4) var(--radius-4) 6px 6px; background: linear-gradient(180deg, var(--neutral-900), var(--neutral-950) 70%); box-shadow: inset 0 0 0 1px var(--fd-edge), inset 0 1px 0 var(--neutral-500); }
+.fd-back::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--fd-edge); transform: translate3d(4px, 4px, -2px); }
+.fd-tab { position: absolute; left: 20px; bottom: calc(100% - 1px); display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 18px 0 14px; border-radius: 6px 10px 0 0; background: var(--neutral-900); box-shadow: inset 1px 0 var(--fd-edge), inset -1px 0 var(--fd-edge), inset 0 1px var(--neutral-500); }
+.fd-tab::before { content: ''; width: 6px; height: 6px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--neutral-500); flex: none; } /* eyelet */
+.fd-tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--neutral-900); } /* tab and board are one piece: no seam */
+.fd-tab .lbl { color: var(--text-body); white-space: nowrap; }
+
+/* Drafts behind: tops peek out between the sheet and the board, with placeholder lines */
+.sheet.back { position: absolute; inset: 48px 20px 40px; background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); transform: none; }
+.sheet.b1 { top: 58px; transform: translate3d(6px, 0, 6px); }
+.sheet.b2 { top: 42px; transform: translate3d(14px, 0, 3px); box-shadow: inset 0 0 0 1px var(--neutral-850), inset 0 1px 0 var(--neutral-800); }
+.sheet.back i { position: absolute; left: 24px; top: 5px; width: 34%; height: 1px; background: var(--neutral-800); }
+.sheet.back i + i { left: auto; right: 24px; width: 12%; }
+
+/* The sheet: sits in the pocket, its foot hidden behind the lip */
+.sheet.front { --lift: 0px; margin: 0 20px; padding: 24px 24px 80px; transform: translate3d(0, var(--lift), 10px); }
+.sheet-head { justify-content: flex-start; align-items: center; margin-bottom: 12px; }
+.sheet-head::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.sheet-head .lbl { order: 1; }
+.sheet .headline { margin-bottom: 16px; }
+
+/* Front lip: shorter panel with a thumb notch, two score lines, its own thickness at the spine */
+.fd-lip { position: absolute; left: 0; right: 0; bottom: 0; height: 50px; border-radius: 2px 2px 6px 6px; background: linear-gradient(180deg, var(--neutral-900), var(--neutral-950)); box-shadow: inset 0 0 0 1px var(--fd-edge), inset 0 1px 0 var(--neutral-500); transform: translateZ(16px); }
+.fd-lip::before { content: ''; position: absolute; left: 50%; top: -1px; width: 64px; height: 20px; margin-left: -32px; border-radius: 0 0 32px 32px; background: var(--neutral-1000); box-shadow: inset 0 -1px 0 var(--neutral-500), inset 1px 0 0 var(--fd-edge), inset -1px 0 0 var(--fd-edge); }
+.fd-lip::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--fd-edge); transform: translate3d(4px, 4px, -1px); }
+.fd-lip i { position: absolute; left: 1px; right: 1px; bottom: 8px; height: 5px; border-block: 1px solid var(--neutral-800); }
+
+/* ---------- Enter: folder lands, drafts and sheet rise out of the pocket, rows write in ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .fd { opacity: 0; translate: 0 -18px; transition: opacity 360ms var(--ease-out) 80ms, translate 480ms var(--ease-out) 80ms; }
+  .js .fd-lip { transition-delay: 120ms; }
+  .js .hero.in .fd { opacity: 1; translate: none; }
+
+  /* .rig in the selectors: base's :not(.on) start states are more specific than a plain override */
+  .js .stack .rig .sheet.rv { --rise: 72px; opacity: 1; transition: translate 600ms var(--ease-out) var(--d), clip-path 600ms var(--ease-out) var(--d), transform 240ms var(--ease-out); }
+  .js .stack .rig .sheet.rv:not(.on) { translate: 0 var(--rise); clip-path: inset(0 0 var(--rise) 0); }
+  .js .stack .rig .sheet.rv.on { translate: none; clip-path: inset(0 0 0 0); }
+  /* !important: base.js sets --d inline; this object keeps its own tighter clock */
+  .js .stack .sheet.b2.rv { --d: 240ms !important; --rise: 40px; }
+  .js .stack .sheet.b1.rv { --d: 300ms !important; --rise: 56px; }
+  .js .stack .rig .sheet.front.rv { --d: 360ms !important; --rise: 140px; transition-duration: 660ms, 660ms, 240ms; }
+
+  .js .stack .toc li.rv { transition: opacity 380ms var(--ease-out) var(--d), translate 380ms var(--ease-out) var(--d); }
+  .js .stack .toc li:nth-child(1) { --d: 540ms !important; } .js .stack .toc li:nth-child(2) { --d: 590ms !important; } .js .stack .toc li:nth-child(3) { --d: 640ms !important; }
+  .js .stack .toc li:nth-child(4) { --d: 690ms !important; } .js .stack .toc li:nth-child(5) { --d: 740ms !important; } .js .stack .toc li:nth-child(6) { --d: 790ms !important; }
+  .js .stack .toc li .bars i { transition: transform 420ms var(--ease-out) calc(var(--d) + 80ms); }
+  .js .stack .toc li .bars i + i { transition-delay: calc(var(--d) + 140ms); }
+  .js .stack .floor.rv { transition-delay: 0ms; }
+
+  /* Your part: pointing at your seat pulls the sheet a little further out of the folder */
+  @media (hover: hover) and (pointer: fine) { .sheet.front:has(.open:hover) { --lift: -8px; } }
+  .sheet.front:has(.open:focus-visible) { --lift: -8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .stack .rv, .js .fd { opacity: 1; translate: none; transition: none; }
+  .js .stack .toc li .bars i { transition: none; }
+}
+
+/* ---------- Mobile: flat folder, readable sheet ---------- */
+@media (max-width: 699px) {
+  .stack { padding: 8px 0 24px; }
+  .rig, .sheet.front, .sheet.back, .fd-lip, .fd-back::before, .fd-lip::after { transform: none; }
+  .fd-back::before, .fd-lip::after { translate: 3px 3px; z-index: -1; }
+  .rig { padding-top: 76px; isolation: isolate; }
+  .rig, .rig > * { transform-style: flat; }
+  .sheet.front { margin: 0 12px; padding: 16px 16px 72px; }
+  .sheet.back { inset-inline: 12px; }
+  .sheet.b1 { top: 58px; inset-inline: 16px 8px; }
+  .sheet.b2 { top: 44px; inset-inline: 20px 4px; }
+  .fd-tab { left: 12px; }
+  .fd-lip { z-index: 3; } /* flat: base gives the front sheet z-index 2 */
+}

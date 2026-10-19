@@ -1,0 +1,80 @@
+/* 02 · Thick slab. The Standard as one solid plate with real side faces (3D-transformed),
+   a lit chamfer, an inner frame and rows engraved as recessed lanes. Drafts = thinner plates.
+   Volume comes from tone only: faces are flat fills a step lighter or darker than the top. */
+
+.stack { --tilt: rotateY(calc(-24deg + var(--ry))) rotateX(calc(-12deg + var(--rx))) rotateZ(1.5deg); padding: 48px 0 64px; }
+.sheet { --th: 30px; border-radius: var(--radius-2); }
+.sheet.b1 { --th: 10px; }
+.sheet.b2 { --th: 6px; }
+
+/* ---------- Faces: four walls hang back from the top face, --th deep ---------- */
+.sheet .f { position: absolute; pointer-events: none; background: var(--neutral-900); }
+.sheet .f.l, .sheet .f.r { top: 1px; bottom: 1px; width: var(--th); }
+.sheet .f.t, .sheet .f.b { left: 1px; right: 1px; height: var(--th); }
+.sheet .f.l { left: 0; transform-origin: 0 50%; transform: rotateY(90deg); }
+.sheet .f.r { right: 0; transform-origin: 100% 50%; transform: rotateY(-90deg); }
+.sheet .f.t { top: 0; transform-origin: 50% 0; transform: rotateX(-90deg); }
+.sheet .f.b { bottom: 0; transform-origin: 50% 100%; transform: rotateX(90deg); }
+/* Edge tones: the camera sees the right and bottom walls. The right wall catches the light, the bottom sits in
+   shade; each wall carries a lit arris where it meets the top. Flat tones only (fine strata alias under 3D). */
+.sheet .f.r { background: linear-gradient(270deg, var(--neutral-850), var(--neutral-800)); box-shadow: inset 1px 0 0 var(--neutral-500); }
+.sheet .f.b { background: linear-gradient(0deg, var(--neutral-950), var(--neutral-900)); box-shadow: inset 0 -1px 0 var(--neutral-800); }
+.sheet.back .f.r { box-shadow: inset 1px 0 0 var(--neutral-800); }
+
+/* ---------- Top face: tone, lit arris, chamfer band, inner frame ---------- */
+.sheet { background: linear-gradient(165deg, var(--neutral-850), var(--neutral-900) 40%, var(--neutral-950)); box-shadow: inset 0 0 0 1px var(--neutral-800), inset 0 1px 0 var(--neutral-500); }
+.sheet.b2 .f { background: var(--neutral-900); }
+.sheet.b2 { background: var(--neutral-950); box-shadow: inset 0 0 0 1px var(--neutral-850), inset 0 1px 0 var(--neutral-800); }
+.sheet.back::before, .sheet.front::before { content: ''; position: absolute; inset: 8px; border-radius: var(--radius-1); box-shadow: inset 0 0 0 1px var(--neutral-850); pointer-events: none; }
+.sheet.b2::before { inset: 6px; box-shadow: inset 0 0 0 1px var(--neutral-900); }
+.sheet .bevel { position: absolute; inset: 1px; padding: 5px; border-radius: var(--radius-1); pointer-events: none;
+  background: linear-gradient(180deg, var(--neutral-500), var(--neutral-800) 3%, var(--neutral-850) 40%, var(--neutral-950));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.sheet.front { padding: 28px 24px 24px; }
+.sheet.front > :not(i) { position: relative; }
+.sheet-head { padding-bottom: 14px; border-bottom: 1px solid var(--neutral-850); }
+.sheet .headline { margin: 16px 0 12px; }
+
+/* ---------- Rows: recessed lanes. Dark floor, shaded top wall, lit bottom lip ---------- */
+.toc { display: grid; gap: 6px; }
+.toc li > * { position: relative; isolation: isolate; padding: 12px; border-top: 0; border-radius: var(--radius-2); }
+.toc li > *::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: linear-gradient(180deg, var(--neutral-1000), var(--neutral-950)); box-shadow: inset 0 1px 0 var(--neutral-1000), inset 0 2px 0 var(--neutral-1000), inset 0 -1px 0 var(--neutral-800), inset 1px 0 0 var(--neutral-1000), inset -1px 0 0 var(--neutral-850); transform-origin: left; }
+.toc .who { border-left-color: var(--neutral-850); }
+.toc .open { margin-inline: 0; padding-inline: 12px; box-shadow: none; }
+.toc .open::before { box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* ---------- Motion: the slab lands, drafts slide out, lanes are cut, rows write in ---------- */
+.js .stack .sheet { transition: opacity 640ms var(--ease-out) var(--d, 0ms), translate 760ms var(--ease-out) var(--d, 0ms), transform 600ms var(--ease-out); }
+.js .stack .sheet.front.rv:not(.on) { translate: 0 28px; }
+.js .toc li.rv { transition-duration: 520ms; }
+.js .toc li > *::before { transition: transform 560ms var(--ease-out) var(--d, 0ms); }
+.js .toc li:not(.on) > *::before { transform: scaleX(0); }
+.js .toc li .bars i { transition-duration: 640ms; transition-delay: calc(var(--d, 0ms) + 160ms); }
+.js .toc li .bars i + i { transition-delay: calc(var(--d, 0ms) + 220ms); }
+/* Your part: the open lane fills with a warm tint and its contents step in, like a seat taken */
+.toc .open::after { content: ''; position: absolute; inset: 1px; z-index: -1; border-radius: var(--radius-1); background: var(--brand-first-10); opacity: 0; transition: opacity var(--t-fast) ease; }
+.toc .open > * { transition: transform 200ms var(--ease-out); }
+.toc .open:focus-visible { background: none; }
+.toc .open:focus-visible::after { opacity: 1; }
+.toc .open:focus-visible > :not(.n) { transform: translateX(3px); }
+@media (hover: hover) and (pointer: fine) {
+  .toc .open:hover { background: none; }
+  .toc .open:hover::after { opacity: 1; }
+  .toc .open:hover > :not(.n) { transform: translateX(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc .open > *, .toc .open:is(:hover, :focus-visible) > :not(.n) { transition: none; transform: none; }
+  .js .stack .sheet { transition: opacity 300ms linear var(--d, 0ms); }
+  .js .toc li > *::before { transform: none; transition: none; }
+}
+
+/* ---------- Narrow: flat plate, thickness kept as a bottom edge ---------- */
+@media (max-width: 1199px) { .toc li > * { grid-template-columns: 20px minmax(0, 1fr); } }
+@media (max-width: 699px) {
+  .stack { padding: 24px 0 40px; }
+  .sheet.front { padding: 20px 16px 16px; }
+  .sheet .f.l, .sheet .f.r, .sheet .f.t { display: none; }
+  .sheet .f.b { transform: none; top: 100%; bottom: auto; left: 2px; right: 2px; height: calc(var(--th) / 2); border-radius: 0 0 var(--radius-2) var(--radius-2); }
+  .toc .open { min-height: 44px; }
+}

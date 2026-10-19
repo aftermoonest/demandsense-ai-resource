@@ -1,0 +1,6 @@
+{
+  "title": "Print proof",
+  "what": "Exactly the locked content: the head, the title and rows 01-06, with only row 06 in orange. The form adds print marks with no words: crop marks at the four corners, two registration targets, dashed fold ticks, a small grey step strip, a soft fold across the sheet, a ream edge under it, and two earlier drafts behind with their own marks.",
+  "why": "A printer's proof is a document that is nearly final but still open for corrections, which is what the Standard is: written in the open and still taking input. The empty sixth row is the space left on the proof for your part before it goes to print.",
+  "how": "The front sheet is paper with a 20px slug around the trim, and all marks are 1px grey SVG hairlines in that slug. The fold is two facets in slightly different black tones with a lit ridge and a crease line, and two thin plies plus two offset drafts give it thickness. On load the drafts settle and the lower half of the sheet swings down from folded to flat (a CSS 3D flap, 640ms ease-in-out), then the marks draw in and the rows write in, rows above the fold first. The base pointer tilt is kept. With reduced motion the sheet is shown flat with marks drawn and no flap. On mobile the 3D is flattened, the drafts and plies are 2D offsets, the slug is narrower, and row 06 is a 104px tap target."
+}
