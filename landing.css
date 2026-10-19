@@ -153,10 +153,12 @@ b { font-weight: 500; color: var(--text); }
 .facts .ico { width: 88px; height: 88px; }
 .facts .t-p2 { margin-top: 8px; max-width: 42ch; }
 @media (min-width: 1000px) {
-  .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 80px; row-gap: 0; }
+  .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 1fr auto; column-gap: 80px; row-gap: 0; }
+  .split > .head { align-self: end; } /* header sits 48px above the facts whatever the figure's height */
   .spot { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
   .split > .head, .facts { grid-column: 2; }
   .facts { margin-top: 48px; align-self: end; }
+  .facts li:last-child { padding-bottom: 48px; } /* same gap to the band line as the body copy keeps to the first fact */
 }
 @media (max-width: 699px) { .facts li { grid-template-columns: 64px minmax(0, 1fr); column-gap: 20px; padding-block: 24px; } .facts .ico { width: 64px; height: 64px; } }
 
