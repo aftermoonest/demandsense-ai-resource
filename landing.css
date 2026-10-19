@@ -142,17 +142,24 @@ b { font-weight: 500; color: var(--text); }
   .cells > * + * { border-left: 0; border-top: 1px solid var(--line); }
 }
 
-/* ---------- Pass card (section: the stage is paid for) ---------- */
-/* Contributor pass: a lanyard badge, tilted like the hero sheets */
-.pass { position: relative; display: grid; gap: 24px; padding: 40px 32px 32px; border-radius: var(--radius-4); align-self: end; rotate: -2deg; box-shadow: inset 0 0 0 1px var(--line), inset 0 1px 0 var(--neutral-500); }
-.pass::before { content: ''; position: absolute; top: 16px; left: 50%; translate: -50% 0; width: 56px; height: 8px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1px var(--neutral-500); }
-.pass-top { display: flex; justify-content: space-between; }
-.pass-top .lbl { color: var(--text-2); }
-.pass dl { display: grid; }
-.pass dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
-.pass dt { font-size: 14px; } .pass dd { color: var(--text-2); }
-.pass .t-p3 { color: var(--text-2); }
-@media (max-width: 999px) { .pass { margin-top: var(--header-gap); rotate: none; } }
+/* ---------- The stage is paid for: the followspot left, the header and three facts right ---------- */
+/* Halves 612 with an 80px gap (DESIGN §6.1 chess rows); the figure spans both rows of the right column */
+.split { display: grid; gap: 40px; }
+.spot { margin: 0; }
+.spot [data-stage] { display: block; aspect-ratio: 5 / 4; }
+.spot [data-stage] > svg { width: 100%; height: 100%; }
+.facts { display: grid; }
+.facts li { display: grid; grid-template-columns: 72px minmax(0, 1fr); column-gap: 24px; padding-block: 24px; border-top: 1px solid var(--line); }
+.facts li:last-child { border-bottom: 1px solid var(--line); }
+.facts .ico { width: 72px; height: 72px; margin-top: -8px; }
+.facts .t-p2 { margin-top: 8px; max-width: 42ch; }
+@media (min-width: 1000px) {
+  .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 80px; row-gap: 0; }
+  .spot { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+  .split > .head, .facts { grid-column: 2; }
+  .facts { margin-top: 48px; align-self: start; }
+}
+@media (max-width: 699px) { .facts li { grid-template-columns: 56px minmax(0, 1fr); column-gap: 16px; } .facts .ico { width: 56px; height: 56px; } }
 
 /* ---------- Made of: rule → skill → scenario ---------- */
 .chain { position: relative; }
@@ -363,10 +370,6 @@ b { font-weight: 500; color: var(--text); }
 .js .flow .node.rv:not(.on, .main), .js .hub .tools > .rv:not(.on) { translate: -12px 0; }
 @media (max-width: 999px) { .js .flow .node.rv:not(.on, .main) { translate: 0 12px; } }
 
-/* Pass: the badge swings in on its lanyard and settles at -2deg */
-.js .pass.rv:not(.on) { translate: 0 -24px; rotate: -7deg; }
-.js .pass.rv { transform-origin: 50% 0; transition: opacity 500ms var(--ease-out) var(--d), translate 900ms var(--ease-out) var(--d), rotate 1200ms cubic-bezier(.34, 1.36, .64, 1) var(--d); }
-.js .pass.rv.on { rotate: -2deg; }
 
 /* Playbook: the Standard rises, the old one gets stamped */
 .js .versus > .paper.rv:not(.on) { translate: 0 8px; }
@@ -407,7 +410,6 @@ b { font-weight: 500; color: var(--text); }
 
 @media (prefers-reduced-motion: reduce) {
   html.js .rv.rv.rv.rv.rv { translate: none; filter: none; rotate: none; }
-  html.js .pass.rv.rv.rv.rv.rv { rotate: -2deg; }
   .js .rv { transition: opacity 300ms linear var(--d, 0ms); }
   .js .toc li .bars i, .js .stop::after, .js .lv-track i { transform: none; }
   .js .stop::before, .js .flow .node.main.rv, .js .chain .link.rv { scale: none; }
@@ -531,15 +533,6 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .hub .core { background: var(--neutral-1000); box-shadow: inset 0 0 0 1px var(--neutral-500); }
 .hubcap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
-/* Pass: a holographic foil follows the pointer across the badge */
-.pass { overflow: hidden; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 500ms var(--ease-out); }
-.pass .holo { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; mix-blend-mode: color-dodge; transition: opacity 400ms var(--ease-out);
-  background:
-    radial-gradient(circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--neutral-0) 35%, transparent), transparent 40%),
-    linear-gradient(115deg, transparent 20%, var(--chart-6) 35%, var(--chart-9) 45%, var(--chart-8) 55%, var(--chart-5) 65%, var(--chart-3) 75%, transparent 90%) calc(var(--mx, 50%) * 1.4) 0 / 220% 100%; }
-.pass > :not(.holo) { position: relative; z-index: 1; }
-@media (hover: hover) and (pointer: fine) { .pass:hover .holo { opacity: .55; } }
-@media (prefers-reduced-motion: reduce) { .pass { transform: none; transition: none; } .pass .holo { display: none; } }
 .js .links.rv:not(.on) { translate: none; }
 /* chain: room on both sides of each divider for its connector chip */
 @media (min-width: 1000px) { .cells.chain > article { padding-inline: 72px; } .cells.chain > article:first-child { padding-left: 0; } .cells.chain > article:last-child { padding-right: 0; } }

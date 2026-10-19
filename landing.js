@@ -15,7 +15,7 @@ const ORDER = [
   ['.stack .sheet.back', '.stack .floor'],
   ['.stack .sheet.front', '.rack'],
   ['.toc li'],
-  ['.cells > article', '.cells > .fact', '.pass', '.versus > *', '.ways > *', '.hub .tools > div'],
+  ['.cells > article', '.cells > .fact', '.spot', '.facts li', '.versus > *', '.ways > *', '.hub .tools > div'],
   ['.chain .link', '.levels > *'],
   ['.board-head', '.ctx > .node'],
   ['.grp.in > .node'],
@@ -199,17 +199,3 @@ flows.forEach((box) => {
   }).observe(svg, { attributes: true, attributeFilter: ['class'] });
   if (fine.matches) box.addEventListener('mouseenter', () => pulse(box));
 });
-
-// ---------- Contributor pass: holographic foil and tilt follow the pointer ----------
-const pass = document.querySelector('.pass');
-if (pass && fine.matches) {
-  pass.addEventListener('pointermove', (e) => {
-    if (reduced.matches) return;
-    const r = pass.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-    pass.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
-    pass.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
-    pass.style.setProperty('--ry', `${((x - 0.5) * 10).toFixed(2)}deg`);
-    pass.style.setProperty('--rx', `${((0.5 - y) * 8).toFixed(2)}deg`);
-  });
-  pass.addEventListener('pointerleave', () => { pass.style.setProperty('--rx', '0deg'); pass.style.setProperty('--ry', '0deg'); });
-}

@@ -62,3 +62,4 @@ Made while you were away (2026-10-19). Each one is reversible; say "revert N" or
 - Figma still draws band rules edge-to-edge (DESIGN §7 updated, comps not).
 
 33. **Your part** in the made-of cards is a signature line: the DS underline field (§8.2) with a gray [Your name] placeholder and a blinking orange caret (approved 19 Oct).
+34. **Stage section ("We paid for the stage")**: two halves (DESIGN §6.1 chess rows, 80px gap). Left: a hairline figure, a followspot hanging from the sponsor's truss over the stage; the pointer steers the beam and the lit ring on the floor is the one orange line (your place). Right: header and the three facts stacked as ruled rows with their icons. Below 1000px: header, figure, facts. The black pass card and its holo foil are gone (approved concept, 19 Oct).
