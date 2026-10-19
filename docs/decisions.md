@@ -39,6 +39,15 @@ Made while you were away (2026-10-19). Each one is reversible; say "revert N" or
 
 26. **Smooth scroll for in-page links** (See what's inside, tabs) unless reduced motion.
 
+## Round 3 (your review of 19 Oct)
+
+27. **Hero = anatomy figure: the Standard as a modular rack.** Five practitioner modules sit in one case, patched together: rules are reference gauges (a dial), the skill reads the rule (input, sense knob, 4 band lamps with 2 of 4 lit, output), scenarios are wide modules with three inputs, a status window and trims. Slot 06 is empty: bus header waiting, orange rim, one orange cable from scenario 05 hanging into it. Hover lifts a module and names it in the caption line (verbatim list from the site); hovering the seat lowers a ghost module into it; clicking it (or Enter) writes to us. Idle tour cycles the modules. The old sheet stack stays only in the closing section.
+28. **Type colours** come from DESIGN §9.5 (Rule chart/6 blue, Skill chart/9 teal, Scenario chart/1 violet): badges, tinted board canvases, the level track, link pulses. Orange stays reserved for "your part".
+29. **One link system** for boards and the Build-with hub: curves fanning into the main block (desktop), L-lines on a left spine (mobile), drawn on reveal; a pulse runs each link once and again on hover.
+30. **Build with** follows the original layout: a stack of tool cards fanning into "Your scenario", then DemandSense.
+31. **Pass badge** gets a holographic foil (chart colours, colour-dodge) and a tilt that follow the pointer.
+32. Connector arrows and button arrows use the Figma `icon/arrow` (node 795:14942).
+
 ## Verified
 
 - Headless Chrome at 1512 / 1100 / 768 / 375 / 320: no horizontal overflow, no console errors.

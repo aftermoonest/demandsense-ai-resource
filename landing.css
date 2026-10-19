@@ -51,6 +51,7 @@ b { font-weight: 500; color: var(--text); }
 /* Section header: marker → 16 → headline → 24 → body (DESIGN §15) */
 .head { display: grid; gap: 16px; justify-items: start; align-content: start; }
 .head .body { max-width: 650px; }
+.head .headline + .body { margin-top: -8px; } /* headline → support line: 8px (DESIGN §3), grid gap stays 16 */
 
 /* ---------- Buttons (DESIGN §8.1) ---------- */
 .btn { display: inline-flex; align-items: center; gap: 16px; height: 40px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); font: 600 14px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; white-space: nowrap; cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out), filter var(--t-fast) var(--ease-out); }
@@ -482,7 +483,8 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 }
 
 /* For every level: one segmented track under the three parts, owner at one end, specialist at the other */
-.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 0; row-gap: 16px; padding-block: 40px 0; }
+.levels { position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 0; row-gap: 16px; padding: 64px calc(var(--margin) + 24px) 24px; }
+.levels::before { content: ''; position: absolute; z-index: -1; inset: 40px var(--margin) 0; border-radius: var(--radius-4); background: var(--bg-muted); }
 .levels > .over { grid-column: 1 / -1; }
 .lv-track { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
 .lv-track i { height: 6px; background: var(--tint); transform-origin: left; }
@@ -549,3 +551,30 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .kd.m { background: var(--neutral-0); color: var(--neutral-950); }
 .js .chain .link.rv.on.on.on.on, html.js .chain .link.rv.rv.rv.rv.rv { translate: -50% -50%; }
 @media (max-width: 999px) { .js .chain .link.rv.on.on.on.on, html.js .chain .link.rv.rv.rv.rv.rv { translate: none; } }
+
+/* Rule/Skill/Scenario: title, example and "your part" share rows across the three cards */
+@media (min-width: 1000px) {
+  .cells.chain > article { display: grid; grid-row: 1 / span 3; grid-template-rows: subgrid; row-gap: 16px; align-content: start; }
+  .cells.chain .ex { align-content: start; }
+  .cells.chain .yp { margin-top: 0; align-content: start; }
+}
+
+/* ---------- Hero: the Standard as a modular rack (anatomy figure, illustrations/rack) ----------
+   The kit's palette mapped to DS neutrals on black; its one lit accent is our orange. */
+.rack.iso { --anatomy-paper: var(--neutral-1000); --anatomy-face: var(--neutral-950); --anatomy-top: var(--neutral-900);
+  --anatomy-shade-0: var(--neutral-1000); --anatomy-shade-1: color-mix(in srgb, var(--neutral-900) 40%, var(--neutral-1000)); --anatomy-shade-2: color-mix(in srgb, var(--neutral-900) 70%, var(--neutral-1000)); --anatomy-shade-3: var(--neutral-900);
+  --anatomy-lit-top: var(--neutral-850); --anatomy-lit-shade: var(--neutral-900);
+  --anatomy-hi: var(--neutral-200); --anatomy-mid: var(--neutral-500); --anatomy-lo: var(--neutral-800); --anatomy-faint: var(--neutral-850); --anatomy-lit: var(--accent);
+  --anatomy-halo: var(--neutral-1000); --anatomy-dot: var(--neutral-300);
+  position: relative; display: grid; gap: 16px; margin: 0 -12% 0 -4%; background: none; }
+.rk { outline-offset: 8px; touch-action: pan-y; }
+.rk [data-module] .iso-solid > .iso-top { fill: var(--neutral-800); }
+.rk [data-module] .iso-solid > .iso-fill { fill: var(--neutral-900); }
+.rk-cable-body { fill: none; stroke: var(--neutral-1000); stroke-width: 3.4; stroke-linecap: round; }
+.rk-cable-core { stroke-width: 1.6 !important; stroke-linecap: round; }
+.rk [data-rim] { transition: stroke-width var(--t-fast) ease; }
+.rk [data-rim][data-on] { stroke-width: 1.8; }
+.rack-cap { display: flex; justify-content: space-between; gap: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.rack-cap .lbl { color: var(--text-2); } .rack-cap .rack-read { color: var(--text); text-align: right; }
+@media (max-width: 999px) { .rack { max-width: 640px; } }
+@media (max-width: 999px) { .rack.iso { margin: 0; } }
