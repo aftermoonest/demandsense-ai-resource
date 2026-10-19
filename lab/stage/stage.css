@@ -1,0 +1,23 @@
+/* Shared by the five stage variants: line classes, draw-in, spot layer. Geometry lives in each NN.html.
+   Strokes stay 1px on screen at any size: stage.js sets --sw = viewBox / rendered width (non-scaling-stroke would break pathLength dashes). */
+.stagefig { margin: 0; touch-action: pan-y; }
+.stagefig svg { display: block; width: 100%; height: auto; overflow: hidden; }
+.stagefig :where(path, ellipse, circle, rect, line) { fill: none; stroke: var(--neutral-800); stroke-width: var(--sw, 1); stroke-linejoin: miter; stroke-linecap: butt; }
+.stagefig .m { stroke: var(--neutral-300); }
+.stagefig .f { stroke: var(--neutral-100); }
+.stagefig .b { stroke: var(--primary-450); }
+.stagefig .p { fill: var(--neutral-0); }
+.stagefig .h { stroke-opacity: .45; }
+.stagefig .pf { fill: var(--neutral-0); stroke: none; }
+.stagefig .bk { fill: var(--neutral-800); stroke: none; }
+.stagefig .bf { fill: var(--primary-450); stroke: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .stagefig .d { stroke-dasharray: 1 2; stroke-dashoffset: 1; }
+  .js .stagefig.in .d { animation: stage-draw 620ms var(--ease-out) calc(var(--i, 0) * 40ms) both; }
+  .js .stagefig .spotg { opacity: 0; }
+  .js .stagefig.in .spotg { animation: stage-fade 520ms var(--ease-out) 900ms both; }
+}
+@keyframes stage-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes stage-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 699px) { .stagefig .fine { display: none; } }

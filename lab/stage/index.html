@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage lab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(../../design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; }
+@font-face { font-family: 'Geist Mono'; src: url(../../design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; }
+body { margin: 0; background: var(--neutral-0, #fff); color: var(--neutral-950, #0a0a0a); font: 500 15px/1.5 'Inter', sans-serif; }
+.wrap { max-width: 1304px; margin: 0 auto; padding: 64px 16px 160px; }
+h1 { font-size: 40px; letter-spacing: -.02em; margin: 0 0 8px; } h1 span { color: #737373; }
+.lbl { font: 600 12px/1.4 'Geist Mono', monospace; text-transform: uppercase; color: #737373; }
+nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 64px; }
+nav a { font: 600 12px 'Geist Mono', monospace; text-transform: uppercase; color: inherit; text-decoration: none; padding: 8px 12px; border: 1px solid #e5e5e5; border-radius: 6px; transition: border-color 120ms ease; }
+@media (hover: hover) { nav a:hover { border-color: #0a0a0a; } }
+article { border-top: 1px solid #e5e5e5; padding: 40px 0 96px; scroll-margin-top: 16px; }
+article header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 24px; }
+article h2 { font-size: 28px; letter-spacing: -.01em; margin: 0; }
+.frames { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; align-items: start; }
+.desk { aspect-ratio: 1512 / 900; position: relative; overflow: hidden; border-radius: 8px; background: #fff; border: 1px solid #e5e5e5; }
+.desk iframe { position: absolute; top: 0; left: 0; width: 1512px; height: 900px; border: 0; transform-origin: 0 0; }
+.phone { height: 560px; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid #e5e5e5; }
+.phone iframe { width: 390px; height: 840px; border: 0; transform: scale(.6667); transform-origin: 0 0; }
+.qa { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 32px; }
+.qa p { margin: 8px 0 0; max-width: 52ch; }
+.links { margin-top: 16px; } .links a { color: inherit; }
+@media (max-width: 899px) { .frames, .qa { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="lbl">DemandSense · Lab</p>
+  <h1>Stage illustration <span>— five 2D views of the same idea</span></h1>
+  <p class="lbl">Header and facts stay as on the live page. Only the figure changes.</p>
+  <nav id="nav"></nav>
+  <div id="list"></div>
+</div>
+<script>
+const ids = ['00', '01', '02', '03', '04', '05'];
+const list = document.getElementById('list'), nav = document.getElementById('nav');
+for (const id of ids) {
+  const file = id === '00' ? 'base' : id;
+  const el = document.createElement('article');
+  el.id = 'v' + id;
+  el.innerHTML = `<header><h2><span class="lbl">${id}</span> <span class="t">…</span></h2><a class="lbl" href="${file}.html" target="_blank">Open ↗</a></header>
+    <div class="frames"><div class="desk"><iframe loading="lazy" src="${file}.html" title="Variant ${id} desktop"></iframe></div>
+    <div class="phone"><iframe loading="lazy" src="${file}.html" title="Variant ${id} mobile"></iframe></div></div>
+    <div class="qa"><div><p class="lbl">What we show</p><p class="what"></p></div><div><p class="lbl">Why this form</p><p class="why"></p></div><div><p class="lbl">How it is built</p><p class="how"></p></div></div>`;
+  list.append(el);
+  const a = document.createElement('a'); a.href = '#v' + id; a.textContent = id; nav.append(a);
+  fetch(`${file}.json`).then(r => r.ok ? r.json() : null).then(b => {
+    b ??= id === '00' ? { title: 'Current isometric followspot', what: 'The followspot on a truss over a stage, isometric.', why: 'Reference for every variant: it reads small and has few details, and shows no audience.', how: 'Untouched (illustrations/followspot.js).' } : { title: 'Pending' };
+    el.querySelector('.t').textContent = b.title;
+    for (const k of ['what', 'why', 'how']) el.querySelector('.' + k).textContent = b[k] ?? '';
+    a.textContent = `${id} ${b.title}`;
+  });
+}
+const fit = () => document.querySelectorAll('.desk').forEach(d => d.firstElementChild.style.transform = `scale(${d.clientWidth / 1512})`);
+addEventListener('resize', fit); new ResizeObserver(fit).observe(document.body);
+</script>
+</body>
+</html>

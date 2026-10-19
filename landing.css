@@ -148,8 +148,6 @@ b { font-weight: 500; color: var(--text); }
 .split { display: grid; gap: 40px; }
 .bleed.b-end { border-top: 0; }
 .spot { margin: 0; }
-.spot [data-stage] { display: block; aspect-ratio: 5 / 4; }
-.spot [data-stage] > svg { width: 100%; height: 100%; }
 .facts { display: grid; }
 .facts li { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: center; column-gap: 32px; padding-block: 32px; border-top: 1px solid var(--line); }
 .facts .ico { width: 88px; height: 88px; }
