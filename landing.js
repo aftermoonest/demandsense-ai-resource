@@ -15,15 +15,13 @@ const ORDER = [
   ['.stack .sheet.back', '.stack .floor'],
   ['.stack .sheet.front'],
   ['.toc li'],
-  ['.cells > *', '.pass', '.versus > *', '.ways > *', '.hub .tools > div'],
-  ['.chain .link', '.levels > *', '.hub .wire:not(.hot)', '.hub .core'],
-  ['.hub .wire.hot', '.hub .dsc', '.hubcap', '.hubhelp'],
+  ['.cells > article', '.cells > .fact', '.pass', '.versus > *', '.ways > *', '.hub .tools > div'],
+  ['.chain .link', '.levels > *'],
   ['.board-head', '.ctx > .node'],
   ['.grp.in > .node'],
-  ['.flow > .wire:first-of-type'],
-  ['.flow > .node.main'],
-  ['.flow > .wire:last-of-type'],
-  ['.grp.out > .node', '.board-note'],
+  ['.flow > .links', '.hub > .links'],
+  ['.flow > .node.main', '.hub > .core'],
+  ['.grp.out > .node', '.hub > .dsc', '.board-note', '.hubcap', '.hubhelp'],
   ['.gets li', '.stagefig', '.notes > *', '.post > *', '.steps li'],
   ['.stop'],
 ];
@@ -72,9 +70,6 @@ if (tabs) {
     const y = tabs.getBoundingClientRect().bottom + 24;
     let i = 0;
     panels.forEach((p, k) => { if (p.getBoundingClientRect().top <= y) i = k; });
-    const p = panels[i].getBoundingClientRect();
-    const progress = Math.min(1, Math.max(0, (y - p.top) / Math.max(1, p.height - innerHeight / 2)));
-    tabs.style.setProperty('--progress', progress.toFixed(3));
     if (i === current) return;
     current = i;
     tabs.style.setProperty('--tab', i);
@@ -143,3 +138,78 @@ const countIO = new IntersectionObserver((entries) => {
   }
 }, { threshold: 0.8 });
 if (!reduced.matches) $$('[data-count]').forEach((el) => countIO.observe(el));
+
+// ---------- Links between blocks (boards and the stack hub) ----------
+// Measured from layout offsets (not getBoundingClientRect), so reveal transforms never skew them.
+// Side by side: curves fan into the main block and out of it. Stacked: L-shaped lines down a left spine.
+function pos(el, box) {
+  let x = 0, y = 0, n = el;
+  while (n && n !== box) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+  return { l: x, t: y, r: x + el.offsetWidth, b: y + el.offsetHeight, y: y + el.offsetHeight / 2 };
+}
+const tip = (x, y, dir) => dir === 'd' ? `M${x - 3.5} ${y - 6}L${x} ${y}L${x + 3.5} ${y - 6}Z` : `M${x - 6} ${y - 3.5}L${x} ${y}L${x - 6} ${y + 3.5}Z`;
+function drawLinks(box) {
+  const svg = box.querySelector(':scope > .links');
+  const main = box.querySelector(':scope > .node.main, :scope > .core');
+  if (!svg || !main) return;
+  const ins = $$(':scope > .grp.in > .node, :scope > .tools > div', box);
+  const outs = $$(':scope > .grp.out > .node, :scope > .dsc', box);
+  const m = pos(main, box), W = box.offsetWidth, H = box.offsetHeight;
+  const stacked = getComputedStyle(box).gridTemplateColumns.trim().split(/\s+/).length === 1;
+  const base = parseFloat(svg.style.getPropertyValue('--d')) || 0;
+  const links = [];
+  if (!stacked) {
+    const curve = (x1, y1, x2, y2) => { const dx = (x2 - x1) * 0.55; return `M${x1} ${y1}C${x1 + dx} ${y1} ${x2 - dx} ${y2} ${x2} ${y2}`; };
+    ins.forEach((e, i) => { const a = pos(e, box); links.push({ d: curve(a.r, a.y, m.l - 1, m.y), end: tip(m.l - 1, m.y, 'r'), delay: i * 50 }); });
+    outs.forEach((e, i) => { const a = pos(e, box); links.push({ d: curve(m.r, m.y, a.l - 1, a.y), end: tip(a.l - 1, a.y, 'r'), delay: 700 + i * 50, out: true }); });
+  } else {
+    const x = 12, r = 8;
+    ins.forEach((e, i) => { const a = pos(e, box); links.push({ d: `M${a.l} ${a.y}H${x + r}Q${x} ${a.y} ${x} ${a.y + r}V${m.t - 1}`, end: i === ins.length - 1 ? tip(x, m.t - 1, 'd') : '', delay: i * 50 }); });
+    outs.forEach((e, i) => { const a = pos(e, box); links.push({ d: `M${x} ${m.b}V${a.y - r}Q${x} ${a.y} ${x + r} ${a.y}H${a.l - 1}`, end: tip(a.l - 1, a.y, 'r'), delay: 700 + i * 50, out: true }); });
+  }
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = links.map((k) => `<path pathLength="1" style="--ld:${base + k.delay}ms" d="${k.d}"/>${k.end ? `<path class="tip" style="--ld:${base + k.delay}ms" d="${k.end}"/>` : ''}`).join('');
+  // pulses ride the same paths
+  $$(':scope > .pulse', box).forEach((p) => p.remove());
+  links.forEach((k) => {
+    const p = document.createElement('i');
+    p.className = 'pulse';
+    p.style.offsetPath = `path("${k.d}")`;
+    p.style.setProperty('--pd', `${k.out ? 900 : 0}ms`);
+    box.append(p);
+  });
+}
+function pulse(box) {
+  if (reduced.matches) return;
+  $$(':scope > .pulse', box).forEach((p) => { p.classList.remove('go'); void p.offsetWidth; p.classList.add('go'); });
+}
+const flows = $$('.flow, .hub');
+const redraw = () => flows.forEach(drawLinks);
+redraw();
+document.fonts?.ready.then(redraw);
+let rz = 0;
+addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(redraw); });
+flows.forEach((box) => {
+  const svg = box.querySelector(':scope > .links');
+  // the first pulse runs once the links have drawn; a hover replays it
+  new MutationObserver((_, mo) => {
+    if (!svg.classList.contains('on')) return;
+    mo.disconnect();
+    setTimeout(() => pulse(box), (parseFloat(svg.style.getPropertyValue('--d')) || 0) + 900);
+  }).observe(svg, { attributes: true, attributeFilter: ['class'] });
+  if (fine.matches) box.addEventListener('mouseenter', () => pulse(box));
+});
+
+// ---------- Contributor pass: holographic foil and tilt follow the pointer ----------
+const pass = document.querySelector('.pass');
+if (pass && fine.matches) {
+  pass.addEventListener('pointermove', (e) => {
+    if (reduced.matches) return;
+    const r = pass.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    pass.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
+    pass.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
+    pass.style.setProperty('--ry', `${((x - 0.5) * 10).toFixed(2)}deg`);
+    pass.style.setProperty('--rx', `${((0.5 - y) * 8).toFixed(2)}deg`);
+  });
+  pass.addEventListener('pointerleave', () => { pass.style.setProperty('--rx', '0deg'); pass.style.setProperty('--ry', '0deg'); });
+}
