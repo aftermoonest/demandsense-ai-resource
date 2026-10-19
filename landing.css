@@ -206,7 +206,7 @@ b { font-weight: 500; color: var(--text); }
 .grp.in > .node::after { left: 100%; } .grp.out > .node::after { right: 100%; }
 .wire { height: 1px; background: var(--neutral-300); position: relative; }
 .wire::before { content: ''; position: absolute; left: -2px; top: -2px; width: 5px; height: 5px; border-radius: 50%; background: var(--neutral-300); }
-.wire::after { content: ''; position: absolute; right: 0; top: -3px; border: 3.5px solid transparent; border-right: 0; border-left: 6px solid var(--neutral-300); }
+.wire::after { content: ''; position: absolute; right: 0; top: -3px; width: 6px; height: 7px; background: var(--neutral-300); clip-path: polygon(0 0, 100% 50%, 0 100%); }
 .node { position: relative; display: grid; gap: 4px; padding: 12px 16px; border-radius: var(--radius-4); background: var(--neutral-0); box-shadow: inset 0 0 0 1px var(--line-card); font-size: 14px; letter-spacing: -.03em; }
 .node .lbl { color: var(--text-body); }
 .node.you .lbl::before, .node.you .lbl-1::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--accent); vertical-align: 1px; }
@@ -240,8 +240,8 @@ b { font-weight: 500; color: var(--text); }
 .tools span, .core span { color: var(--text-2); font-size: 14px; }
 .core { display: grid; gap: 8px; padding: 24px; border-radius: var(--radius-4); box-shadow: inset 0 0 0 1px var(--line); }
 .core .lbl, .dsc .lbl { color: var(--text-2); }
-.hub .wire { background: var(--line); } .hub .wire::after { border-left-color: var(--line); }
-.hub .wire.hot { background: var(--text-2); } .hub .wire.hot::after { border-left-color: var(--text-2); }
+.hub .wire { background: var(--line); } .hub .wire::after { background: var(--line); }
+.hub .wire.hot { background: var(--text-2); } .hub .wire.hot::after { background: var(--text-2); }
 .dsc { display: grid; gap: 16px; padding: 24px; border-radius: var(--radius-4); background: var(--neutral-900); }
 .dsc-head { display: flex; align-items: center; gap: 12px; }
 .dsc .t-p2 { color: var(--text-2); }
