@@ -44,7 +44,7 @@ function prepare(section) {
 
 // Units build independently: tall blocks (boards, cell bands, lists) when they arrive themselves,
 // the rest of a section with its header. Inner units claim their elements first.
-const units = [...$$('.board, .bleed, .lv-bar, .contrib, .rail, .hub, .versus, .ways'), ...$$('.hero, .sec')];
+const units = [...$$('.board, div.bleed, .lv-bar, .contrib, .rail, .hub, .versus, .ways'), ...$$('.hero, .sec')];
 units.forEach(prepare);
 root.classList.add('js');
 
@@ -215,8 +215,10 @@ flows.forEach((box) => {
 const bar = document.querySelector('.sitebar');
 if (bar) {
   const darks = $$('.surface-black').filter((el) => el.matches('header, section'));
+  const hero = document.querySelector('header.hero');
   const theme = () => {
     const y = bar.offsetHeight / 2;
+    bar.classList.toggle('on', hero.getBoundingClientRect().bottom <= bar.offsetHeight);
     bar.dataset.theme = darks.some((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom > y; }) ? 'dark' : 'light';
   };
   addEventListener('scroll', theme, { passive: true });
