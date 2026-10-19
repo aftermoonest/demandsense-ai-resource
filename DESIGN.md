@@ -22,7 +22,7 @@ Single source of truth for the AI Resource landing page and anything built in th
 | Landing demo (sample reports) | `788:45613` | Report main column + dividers | `516:88441` |
 | Landing feature chess rows | `788:45632` | Report grid (sidebar, edge lines) | `516:90727` |
 | Landing testimonials | `788:45675` | Report summary / after | `516:91221`, `516:91351` |
-| Landing CTA | `788:45687` | Mobile blockers (375) | `801:15362`, `803:16313` |
+| Landing CTA | `788:45687` | Mobile "progress" (375, renamed from blockers; `803:16313` unreadable via MCP) | `801:15362`, `803:16313` |
 | Landing features | `788:46638` | Colors (brand / custom palette) | `103:1084`, `103:1364` |
 | Landing numbers | `788:46683` | Dividers (vertical / horizontal) | `206:53015`, `346:57229` |
 | Landing FAQ | `788:46697` | Section header | `247:66581` |
@@ -83,7 +83,7 @@ The headline is one continuous text block with two color spans. Same size, same 
 
 ### 4.1 Primitives (Figma `Colors` collection, all 66 variables)
 
-**Neutral**: 0 `#ffffff` · 25 `#f8f8f9` · 50 `#f0f1f2` · 75 `#e9eaec` · 100 `#e2e3e6` · 200 `#c6c8cc` · 300 `#aaadb3` · 500 `#767980` · 800 `#2d2f33` · 850 `#212326` · 900 `#161719` · 950 `#0b0c0d` · 1000 `#000000`. Alpha: `0-10` `#ffffff1a`, `1000-10` `#0000001a`.
+**Neutral**: 0 `#ffffff` · 25 `#f8f8f9` · 50 `#f0f1f2` · 75 `#e9eaec` · 100 `#e2e3e6` · 200 `#c6c8cc` · 300 `#aaadb3` · 500 `#767980` · 800 `#2d2f33` · 850 `#212326` · 900 `#161719` · 950 `#0b0c0d` · 1000 `#000000`. Alpha: `0-10` `#ffffff1a`, `1000-10` `#0000001a`. Transparent stops for fade gradients: `25-0` `#f8f8f900`, `800-0` `#2d2f3300`, `1000-0` `#00000000` (in the Figma file, not in the earlier 66-variable count).
 
 **Primary (blue)**: 200 `#a4bcff` · 300 `#7ba0ff` · 450 `#3875f6` · 850 `#001a4c` · 900 `#00113a` · side `#78d7ff`.
 
@@ -115,7 +115,7 @@ The extended Figma palette (4 ramps and the 20×20 hue grid, Figma `colors/custo
 
 ### 4.3 Interaction
 
-From Figma `neutral/interaction/*`: hovered solid fills step one notch toward contrast (0 → 200, 950 → 800, 50 → 200, 100 → 300); pressed fills go to `neutral/500`. Alpha fills: hover `#0000001a → #00000040`, pressed `#00000066` (white equivalents `#ffffff40` / `#ffffff59`). Inputs and FAQ rows hover by darkening their bottom line to `neutral/950`.
+From Figma `neutral/interaction/*`: hovered solid fills step one notch toward contrast (0 → 200, 950 → 800, 50 → 200, 100 → 300); pressed fills go to `neutral/500`. `interaction/1000` (loading tab) matches 950: hovered `#2d2f33`, pressed `#767980`. Hover and pressed are now real Figma variants (`state` axis, §8.1–8.4), not only variables. Alpha fills: hover `#0000001a → #00000040`, pressed `#00000066` (white equivalents `#ffffff40` / `#ffffff59`). Inputs and FAQ rows hover by darkening their bottom line to `neutral/950`.
 
 ### 4.4 Color in data
 
@@ -175,6 +175,8 @@ Fonts: **Inter** (Medium 500 everywhere; SemiBold 600 only for side tabs and bra
 | label/l0 | Geist Mono 600 | 14 / 1.4 / 0, uppercase | Buttons default |
 | label/l1 | Geist Mono 600 | 12 / 1.4 / 0, uppercase | Section marker, tabs, chips, small buttons, metric captions |
 | label/l2 | Geist Mono 600 | 10 / 1.4 / 0, uppercase | Field labels, legal, micro meta |
+
+`display` (48) and `quote` (28/1.4) are not local Figma styles (raw text on the landing hero and testimonial); the other 17 are. In the report main column (`516:88441`) a `headline/h6` binding resolves to 16/1.4 instead of 20/1.2: treat as an override, h6 stays 20.
 
 Rules: tracking is negative for Inter, zero for mono. Mono is always uppercase. Numbers always `tabular-nums`. Use `text-wrap: balance` on headlines. Never bold Inter for emphasis: emphasis is color (tone 1 vs tone 2).
 
@@ -295,7 +297,12 @@ Spacing scale (4px base): 2 · 4 · 6 · 8 · 12 · 16 · 24 · 32 · 40 · 64 �
 | lg | 1000–1511 | 12 | 40 | 64 | 104 (fluid columns) |
 | xl | ≥ 1512 | 12 | 64 outside the grid | 64 | grid stays 1304, centered |
 
-Tokens: `--edge`, `--edge-inset`, `--margin` (= edge + inset), `--content-max` (1304).
+Tokens: `--edge`, `--edge-inset`, `--margin` (= edge + inset), `--content-max` (1304), `--bleed` (§8.14).
+
+The report build has two extra cut points, both in component CSS, not tokens:
+- **1000–1350**: wide rows that bleed to the edge (ad library, wide tables) get `width: calc(100% + 80px)`, `margin: 0 -40px`, `padding-left: 40px`, and the divider line starts at `left: 0`. Content width is too tight for the full 64 inset there.
+- **700 vs 699**: the share popup collapses at `max-width: 700px`, everything else at 699. Use 699.
+- **Touch** (`hover: none`, `pointer: coarse`): chart keys get `cursor: pointer`; tooltips open on tap (§10).
 
 ---
 
@@ -332,7 +339,7 @@ All measurements from Figma. `pad` is top/right/bottom/left.
 
 ### 8.1 Button
 
-Axes: `type` filled · outlined · blur · ghost; `class` text-only · leading-icon · trailing-icon · icon-only; `size` default · small · xs; `surface` on-white · on-black.
+Axes: `type` filled · outlined · blur · ghost; `class` text-only · leading-icon · trailing-icon · icon-only; `size` default · small · xs; `surface` on-white · on-black; `state` enabled · hovered · pressed (Figma `355:23069`, e.g. hovered `863:23461`; no disabled or focus variant).
 
 | Size | Height | Padding | Gap | Label | Icon |
 |---|---|---|---|---|---|
@@ -351,24 +358,27 @@ Axes: `type` filled · outlined · blur · ghost; `class` text-only · leading-i
 - **Conversion button** (landing form): `primary/450`, full width, pad 16 / 24 / 16 / 28, label l0 + a row of 10px mono check items (FREE · NO CREDIT CARD · …) at 60% luminosity beneath, 28px arrow on the right.
 - **Carousel arrows**: icon-only pair; previous = outlined, next = filled.
 - States: hover per §4.3 (report build uses `filter: brightness(.94)`); pressed `neutral/500`; focus ring 2px `secondary/300`, offset 4px.
+- Figma state fills: filled hover = interaction/950 `#2d2f33` (on black: interaction/0 `#c6c8cc`), pressed `#767980`; outlined keeps its 1px stroke and takes the same fills; ghost hover `#c6c8cc`; blur hover `#00000040`.
 - Missing in Figma: disabled and loading. Use 40% opacity + `cursor: not-allowed`; loading swaps the icon for a 16px spinner, label stays.
 
 ### 8.2 Text field
 
 - Underline field, no box. Height 48 (default) / 53 (large). Bottom border 1px `neutral/1000-10` (on black `neutral/800`); hover and focus: `neutral/950` (on black white). Padding bottom 8, inner gap 4.
 - Label above value: label/l2 10px, `neutral/800` (on black `neutral/500`).
-- Value: p1 16px `neutral/950`; large uses 18px. Placeholder `neutral/500`.
+- Placeholder (empty field) is p2 14px `neutral/500`; the typed value is p1 16px `neutral/950`; large uses 18px. Axes: `state` enabled · hovered · pressed, `is-filled`, `size`, `surface` (`408:46777`). Hovered: underline and placeholder go `neutral/950`. Pressed = focus: underline `neutral/950` plus a 1×20 caret `neutral/950`.
 - Fields stack 24px apart inside a form card.
 - Missing in Figma: error and success. Error: underline and helper text `danger/550`, helper l2 under the line, 4px gap. Success: `success/450`.
 
 ### 8.3 Toggle
 
-Switch 40×20, radius 1000. Off track `neutral/100`, on track `neutral/950`, knob 24×16 white (pill knob, not a circle). Labeled toggle: l1 label + switch, pad 8, gap 8, height 36.
+Switch 40×20, radius 1000. Off track `neutral/100`, on track `neutral/950`, knob 24×16 white (pill knob, not a circle). Labeled toggle: l1 label + switch, pad 8, gap 8, height 36. States (`319:43441`, `319:43447`): hovered/pressed fill follows §4.3 (on = 950 → `#2d2f33` → `#767980`; labeled row hovered `#aaadb3`).
 
 ### 8.4 Tabs
 
 - **Pill tab** (`tab`): 36 high, pad 9.5 / 16, gap 16, radius 100. Index number + label in l1. Active: `neutral/950` fill, number `neutral/300`, label white. Inactive: `neutral/50` fill, number `neutral/500`, label `neutral/950`. `is-progress` adds an angular-gradient 2px ring that fills over time (auto-advancing tabs).
 - **Compact tab** (`tab` 220×32): 28px square index badge (radius 1, active black with icon, inactive white with mono number) + l1 label.
+- **Loading tab** (`tab` 68×36, `387:94095`): black pill, pad 6 / 16, gap 8, 24px loader (`primary/300` bars) + l1 label in white. `Variant2` = label only (pad 9.5, 45% opacity, 36×36 without text). Hover `#2d2f33`, pressed `#767980`. Shown while a report is generating.
+- **States**: pill, compact, side and loading tabs all have `state` enabled · hovered · pressed. Inactive pill hover `#c6c8cc` (label stays 950, index 500); compact hover `#c6c8cc`, pressed `#767980`; side tab hover `#c6c8cc` with its 1px `neutral/75` border.
 - **Side tab** (`tab/side`): 40 high, pad 12, gap 6, radius 8, 16px icon + Inter SemiBold 14. Active: white fill + 1px `neutral/75`; inactive: no fill, `neutral/500`. Report sidebar navigation.
 
 ### 8.5 Chips and markers
@@ -379,9 +389,9 @@ Switch 40×20, radius 1000. Off track `neutral/100`, on track `neutral/950`, kno
 | Outline chip | pad 4/8, radius 6, 1px `neutral/100` (black: `neutral/850`), Inter 14 | Filters, tags in text |
 | Filled chip | pad 4/8, radius 2, `neutral/50` (black: `neutral/800`), p2 | Visual motifs, inline values ("+15%") |
 | Status chip | pad 4/8, radius 2, l1 white on danger/550 · secondary/400 · success/450 | Severity |
-| Tone chip | 28 high, radius 2, `neutral/50`, pair labels split by "/" | Tone scales |
+| Tone chip | 28 high, radius 2, fill `#f0f1f2` (hardcoded, same as `neutral/50`), pad 6 / 5.5, p3-size Inter 12 labels each with a count pill (white, radius 100, pad 8 / 2, l1), "/" in `neutral/300` | Tone scales |
 | Logo chip | white pill, 1px `neutral/75`, pad 6.5/12/6.5/15, logo + l1 | Hero eyebrow ("LinkedIn · FREE LINKEDIN COMPETITOR ANALYSIS") |
-| Tooltip | white, radius 2, pad 4/8, p2 black, 8×4 caret | Chip hover |
+| Tooltip | white, radius 2, pad 4/8, p2 black, 8×4 caret, 4 above the chip (`709:30557`; status chips have `state=hovered` showing it, `709:30567`) | Chip hover |
 
 ### 8.6 Cards
 
@@ -390,11 +400,12 @@ All cards: radius 4 (dark card radius 2), no shadow.
 - **card/ad**: 362 wide, white, 1px `neutral/75`. Header row pad 16 (40px avatar + name/meta), media 16:9 with top/bottom line, body pad 24 with h6-ish text.
 - **Sample report card** (landing demo): 467 wide cell with left/right lines, image 260 high, body: logo + market chip, h5-sized question (24/1.2), three `n3` stats with l1 captions.
 - **Content card** (`card` 359): white, pad 40, gap 24: marker → h5 title + p2 body (gap 4) → outlined button.
+- **Article card** (`card` 350, `608:19428`): no fill or border; 16:9 image radius 4, gap 24, chip (16px icon + l1) → 12 → h6 20 title → 4 → p2 `neutral/800` body (ellipsis).
 - **Dark card** (`card` 300×250): `neutral/900`, radius 2, pad 24, gap 80; label l1 `neutral/500` at the bottom. Report "power moves" on black (emoji/icon, h6 title, p2 body, l1 index).
 - **card/faq**: row pad 0 / 32, inner pad 24 / 0, bottom line `neutral/100`; hover: line `neutral/950`; open: `neutral/50` fill, radius 4, no line, answer p2 `neutral/800`. Plus/minus icon 20px right.
 - **card/feature** (accordion list): row pad 16, gap 16, bottom line. Collapsed: 28px mono index `neutral/500` + h6 label. Active: `neutral/50` fill, radius 4, index badge becomes black square with check, body + small filled button revealed. `is-last` drops the line.
 - **card/insight**: outer pad 4, radius 4, fill `brand/*-10` (on black `-25`). Header pad 6 / 12: l2 "Insight from" + brand + l2 id at 50%. Inner panel radius 2, white (on black `neutral/1000`), pad 12: h6 title + p2 body. Hypothesis variant: black outer, `neutral/850` inner.
-- **Testimonial card**: 708 cell with left/right lines, pad 40, gap 40: logo, quote (28/1.4, gray with black highlights), 120px photo (radius 2, 1px `neutral/75`) + name p0 + role l1 + G2 rating.
+- **Testimonial card**: 708 cell with left/right lines, pad 40, gap 40: logo, quote (28/1.4, gray with black highlights), 120px photo (radius 4, 1px `neutral/100`) + name h6 20 + role l0 14 `neutral/500` + G2 rating (l0 black, 16px stars); side lines `neutral/100`; quote highlight `#0b0c0d` (hardcoded).
 - **Form card** (hero/CTA): white, radius 4, pad 40, gap 80 between fields block and submit block. Title h4 two-tone, support p1 `neutral/800`.
 
 ### 8.7 Data components
@@ -437,8 +448,8 @@ Dot grids fill empty structural space: the report sidebar below the navigation, 
 
 | Tile | Dot | Background | Used for | CSS |
 |---|---|---|---|---|
-| Sidebar (`206:54238`) | 8px `neutral/950` at 25% | white | Report sidebar, 220 × 430 under the nav | `.pattern` |
-| Overview (`270:96477`) | 8px `neutral/900` | transparent, on black | Black overview panel, 1170 × 763, 5% fade on all four edges | `.pattern-on-black .pattern-fade` |
+| Sidebar (`206:54238`, id gone from the file) | 8px `neutral/950` at 25% | white | Report sidebar, 220 × 430 under the nav | `.pattern` |
+| Overview (`270:96477`, id gone from the file) | 8px `neutral/900` | transparent, on black | Black overview panel, 1170 × 763, 5% fade on all four edges | `.pattern-on-black .pattern-fade` |
 | `358:36667` | 8px `neutral/900` | transparent | Dark texture on white | `.pattern` + `--dot: var(--neutral-900)` |
 | `358:36669` | 8px `neutral/0` | transparent | Light dots on black or color | `--dot: var(--neutral-0)` |
 | `358:36671` | 16px `neutral/50` | transparent | Coarse, quiet texture | `.pattern-lg` |
@@ -475,6 +486,27 @@ Settings (`wave/settings.json`, from the Wave Lab inspector):
 | Composition | Same as the live report: position (380, −301.7, −11.1) · rotation (−0.4496, −0.1176, 1.8744) · scale (9, 8, 5) · zoom 1 · time offset 17.5 |
 
 To change the wave: export settings JSON from Wave Lab, replace `wave/settings.json`, run `npm install && npm run build` in `design-system/wave/`.
+
+### 8.13 Feedback and overlays *(from the live report; no Figma comp yet)*
+
+| Piece | Spec |
+|---|---|
+| **Toast** (`.toast`) | Fixed, centered, 24 from bottom. `neutral/950`, white p2 14px, pad 12 / 20, radius 4. Enters with 16px rise + fade, 200ms `ease-out`. Silent confirmations only ("Link copied"). |
+| **Skip link** (`.skip-link`) | Fixed at left 16, parked at top −80, slides to top 16 on `:focus`. White, pad 12 / 20, radius 4, layer `--z-skip`. First focusable element. |
+| **Dialog content** | Column, gap 16. Title 28px, tracking −5%. Media `max-height: 65vh`, `object-fit: contain`. Links in mono 14. Close: 28px glyph at top 8 / right 16 (share popup: `neutral/50` pill). Backdrop and shadow: §12, `--shadow-dialog`. |
+| **Share popup** | Two columns (art + form); under 700px one column, art hidden, `max-height: 90vh`, submit 32 below the fields. |
+| **Full-screen overlay** | Fixed `inset: 0`, `--z-overlay`; inner scroller uses `overscroll-behavior: contain`. Close = 36px blur pill (`neutral/1000-10` + blur 24) at 24 / 24. |
+| **Stepper** (`.step`) | Auto-advancing steps. Badge 28 square, radius 1, mono 14 index (`neutral/500`); active badge turns black and swaps the index for an icon. Under the step a 2px `neutral/950` bar fills `width 0 → 100%` in 5s linear (`step-fill`); pauses when off-screen. State is `aria-pressed`. `steps-static` (reduced motion / print) shows every description, hides the bar. |
+| **Pinned avatar halo** | Chart avatar on click: `--shadow-halo` (two grey rings, 4 and 8). Rings, not blur. |
+
+Layers: `--z-raised` 1 · `--z-sticky` 10 · `--z-overlay` 50 · `--z-tip` 60 · `--z-skip` 100. Nothing else; no `9999`.
+
+### 8.14 Scroll, bleed, print
+
+- **Rails**: `scroll-snap-type: x mandatory`, children `scroll-snap-align: start`, scrollbar hidden (`.scroll-snap-x`). Arrows and keys still step one card.
+- **Overlay scrollers**: `overscroll-behavior: contain` (`.scroll-contain`).
+- **Bleed** (`--bleed`): `edge + max(0, (100vw − 1512) / 2)`. Used with negative margins to push a band (ad rows, wide tables) from the main column to the viewport edge on any screen width.
+- **Print** (report is printed): hide nav, skip link, toast, dialogs and `[data-action]`; kill transitions and show every reveal in its end state (`opacity: 1; transform: none`, including charts); force colors with `print-color-adjust: exact`; the report scales to `zoom: .65` at 1172 wide; dividers do not break pages (`break-after: avoid`).
 
 ---
 
@@ -573,6 +605,8 @@ Shipped patterns to reuse:
 - Count-up numbers with tabular figures.
 - Build-ins start when the block enters the viewport, run once.
 
+Reveal on view (`.motion-ready` gate, so no-JS shows everything): list items rise 8px + fade 300ms, stagger `--stagger-row` 30ms; chart bars `--stagger-bar` 40ms; pinned avatars `scale(.7 → 1)` + fade, stagger `--stagger-pin` 80ms, then drop to `--t-fast` once built. Keyframes: `view-in` (opacity), `bar-refill` (was `lvl-refill`: `scaleX(.2 → 1)` + fade), `step-fill` (2px progress, the one place `width` animates). Toast: §8.13.
+
 Rules: animate `transform` and `opacity` only; name the properties (no `transition: all`); hover effects only inside `@media (hover: hover) and (pointer: fine)`; `prefers-reduced-motion: reduce` removes travel and scale, keeps opacity and timing. Accordions animate `grid-template-rows` 0fr → 1fr, not height.
 
 ---
@@ -602,7 +636,8 @@ Do
 Don't
 - Add a body paragraph under a section headline.
 - Use shadows, gradients, or glows on cards (gradient panels behind product shots are the only gradient).
-- Round anything except: buttons/tabs/pills (100), cards (4), chips (2/6), side tab and dialog (8).
+- Round anything except: buttons/tabs/pills (100), cards (4), chips (2/6), side tab and dialog (8), avatars and ring/gauge dots (circle, `50%`).
+- Use `z-index` outside the layer scale (§8.13).
 - Use Inter bold or any weight other than 500 (600 only for side tabs and brand names).
 - Introduce colors outside the token list.
 - Carry over the current site's navy glass, glowing orbs, or 3D tilted sheets.
@@ -611,7 +646,23 @@ Don't
 
 ## 14. Open questions
 
+0. Figma re-check (see also `side-session-notes`): no disabled or focus variants exist anywhere; `pressed` stands in for focus on the text field. Report has a second CTA frame (`694:72683`) and a landing-style `after` block (`516:91351`: what-next, demo, features, numbers, faq, cta) not described here.
+
 1. No mobile landing comps exist. §6.3–6.4 numbers come from the shipped report and the 375 blocker frames; design one mobile landing in Figma to lock them.
 2. Disabled, loading, and error states are not in Figma (§8.1, §8.2 give defaults).
 3. Five Figma components miss AA contrast (§4.5 table). Darken or accept.
 4. Site header/footer belong to the demandsense.com system. Confirm the resource page embeds them unchanged.
+5. §8.13–8.14 (toast, skip link, dialog, stepper, halo, print, 1000–1350 bleed) come from the live report, not Figma. Add comps or confirm.
+6. Live report is not an exact match for tokens: it uses short names (`--n950`, `--orange`) and `neutral/200` as `#e9eaec` (our `neutral/75`). Our names follow Figma; do not copy its CSS vars.
+
+---
+
+## 15. AI Resource landing: approved deviations (2026-10-19)
+
+Agreed with Oleksii for the landing rebuild (spec: `docs/superpowers/specs/2026-10-19-landing-rebuild-design.md`). They override §2, §3, §8.1 and §8.12 on the landing only.
+
+- **Surfaces.** Besides hero and CTA, the key-promise section ("What you build with") is black. White sections may hold **dark cards** (`.surface-black`, radius 4, no shadow): "The Standard" card and the two "Two ways in" cards.
+- **Headline + body.** Section headers may carry one body paragraph: marker → 16 → two-tone headline → 24 → p1 `neutral/800`, max 650. Temporary: the Vercel copy has long leads; revisit later.
+- **Primary CTA on dark.** Blue filled `primary/450`, white label, not darkened (label contrast 4.16, below AA for 14px; accepted).
+- **Wave in cards.** Every dark card hosts its own live `[data-wave]` with `frame {x:0,w:1}`. Skill card = fine/thin texture, Scenario card = heavy texture (tuned via `fibers` and scale overrides). The black key section has no wave.
+- **Sticky tabs.** Rule / Skill / Scenario explainers share one sticky pill-tab bar that follows scroll on every breakpoint; tabs also jump to their panel.
