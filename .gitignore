@@ -24,3 +24,5 @@ build/
 illustrations/hairline-*-look.png
 illustrations/hairline-*-blind.png
 illustrations/hairline-*-motion.png
+.vercel
+.env*
