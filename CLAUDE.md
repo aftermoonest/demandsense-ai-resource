@@ -39,12 +39,13 @@ Security note: `hallmark` and `hairline` scored "Med Risk" (`anatomy`: Low Risk)
 
 ### Illustrations (hairline)
 
-Chosen illustration skill for the landing: **hairline**. Reasons: monochrome line style fits the report language (lines over fills, no shadows), colors come from theme variables so they map to our tokens (neutral 950, orange `#fa8c16` as the single accent), and it ships as an npm component (`@lucasmarkes/hairline`) as well as standalone HTML.
+Chosen illustration skill for the landing: **hairline**. Reasons: monochrome line style fits the report language (lines over fills, no shadows), colors come from theme variables so they map to our tokens (neutral 950, primary blue `--primary-450` as the single accent; `--primary-300` on black), and it ships as an npm component (`@lucasmarkes/hairline`) as well as standalone HTML.
 
 - `/hairline-create <idea>`: new figure. It offers 2-3 concepts first; pick one, don't skip. Output is one self-contained `hairline-<name>.html`. Run it from a scratch folder (e.g. `illustrations/`), not the repo root.
 - `/hairline-adopt <file.svg>`: rebuild an existing SVG (icon, logo, stage plan) as a figure. Use this for the top-view stage illustration.
 - Rules: one figure = one idea; a concept that needs a label is not a concept. Never edit `kernel.js` or `bench.html`. Do not hand over a figure the validator (`validate.mjs`) rejects. `look.mjs` needs a browser (installs `playwright-core` once).
-- Map the hairline theme variables (plate, highlight, edge, mid/low tone, stroke width) to DS tokens; one accent colour only, on the live part. No text drawn inside the figure.
+- Map the hairline theme variables (plate, highlight, edge, mid/low tone, stroke width) to DS tokens; one accent colour only, on the live part: primary blue (`--primary-450`, `--primary-300` on black), never orange (orange stays for "your part" in UI). No text drawn inside the figure.
+- Edgy, not soft: every illustration (figures, icons, anatomy) uses tight corners, radius about 0.5–1.2 world units; cylinders and discs stay round. Rich in real detail (lattice, fins, rails, fixtures) rather than plain blocks.
 - Embedding: prefer the npm component (`npm i @lucasmarkes/hairline`) over iframing the HTML. Respect `prefers-reduced-motion` (no auto tour), and give each figure a static fallback.
 - Use sparingly: big figures only in the 2-3 slots the brief names (stage in spotlight/benefits, optional hero graphic). Small icons stay simple line icons, not interactive figures.
 - `iso-glow` is global in `~/.claude/skills` (dark glow aesthetic); don't use it here unless asked.
@@ -55,7 +56,7 @@ Installed, but off-style by default: it draws solid, four-tone-shaded isometric 
 
 - Invoke: `/anatomy <one-line idea>`. Needs Node 20.10+ and Chrome/Chromium for its checks. Closest example first: `.agents/skills/anatomy/examples/` (`dial-indicator` smallest; `test-rig` is the quality bar). `node examples/<name>/build.mjs --light` for the light theme.
 - Principle: the object is the explanation. Invent one real physical thing whose working is the concept; avoid labelled boxes and arrows. One camera angle, one accent on the part to watch, no text inside the drawing (labels sit outside).
-- Constraints for this project: light theme on white sections, dark on dark sections; accent = `#fa8c16` only; skip WebGL shaders and 3D mode (weight, reduced-motion); no PDF print or gallery publish. Keep a static SVG fallback and honour `prefers-reduced-motion`.
+- Constraints for this project: light theme on white sections, dark on dark sections; accent = primary blue only (`--primary-300` on black, `--primary-450` on white); tight corners; skip WebGL shaders and 3D mode (weight, reduced-motion); no PDF print or gallery publish. Keep a static SVG fallback and honour `prefers-reduced-motion`.
 - Candidate slots: "Rule/Skill/Scenario" explainers (a rule as a gauge, a skill as a machine with role inputs, a scenario as an assembly). Do not put two different illustration styles in the same section.
 
 ### UI/UX & Animation Guidelines (CRITICAL)

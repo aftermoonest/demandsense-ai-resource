@@ -143,23 +143,24 @@ b { font-weight: 500; color: var(--text); }
 }
 
 /* ---------- The stage is paid for: the followspot left, the header and three facts right ---------- */
-/* Halves 612 with an 80px gap (DESIGN §6.1 chess rows); the figure spans both rows of the right column */
+/* Halves 612 with an 80px gap (DESIGN §6.1 chess rows); the figure spans both rows of the right column and
+   stands on the band line that closes the last fact */
 .split { display: grid; gap: 40px; }
+.bleed.b-end { border-top: 0; }
 .spot { margin: 0; }
 .spot [data-stage] { display: block; aspect-ratio: 5 / 4; }
 .spot [data-stage] > svg { width: 100%; height: 100%; }
 .facts { display: grid; }
-.facts li { display: grid; grid-template-columns: 72px minmax(0, 1fr); column-gap: 24px; padding-block: 24px; border-top: 1px solid var(--line); }
-.facts li:last-child { border-bottom: 1px solid var(--line); }
-.facts .ico { width: 72px; height: 72px; margin-top: -8px; }
+.facts li { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: center; column-gap: 32px; padding-block: 32px; border-top: 1px solid var(--line); }
+.facts .ico { width: 88px; height: 88px; }
 .facts .t-p2 { margin-top: 8px; max-width: 42ch; }
 @media (min-width: 1000px) {
   .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 80px; row-gap: 0; }
-  .spot { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+  .spot { grid-column: 1; grid-row: 1 / span 2; align-self: end; }
   .split > .head, .facts { grid-column: 2; }
-  .facts { margin-top: 48px; align-self: start; }
+  .facts { margin-top: 48px; align-self: end; }
 }
-@media (max-width: 699px) { .facts li { grid-template-columns: 56px minmax(0, 1fr); column-gap: 16px; } .facts .ico { width: 56px; height: 56px; } }
+@media (max-width: 699px) { .facts li { grid-template-columns: 64px minmax(0, 1fr); column-gap: 20px; padding-block: 24px; } .facts .ico { width: 64px; height: 64px; } }
 
 /* ---------- Made of: rule → skill → scenario ---------- */
 .chain { position: relative; }
@@ -307,8 +308,8 @@ b { font-weight: 500; color: var(--text); }
 /* ---------- Hairline figures and icons (illustrations/) ----------
    The kernel's palette mapped to DS tokens: plate = surface, edge = ink, one accent = orange.
    .hl repeats the kernel's drawing rules for static SVGs (icons, fallbacks) that render before or without JS. */
-[data-hairline], .hl { --hairline-plate: var(--neutral-0); --hairline-hi: var(--accent); --hairline-edge: var(--neutral-800); --hairline-mid: var(--neutral-300); --hairline-lo: var(--neutral-100); --hairline-stroke: 1; }
-.surface-black [data-hairline], .surface-black .hl { --hairline-plate: var(--neutral-1000); --hairline-edge: var(--neutral-300); --hairline-mid: var(--neutral-500); --hairline-lo: var(--neutral-800); }
+[data-hairline], .hl { --hairline-plate: var(--neutral-0); --hairline-hi: var(--primary-450); --hairline-edge: var(--neutral-800); --hairline-mid: var(--neutral-300); --hairline-lo: var(--neutral-100); --hairline-stroke: 1; }
+.surface-black [data-hairline], .surface-black .hl { --hairline-plate: var(--neutral-1000); --hairline-hi: var(--primary-300); --hairline-edge: var(--neutral-300); --hairline-mid: var(--neutral-500); --hairline-lo: var(--neutral-800); }
 .hl { display: block; overflow: visible; }
 .hl :where(path, polygon, ellipse, line) { fill: var(--hairline-plate); stroke: var(--hairline-mid); stroke-width: var(--hairline-stroke); vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
 .hl :where(.nf) { fill: none; } .hl :where(.fo) { stroke: none; }
@@ -548,11 +549,11 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 }
 
 /* ---------- Hero: the Standard as a modular rack (anatomy figure, illustrations/rack) ----------
-   The kit's palette mapped to DS neutrals on black; its one lit accent is our orange. */
+   The kit's palette mapped to DS neutrals on black; its one lit accent is primary blue (illustrations' accent). */
 .rack.iso { --anatomy-paper: var(--neutral-1000); --anatomy-face: var(--neutral-950); --anatomy-top: var(--neutral-900);
   --anatomy-shade-0: var(--neutral-1000); --anatomy-shade-1: color-mix(in srgb, var(--neutral-900) 40%, var(--neutral-1000)); --anatomy-shade-2: color-mix(in srgb, var(--neutral-900) 70%, var(--neutral-1000)); --anatomy-shade-3: var(--neutral-900);
   --anatomy-lit-top: var(--neutral-850); --anatomy-lit-shade: var(--neutral-900);
-  --anatomy-hi: var(--neutral-200); --anatomy-mid: var(--neutral-500); --anatomy-lo: var(--neutral-800); --anatomy-faint: var(--neutral-850); --anatomy-lit: var(--accent);
+  --anatomy-hi: var(--neutral-200); --anatomy-mid: var(--neutral-500); --anatomy-lo: var(--neutral-800); --anatomy-faint: var(--neutral-850); --anatomy-lit: var(--primary-300);
   --anatomy-halo: var(--neutral-1000); --anatomy-dot: var(--neutral-300);
   position: relative; display: grid; gap: 16px; margin: 0 -12% 0 -4%; background: none; }
 .rk { outline-offset: 8px; touch-action: pan-y; }
