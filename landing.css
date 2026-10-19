@@ -449,7 +449,8 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 
 /* Round 3: one icon size in every fact cell */
-.fact .ico, .fact .ico.lg { width: 64px; height: 64px; }
+.fact .ico, .fact .ico.lg { width: 112px; height: 112px; margin-left: -8px; }
+@media (max-width: 699px) { .fact .ico, .fact .ico.lg { width: 88px; height: 88px; } }
 
 /* =====================================================================
    Round 3: infographics system
@@ -578,3 +579,6 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 .rack-cap .lbl { color: var(--text-2); } .rack-cap .rack-read { color: var(--text); text-align: right; }
 @media (max-width: 999px) { .rack { max-width: 640px; } }
 @media (max-width: 999px) { .rack.iso { margin: 0; } }
+/* Icons scale their own strokes: non-scaling strokes break the pathLength draw-on at large sizes */
+.ico .hl :is(path, polygon, ellipse, line) { vector-effect: none; stroke-width: .9; }
+.gets .ico .hl :is(path, polygon, ellipse, line) { stroke-width: 2.2; }
