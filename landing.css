@@ -142,25 +142,63 @@ b { font-weight: 500; color: var(--text); }
   .cells > * + * { border-left: 0; border-top: 1px solid var(--line); }
 }
 
-/* ---------- The stage is paid for: the followspot left, the header and three facts right ---------- */
-/* Halves 612 with an 80px gap (DESIGN §6.1 chess rows); the figure spans both rows of the right column,
-   centred on them; a band line closes the last fact */
-.split { display: grid; gap: 40px; }
-.bleed.b-end { border-top: 0; }
-.spot { margin: 0; }
-.facts { display: grid; }
-.facts li { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: center; column-gap: 32px; padding-block: 32px; border-top: 1px solid var(--line); }
-.facts .ico { width: 88px; height: 88px; }
-.facts .t-p2 { margin-top: 8px; max-width: 42ch; }
+/* ---------- Worth your time: black, head left + followspot right, facts in cells, one big CTA ----------
+   The lamp is a pale hairline drawing; the only colour is its light. The beam lies over the whole section in
+   screen blend, so every line, icon and word under it is lit the same way; a fact the pool lands on lights up. */
+.spotsec { overflow: hidden; isolation: isolate; padding-top: min(var(--section-gap), 120px); }
+.spotsec .bleed.mt { margin-top: 72px; }
+.spotsec > :not(.beam) { position: relative; z-index: 1; }
+.spotsec .beam { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity 900ms var(--ease-out) 450ms; }
+.spotsec.on .beam { opacity: .8; }
+.spotsec .beam .core { opacity: .4; }
+.spotsec .beam .ghosts circle { fill: none; stroke: var(--primary-300); stroke-opacity: .1; }
+.spotsec .beam .ghosts circle:nth-child(2) { fill: var(--primary-450); fill-opacity: .06; stroke: none; }
+.spotsec .beam .fringe { fill: none; stroke-width: 1; }
+.spotsec .beam .fringe.a { stroke: var(--primary-300); stroke-opacity: .12; }
+.spotsec .beam .fringe.b { stroke: var(--primary-450); stroke-opacity: .16; }
+
+.spotsec .top { display: grid; gap: 40px; }
+#stage.spotsec .head { grid-template-columns: minmax(0, 1fr); grid-template-areas: none; }
+#stage.spotsec .head > * { grid-area: auto; justify-self: start; }
+#stage.spotsec .head > .body { margin-top: -8px; }
+.spotsec .head .btn.xl { height: 64px; padding: 0 32px; gap: 20px; font-size: 18px; margin-top: 24px; }
+.spotsec .head .btn.xl svg { width: 22px; height: 22px; }
+.lampfig { margin: 0; }
+.lampfig svg { display: block; width: 100%; height: auto; overflow: visible; }
+.lampfig :where(path) { fill: var(--neutral-1000); stroke: var(--neutral-800); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
+.lampfig .nf { fill: none; }
+.lampfig .lo { stroke: var(--neutral-850); }
+.lampfig .sil { stroke: var(--neutral-500); }
+.lampfig .lens { fill: var(--primary-450); fill-opacity: .35; stroke: var(--primary-300); }
+.lampfig .halo { fill-opacity: .6; }
+.lampfig .pipe { -webkit-mask: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent); mask: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent); }
+
+/* Facts the pool does not touch rest grey; the lit one takes the accent. */
+.spotsec .fact .hl { --hairline-hi: var(--neutral-500); }
+.spotsec .fact h3, .spotsec .fact .body { transition: color 300ms var(--ease-out); }
+.spotsec .fact .hl path { transition: stroke 300ms var(--ease-out), fill 300ms var(--ease-out); }
+.spotsec .fact:not(.lit) h3 { color: var(--neutral-300); }
+.spotsec .fact:not(.lit) .body { color: var(--neutral-500); }
+.spotsec .fact:not(.lit) .hl { --hairline-edge: var(--neutral-500); --hairline-mid: var(--neutral-800); }
+.spotsec .fact.lit .hl { --hairline-hi: var(--primary-300); }
+
 @media (min-width: 1000px) {
-  .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 1fr auto; column-gap: 80px; row-gap: 0; }
-  .split > .head { align-self: end; } /* header sits 48px above the facts whatever the figure's height */
-  .spot { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
-  .split > .head, .facts { grid-column: 2; }
-  .facts { margin-top: 48px; align-self: end; }
-  .facts li:last-child { padding-bottom: 48px; } /* same gap to the band line as the body copy keeps to the first fact */
+  .spotsec .top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: var(--gutter); position: relative; }
+  /* hangs from the section's top edge and adds no height: the head sets the row */
+  .spotsec .lampfig { position: absolute; top: calc(-1 * min(var(--section-gap), 120px)); right: -40px; width: 520px; }
 }
-@media (max-width: 699px) { .facts li { grid-template-columns: 64px minmax(0, 1fr); column-gap: 20px; padding-block: 24px; } .facts .ico { width: 64px; height: 64px; } }
+@media (max-width: 999px) { .lampfig { order: -1; width: min(100%, 420px); justify-self: end; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .lampfig { opacity: 0; translate: 0 -12px; transition: opacity 600ms var(--ease-out), translate 600ms var(--ease-out); }
+  .js .spotsec.on .lampfig { opacity: 1; translate: 0 0; }
+}
+
+/* The white section before the black one: same air below its cells as the hero leaves above it, no bottom divider. */
+#building { padding-bottom: var(--section-gap-hero); }
+#building > .bleed { border-bottom: 0; }
+/* its two vertical dividers fade out from halfway down */
+@media (min-width: 1000px) { #building .cells > * + * { border-image: linear-gradient(var(--line) 50%, transparent) 1; } }
 
 /* ---------- Made of: rule → skill → scenario ---------- */
 .chain { position: relative; }
