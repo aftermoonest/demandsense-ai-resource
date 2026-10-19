@@ -387,8 +387,8 @@ header.hero .btn { height: 56px; padding: 0 28px; font-size: 16px; }
 
 /* ---------- Contributors get: benefit list left, the main room right (brief §3) ---------- */
 /* What contributors get (≥1000): the stage (lamp + centred headline) sticks for a full viewport while the seven
-   Figma 892:23410 cards scroll up past it in the side bands, left and right, never over the text. The deck starts
-   with cards already on screen. Below 1000 there is no room beside the text: the stage scrolls and the cards stack. */
+   Figma 892:23410 cards scroll up past it, scattered left and right. The stage opens empty, only the first card's
+   top peeking from the bottom edge. Below 1000 there is no room beside the text: the stage scrolls and the cards stack. */
 #get { padding-top: 0; overflow: clip; --cw: 260px; }
 #get .stage { position: relative; display: grid; place-items: center; overflow: hidden; isolation: isolate; padding: 400px 0 64px; }
 #get .stage > .head { position: relative; z-index: 1; }
@@ -412,7 +412,7 @@ header.hero .btn { height: 56px; padding: 0 28px; font-size: 16px; }
   /* as big as the middle band allows: line 1 is ~8.3em wide; caps at 96px */
   #get .headline { font-size: clamp(48px, calc((min(100vw, var(--content-max) + 2 * var(--margin)) - 2 * var(--margin) - 2 * (var(--cw) + 40px)) / 8.4), 96px); }
   #get .lampfig { top: -200px; }
-  #get .deck { display: block; margin-top: -100svh; padding: 10svh var(--margin) 24svh; pointer-events: none; --step: 22svh; }
+  #get .deck { display: block; margin-top: -100svh; padding: calc(100svh - 72px) var(--margin) 24svh; pointer-events: none; --step: 22svh; }
   .deck li { pointer-events: auto; width: var(--cw); height: var(--cw); margin-left: calc((100% - var(--cw)) * var(--x)); }
   .deck li + li { margin-top: calc(var(--step) + var(--dy, 0px) - var(--cw)); }
 }
