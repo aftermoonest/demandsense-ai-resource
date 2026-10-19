@@ -1,0 +1,209 @@
+/*
+  DemandSense design tokens.
+  Primitives = Figma "Colors" collection + local text styles (file jiNJOOlaeRo2jTiNU64MQh), read via Plugin API.
+  Semantic layer, grid and motion = this design system (see ../DESIGN.md).
+*/
+:root {
+  /* ---------- Primitives: neutral ---------- */
+  --neutral-0: #ffffff;
+  --neutral-25: #f8f8f9;
+  --neutral-50: #f0f1f2;
+  --neutral-75: #e9eaec;
+  --neutral-100: #e2e3e6;
+  --neutral-200: #c6c8cc;
+  --neutral-300: #aaadb3;
+  --neutral-500: #767980;
+  --neutral-800: #2d2f33;
+  --neutral-850: #212326;
+  --neutral-900: #161719;
+  --neutral-950: #0b0c0d;
+  --neutral-1000: #000000;
+  --neutral-0-10: #ffffff1a;
+  --neutral-1000-10: #0000001a;
+
+  /* ---------- Primitives: primary (blue) ---------- */
+  --primary-200: #a4bcff;
+  --primary-300: #7ba0ff;
+  --primary-450: #3875f6;
+  --primary-850: #001a4c;
+  --primary-900: #00113a;
+  --primary-side: #78d7ff;
+
+  /* ---------- Primitives: secondary (orange), status ---------- */
+  --secondary-300: #fa8c16;
+  --secondary-400: #d47300;
+  --danger-450: #d64c53;
+  --danger-550: #b2313a;
+  --success-300: #49b94b;
+  --success-450: #169027;
+
+  /* ---------- Primitives: brand slots (compared companies) ---------- */
+  --brand-first: #fa8c16;
+  --brand-second: #02bcfd;
+  --brand-third: #1764ff;
+  --brand-first-10: #fa8c161a;  --brand-first-25: #fa8c1640;
+  --brand-second-10: #02bcfd1a; --brand-second-25: #02bcfd40;
+  --brand-third-10: #1764ff1a;  --brand-third-25: #1764ff40;
+
+  /* ---------- Primitives: chart (categorical, data only) ---------- */
+  --chart-1: #531aa0;
+  --chart-2: #7e003f;
+  --chart-3: #7c0f99;
+  --chart-4: #00ac6f;
+  --chart-5: #ff6a4b;
+  --chart-6: #55c0f9;
+  --chart-7: #ffae6f;
+  --chart-8: #ffb900;
+  --chart-9: #55e4db;
+  --chart-10: #c0526e;
+  --chart-11: #0080a4;
+
+  /* ---------- Interaction (Figma neutral/interaction/*) ---------- */
+  --hover-on-0: var(--neutral-200);        /* white fill hovered */
+  --hover-on-950: var(--neutral-800);      /* black fill hovered */
+  --hover-on-50: var(--neutral-200);
+  --hover-on-100: var(--neutral-300);
+  --pressed: var(--neutral-500);           /* any solid fill pressed */
+  --hover-0-10: #ffffff40;  --pressed-0-10: #ffffff59;
+  --hover-1000-10: #00000040; --pressed-1000-10: #00000066;
+
+  /* ---------- Semantic: white surface (default) ---------- */
+  --bg: var(--neutral-0);
+  --bg-subtle: var(--neutral-25);          /* row hover, quiet fill */
+  --bg-muted: var(--neutral-50);           /* inactive pill, open FAQ, active feature row */
+  --text: var(--neutral-950);              /* headline part 1, body */
+  --text-2: var(--neutral-500);            /* headline part 2 (gray) */
+  --text-body: var(--neutral-800);         /* supporting copy under h5/h6 */
+  --text-meta: var(--neutral-300);         /* timestamps, hints */
+  --line: var(--neutral-100);              /* dividers, edge lines, grid */
+  --line-card: var(--neutral-75);          /* card / media borders */
+  --line-field: var(--neutral-1000-10);    /* input underline */
+  --accent: var(--secondary-300);          /* section marker, focus, current */
+  --action: var(--neutral-950);            /* primary button */
+  --action-text: var(--neutral-0);
+  --action-brand: var(--primary-450);      /* conversion button (form submit) */
+
+  /* ---------- Type ---------- */
+  --font-sans: 'Inter', 'Inter Variable', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  /* ---------- Radius ---------- */
+  --radius-0: 0;
+  --radius-1: 1px;      /* number badge, chart segment */
+  --radius-2: 2px;      /* chips, tooltip, dark card, inner insight panel */
+  --radius-4: 4px;      /* cards, form card, FAQ open, container */
+  --radius-6: 6px;      /* outline chip, chart tooltip */
+  --radius-8: 8px;      /* side tab, dialog */
+  --radius-pill: 100px; /* buttons, tabs, eyebrow chip, toggle */
+
+  /* ---------- Space (4px base) ---------- */
+  --space-2: 2px;  --space-4: 4px;  --space-6: 6px;  --space-8: 8px;
+  --space-12: 12px; --space-16: 16px; --space-24: 24px; --space-32: 32px;
+  --space-40: 40px; --space-64: 64px; --space-80: 80px; --space-128: 128px; --space-160: 160px;
+
+  /* ---------- Grid (desktop, xl/lg) ---------- */
+  --frame: 1512px;          /* design canvas */
+  --edge: 40px;             /* viewport edge -> vertical edge line */
+  --edge-inset: 64px;       /* edge line -> content, minimum */
+  --margin: calc(var(--edge) + var(--edge-inset)); /* 104: grid starts here; the line sits outside the grid */
+  --content-max: 1304px;    /* 1512 - 2 * 104 */
+  --gutter: 16px;
+  --columns: 12;            /* col = (1304 - 11*16)/12 = 94px */
+  --section-gap: 160px;     /* between landing sections */
+  --section-gap-hero: 128px;/* hero -> first section */
+  --header-gap: 40px;       /* section header -> content */
+  --edge-fade: 5%;          /* mobile edge-line fade at top/bottom */
+
+  /* ---------- Motion ---------- */
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
+  --t-fast: 150ms;   /* hover, color, tooltip */
+  --t-base: 240ms;   /* enter/exit, accordions, tab swap */
+  --t-build: 700ms;  /* chart build-in */
+
+  /* ---------- Elevation (floating layers only) ---------- */
+  --shadow-pop: 0 8px 28px #0003;
+  --shadow-dialog: 0 20px 80px #0003;
+  --blur-glass: 24px;  /* blur button backdrop */
+}
+
+/* Tablet / small desktop */
+@media (max-width: 999px) {
+  :root { --edge: 24px; --edge-inset: 40px; --columns: 8; --section-gap: 120px; --section-gap-hero: 96px; --header-gap: 32px; }
+}
+/* Mobile (375 base) */
+@media (max-width: 699px) {
+  :root { --edge: 16px; --edge-inset: 16px; --columns: 4; --section-gap: 80px; --section-gap-hero: 64px; --header-gap: 24px; }
+}
+
+/* Black surface: hero, CTA, strategic summary. Same names, inverted values. */
+.surface-black {
+  --bg: var(--neutral-1000);
+  --bg-subtle: var(--neutral-900);
+  --bg-muted: var(--neutral-850);
+  --text: var(--neutral-0);
+  --text-2: var(--neutral-300);
+  --text-body: var(--neutral-300);
+  --text-meta: var(--neutral-500);
+  --line: var(--neutral-800);
+  --line-card: var(--neutral-850);
+  --line-field: var(--neutral-800);
+  --action: var(--neutral-0);
+  --action-text: var(--neutral-950);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ---------- Dot patterns (Figma 04 · Patterns; pattern fills at scale .25 of a 24px tile) ----------
+   Tile = --pitch, dot diameter = pitch / 3 (8px dot in a 24px tile), dot centered.
+   .pattern          sidebar texture on white: neutral/950 at 25%, 6px pitch (report sidebar 516:91220)
+   .pattern-on-black overview texture on black: neutral/900, 6.24px pitch (report overview 516:88471)
+   .pattern-fade     5% fade on all four edges, as the Figma overview fill stack does.
+                     Put it on a pattern-only layer; it masks the element's own background too. */
+.pattern, .pattern-on-black {
+  --pitch: 6px;
+  --dot: #0b0c0d40;
+  --r: calc(var(--pitch) / 6);
+  background-image: radial-gradient(circle, var(--dot) var(--r), transparent calc(var(--r) + .5px));
+  background-size: var(--pitch) var(--pitch);
+}
+.pattern-on-black { --pitch: 6.24px; --dot: var(--neutral-900); }
+.pattern-lg { --r: calc(var(--pitch) / 3); --dot: var(--neutral-50); } /* 16px dot in 24px tile */
+.pattern-fade {
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent), linear-gradient(transparent, #000 5%, #000 95%, transparent);
+  mask-composite: intersect;
+}
+
+/* ---------- Text styles (Figma local styles; % tracking = em/100) ---------- */
+.t-h1 { font: 500 56px/1.05 var(--font-sans); letter-spacing: -.04em; }
+.t-display { font: 500 48px/1.05 var(--font-sans); letter-spacing: -.04em; } /* landing hero */
+.t-h2 { font: 500 40px/1.1 var(--font-sans); letter-spacing: -.04em; }
+.t-h3 { font: 500 32px/1.1 var(--font-sans); letter-spacing: -.04em; }
+.t-h4 { font: 500 28px/1.1 var(--font-sans); letter-spacing: -.04em; }
+.t-quote { font: 500 28px/1.4 var(--font-sans); letter-spacing: -.04em; }
+.t-h5 { font: 500 24px/1.2 var(--font-sans); letter-spacing: -.04em; }
+.t-h6 { font: 500 20px/1.2 var(--font-sans); letter-spacing: -.04em; }
+.t-h7, .t-p0 { font: 500 18px/1.4 var(--font-sans); letter-spacing: -.04em; }
+.t-p1 { font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; }
+.t-p2 { font: 500 14px/1.4 var(--font-sans); letter-spacing: -.03em; }
+.t-p3 { font: 500 12px/1.4 var(--font-sans); letter-spacing: -.03em; }
+.t-n1 { font: 500 64px/1 var(--font-mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.t-n2 { font: 600 40px/1 var(--font-mono); text-transform: uppercase; font-variant-numeric: tabular-nums; }
+.t-n3 { font: 500 24px/1 var(--font-mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.t-l0 { font: 600 14px/1.4 var(--font-mono); text-transform: uppercase; }
+.t-l1 { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; }
+.t-l2 { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; }
+
+/* Mobile type steps (no mobile comps in Figma; matched to report build: clamp(36px, 7.5vw, 64px)) */
+@media (max-width: 699px) {
+  .t-h1 { font-size: 40px; }
+  .t-display { font-size: 36px; }
+  .t-h2 { font-size: 32px; }
+  .t-h3 { font-size: 28px; }
+  .t-h4, .t-quote { font-size: 24px; }
+  .t-h5 { font-size: 20px; }
+  .t-n1 { font-size: 48px; }
+}
+
+/* Two-tone headline: one text block, second span goes gray. Never two elements. */
+.headline > .tone-2 { color: var(--text-2); }

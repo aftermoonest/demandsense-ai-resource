@@ -1,0 +1,13 @@
+{
+  "name": "ds-wave",
+  "private": true,
+  "scripts": {
+    "build": "esbuild index.js --bundle --minify --format=iife --loader:.json=json --outfile=../wave.js"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

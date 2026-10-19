@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DemandSense Design System</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(fonts/GeistMono-Medium.ttf) format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--neutral-0); color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; font-optical-sizing: none; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p { margin: 0; font: inherit; }
+.headline { text-wrap: balance; max-width: 650px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* Page frame: content sits on the grid (--margin); edge lines sit outside it, --edge-inset before the content. */
+.band { position: relative; padding-inline: var(--margin); }
+.band > .inner { max-width: var(--content-max); margin-inline: auto; position: relative; }
+.ruled::before, .ruled::after { content: ''; position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line); }
+.ruled::before { left: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); }
+.ruled::after { right: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); }
+.rule { height: 0; border-top: 1px solid var(--line); margin-inline: calc(-1 * var(--margin)); }
+@media (max-width: 699px) {
+  .ruled::before, .ruled::after { background: linear-gradient(transparent, var(--line) var(--edge-fade), var(--line) calc(100% - var(--edge-fade)), transparent); }
+  .rule { margin-inline: calc(-1 * var(--edge-inset)); }
+}
+
+.gap-hero { height: var(--section-gap-hero); } .gap { height: var(--section-gap); } .gap-h { height: var(--header-gap); }
+
+/* 12-col grid helper */
+.grid { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: var(--gutter); }
+.span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; } .span-5 { grid-column: span 5; } .span-6 { grid-column: span 6; } .span-7 { grid-column: span 7; } .span-12 { grid-column: 1 / -1; }
+@media (max-width: 999px) { .span-3, .span-4 { grid-column: span 4; } .span-5, .span-6, .span-7 { grid-column: 1 / -1; } }
+@media (max-width: 699px) { .span-3 { grid-column: span 2; } .span-4 { grid-column: 1 / -1; } }
+
+/* Grid overlay */
+.overlay { position: fixed; inset: 0; pointer-events: none; z-index: 40; padding-inline: var(--margin); opacity: 0; transition: opacity var(--t-fast) var(--ease-out); }
+.overlay.on { opacity: 1; }
+.overlay .grid { max-width: var(--content-max); margin: auto; height: 100%; }
+.overlay .grid > i { background: #fa8c1614; border-inline: 1px solid #fa8c1633; }
+.overlay .grid > i:nth-child(n+5) { display: none; }
+@media (min-width: 700px) { .overlay .grid > i:nth-child(n+5) { display: block; } .overlay .grid > i:nth-child(n+9) { display: none; } }
+@media (min-width: 1000px) { .overlay .grid > i:nth-child(n+9) { display: block; } }
+
+/* Section marker */
+.marker { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text); }
+.marker::before { content: ''; width: 8px; height: 8px; margin: 4px; background: var(--accent); }
+.header { display: flex; flex-direction: column; gap: 16px; }
+
+/* Buttons */
+.btn { --h: 40px; display: inline-flex; align-items: center; gap: 16px; height: var(--h); padding: 0 16px; border: 0; border-radius: var(--radius-pill); font: 600 14px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; cursor: pointer; text-decoration: none; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn.small { --h: 36px; padding: 0 14px; gap: 12px; font-size: 12px; } .btn.small svg { width: 16px; height: 16px; }
+.btn.xs { --h: 32px; padding: 0 12px; gap: 10px; font-size: 12px; } .btn.xs svg { width: 16px; height: 16px; }
+.btn.icon { padding: 0 20px; } .btn.xs.icon { padding: 0 16px; }
+.btn.filled { background: var(--action); color: var(--action-text); }
+.btn.outlined { background: none; color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.blur { background: var(--neutral-1000-10); color: var(--text); backdrop-filter: blur(var(--blur-glass)); }
+.surface-black .btn.blur { background: var(--neutral-0-10); }
+.btn.ghost { background: none; color: var(--text); }
+.btn.brand { background: var(--action-brand); color: #fff; }
+@media (hover: hover) and (pointer: fine) {
+  .btn.filled:hover { background: var(--hover-on-950); }
+  .surface-black .btn.filled:hover { background: var(--hover-on-0); }
+  .btn.outlined:hover { box-shadow: inset 0 0 0 1px var(--text); }
+  .btn.blur:hover { background: var(--hover-1000-10); }
+  .btn.ghost:hover { background: var(--bg-muted); }
+}
+.btn:active { background: var(--pressed); color: var(--neutral-0); }
+.btn[disabled] { opacity: .4; cursor: not-allowed; }
+@media (pointer: coarse) { .btn.small, .btn.xs { position: relative; } .btn.small::after, .btn.xs::after { content: ''; position: absolute; inset: -6px -2px; } }
+.row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+
+/* Field */
+.field { display: grid; gap: 4px; padding-bottom: 8px; border-bottom: 1px solid var(--line-field); transition: border-color var(--t-fast) var(--ease-out); }
+.field:hover, .field:focus-within { border-color: var(--text); }
+.field label { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text-body); }
+.field input { border: 0; padding: 1px 0; background: none; color: var(--text); font: 500 18px/1.4 var(--font-sans); letter-spacing: -.04em; outline: none; }
+.field input::placeholder { color: var(--neutral-500); }
+.field.error { border-color: var(--danger-550); } .field .help { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; color: var(--danger-550); margin-top: 4px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.tab { display: inline-flex; gap: 16px; align-items: center; height: 36px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); background: var(--neutral-50); color: var(--neutral-950); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; cursor: pointer; flex: none; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
+.tab b { font-weight: 600; color: var(--neutral-500); }
+.tab[aria-selected=true] { background: var(--neutral-950); color: var(--neutral-0); } .tab[aria-selected=true] b { color: var(--neutral-300); }
+.panel { animation: view-in 200ms var(--ease-out); }
+@keyframes view-in { from { opacity: 0; } }
+
+/* Chips */
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: var(--radius-2); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: #fff; }
+.chip.red { background: var(--danger-550); } .chip.orange { background: var(--secondary-400); } .chip.green { background: var(--success-450); }
+.chip.quiet { background: var(--neutral-50); color: var(--neutral-950); font: 500 14px/1.4 var(--font-sans); letter-spacing: -.03em; text-transform: none; }
+.chip.outline { border-radius: var(--radius-6); box-shadow: inset 0 0 0 1px var(--line); color: var(--text); font: 500 14px/1.4 var(--font-sans); letter-spacing: -.03em; text-transform: none; }
+.chip.ink { background: var(--neutral-950); }
+
+/* Cell rows */
+.cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cells > * + * { border-left: 1px solid var(--line); }
+@media (max-width: 699px) { .cells { grid-template-columns: 1fr 1fr; } .cells > :nth-child(3) { border-left: 0; } .cells > :nth-child(n+3) { border-top: 1px solid var(--line); } }
+.metric { display: grid; gap: 12px; justify-items: center; text-align: center; padding: 80px 40px; }
+@media (max-width: 699px) { .metric { padding: 40px 16px; } }
+.metric .t-l1 { color: var(--text-body); max-width: 22ch; }
+
+/* Swatches */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 16px; }
+.sw { display: grid; gap: 8px; }
+.sw i { display: block; height: 64px; border-radius: var(--radius-2); box-shadow: inset 0 0 0 1px var(--neutral-1000-10); }
+.sw span { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text-body); }
+.sw code { font: 500 12px/1.4 var(--font-mono); color: var(--neutral-800); }
+.group-label { margin: 40px 0 16px; }
+
+/* Type specimen */
+.type-row { display: grid; grid-template-columns: 180px 1fr; gap: 24px; align-items: baseline; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.type-row > .t-l2 { color: var(--neutral-800); }
+@media (max-width: 699px) { .type-row { grid-template-columns: 1fr; gap: 8px; } }
+
+/* Feature accordion */
+.features { display: grid; }
+.feature { border-bottom: 1px solid var(--line); border-radius: var(--radius-4); transition: background-color var(--t-base) var(--ease-out); }
+.feature summary { display: flex; gap: 16px; align-items: center; padding: 16px; list-style: none; cursor: pointer; }
+.feature summary::-webkit-details-marker { display: none; }
+.feature .idx { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-2); font: 600 14px/1.4 var(--font-mono); color: var(--neutral-500); flex: none; transition: background-color var(--t-base) var(--ease-out), color var(--t-base) var(--ease-out); }
+.feature[open] { background: var(--bg-muted); border-color: transparent; }
+.feature[open] .idx { background: var(--neutral-950); color: #fff; }
+.feature .body { display: grid; gap: 12px; padding: 0 16px 20px 60px; color: var(--text-body); }
+.feature:last-child { border-bottom: 0; }
+
+/* FAQ */
+.faq details { border-radius: var(--radius-4); transition: background-color var(--t-base) var(--ease-out); }
+.faq summary { display: flex; justify-content: space-between; gap: 16px; margin: 0 32px; padding: 24px 0; border-bottom: 1px solid var(--line); list-style: none; cursor: pointer; transition: border-color var(--t-fast) var(--ease-out); }
+.faq summary::-webkit-details-marker { display: none; }
+@media (hover: hover) and (pointer: fine) { .faq summary:hover { border-color: var(--neutral-950); } }
+.faq summary::after { content: '+'; font: 400 24px/1 var(--font-sans); color: var(--neutral-500); transition: transform var(--t-base) var(--ease-out); }
+.faq details[open] { background: var(--bg-muted); }
+.faq details[open] summary { border-color: transparent; padding-bottom: 4px; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq .answer { margin: 0 32px; padding-bottom: 24px; color: var(--text-body); }
+@media (max-width: 699px) { .faq summary, .faq .answer { margin-inline: 16px; } }
+
+/* Insight card */
+.insight { padding: 4px; border-radius: var(--radius-4); background: var(--brand-first-10); display: grid; gap: 4px; }
+.insight.second { background: var(--brand-second-10); } .insight.third { background: var(--brand-third-10); }
+.insight header { display: flex; justify-content: space-between; padding: 6px 12px; font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; color: #0b0c0d80; }
+.insight .in { background: #fff; border-radius: var(--radius-2); padding: 12px; display: grid; gap: 4px; }
+.insight .in p:last-child { color: var(--text-body); }
+.surface-black .insight { background: var(--brand-first-25); } .surface-black .insight header { color: #ffffff80; } .surface-black .insight .in { background: #000; }
+
+/* Form card */
+.form-card { background: #fff; color: var(--neutral-950); border-radius: var(--radius-4); padding: 40px; display: grid; gap: 80px; --text: var(--neutral-950); --text-body: var(--neutral-800); --line-field: var(--neutral-1000-10); --text-2: var(--neutral-500); }
+@media (max-width: 699px) { .form-card { padding: 24px; gap: 40px; } }
+
+/* Hero list */
+.inbox li { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.inbox { list-style: none; margin: 0; padding: 0; }
+.num-badge { width: 24px; height: 24px; display: grid; place-items: center; flex: none; background: var(--primary-450); border-radius: var(--radius-1); font: 600 12px/1.4 var(--font-mono); color: #fff; }
+
+/* Wave host covers the hero; wave.js places the canvas with the report framing. */
+.hero-wave { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+header.surface-black > .band { position: relative; }
+@media (max-width: 699px) { .hero-wave { opacity: .5; } }
+.pattern-demo { height: 240px; border-radius: var(--radius-4); }
+#grid-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 50; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay" aria-hidden="true"><div class="grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<button class="btn filled small" id="grid-toggle" aria-pressed="false">Show grid</button>
+
+<!-- HERO: black, always -->
+<header class="surface-black" style="position: relative; overflow: hidden">
+  <div class="hero-wave" data-wave></div>
+  <div class="band" style="padding-top: 106px; padding-bottom: 40px">
+    <div class="inner grid" style="row-gap: 40px">
+      <div class="span-7 header" style="align-self: start">
+        <span class="marker">Design system · DS Report</span>
+        <h1 class="headline t-display">DemandSense design system. <span class="tone-2">Lines for structure, two tones for every headline, black for the moments that ask for action.</span></h1>
+        <ul class="inbox" style="margin-top: 40px">
+          <li><span class="num-badge">01</span><span>Color, type and spacing tokens from the Figma variables</span></li>
+          <li><span class="num-badge">02</span><span>12-column grid with edge lines at the margins</span></li>
+          <li><span class="num-badge">03</span><span>Components with every measured variant</span></li>
+        </ul>
+      </div>
+      <form class="span-5 form-card" onsubmit="event.preventDefault()">
+        <div style="display: grid; gap: 40px">
+          <div style="display: grid; gap: 8px">
+            <h2 class="headline t-h4">Form card on black. <span class="tone-2">Underline fields, mono labels.</span></h2>
+            <p class="t-p1" style="color: var(--neutral-800)">One support line is allowed in forms.</p>
+          </div>
+          <div style="display: grid; gap: 24px">
+            <div class="field"><label for="f1">Enter competitor 1</label><input id="f1" placeholder="www.competitor.com"></div>
+            <div class="field error"><label for="f2">Enter competitor 2</label><input id="f2" value="competitor" aria-describedby="f2h"></div>
+            <span class="help" id="f2h" style="font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; color: var(--danger-550); margin-top: -20px">Enter a full domain, like competitor.com</span>
+          </div>
+        </div>
+        <button class="btn brand" style="height: auto; padding: 16px 24px 16px 28px; justify-content: space-between; width: 100%">Get my free report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="width: 28px; height: 28px"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
+      </form>
+    </div>
+  </div>
+  <div class="band"><div class="rule"></div></div>
+  <div class="band" style="padding-block: 40px">
+    <div class="inner row" style="gap: 40px">
+      <div><div class="t-n3">250</div><div class="t-l1" style="color: var(--text-2); margin-top: 4px">Ads analyzed</div></div>
+      <div><div class="t-n3">14</div><div class="t-l1" style="color: var(--text-2); margin-top: 4px">Insights found</div></div>
+      <div><div class="t-n3">12</div><div class="t-l1" style="color: var(--text-2); margin-top: 4px">Hypotheses</div></div>
+      <div class="row" style="margin-left: auto; gap: 8px">
+        <button class="btn filled">Filled</button><button class="btn outlined">Outlined</button><button class="btn blur">Blur</button><button class="btn ghost">Ghost</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="gap-hero"></div>
+
+  <!-- COLOR -->
+  <section class="band" aria-labelledby="color-h">
+    <div class="inner header">
+      <span class="marker">Color</span>
+      <h2 class="headline t-h2" id="color-h">Neutrals do the work. <span class="tone-2">Orange marks, blue converts, chart colors stay inside data.</span></h2>
+    </div>
+    <div class="gap-h"></div>
+    <div class="inner" id="swatches"></div>
+  </section>
+
+  <div class="gap"></div>
+
+  <!-- TYPE -->
+  <section class="band" aria-labelledby="type-h">
+    <div class="inner header">
+      <span class="marker">Typography</span>
+      <h2 class="headline t-h2" id="type-h">Inter speaks, Geist Mono measures. <span class="tone-2">One weight for text, uppercase mono for every label and number.</span></h2>
+    </div>
+    <div class="gap-h"></div>
+    <div class="inner">
+      <div class="type-row"><span class="t-l2">display 48/1.05</span><p class="t-display headline">See what they say. <span class="tone-2">Pick what sets you apart</span></p></div>
+      <div class="type-row"><span class="t-l2">h2 40/1.1</span><p class="t-h2 headline">Know what you get. <span class="tone-2">Before you request it</span></p></div>
+      <div class="type-row"><span class="t-l2">h4 28/1.1</span><p class="t-h4 headline">The creative library, in full. <span class="tone-2">The proof each company shows</span></p></div>
+      <div class="type-row"><span class="t-l2">quote 28/1.4</span><p class="t-quote" style="color: var(--neutral-500)">We had <span style="color: var(--text)">the biggest sale in our history</span>, and could trace it back to LinkedIn.</p></div>
+      <div class="type-row"><span class="t-l2">h5 24/1.2</span><p class="t-h5">How each brand splits its ads</p></div>
+      <div class="type-row"><span class="t-l2">h6 20/1.2</span><p class="t-h6">What's in the report?</p></div>
+      <div class="type-row"><span class="t-l2">p1 16/1.4</span><p class="t-p1">Up to 12 months of LinkedIn ads from you and two competitors, compared on offers, messages, tone, proof and calls to action.</p></div>
+      <div class="type-row"><span class="t-l2">p2 14/1.4</span><p class="t-p2" style="color: var(--text-body)">No. You give us websites, not logins, and there's nothing to connect.</p></div>
+      <div class="type-row"><span class="t-l2">n1 64/1</span><p class="t-n1">3.9x</p></div>
+      <div class="type-row"><span class="t-l2">n3 24/1</span><p class="t-n3">250</p></div>
+      <div class="type-row"><span class="t-l2">l0 / l1 / l2</span><p class="row" style="gap: 24px"><span class="t-l0">Get my report</span><span class="t-l1">What marketers say</span><span class="t-l2" style="color: var(--neutral-800)">Enter competitor 1</span></p></div>
+    </div>
+  </section>
+
+  <div class="gap"></div>
+
+  <!-- PATTERNS -->
+  <section class="band" aria-labelledby="pat-h">
+    <div class="inner header">
+      <span class="marker">Patterns</span>
+      <h2 class="headline t-h2" id="pat-h">Dots fill empty space. <span class="tone-2">A 6px grid of 2px dots, faded at the edges on black.</span></h2>
+    </div>
+    <div class="gap-h"></div>
+    <div class="inner grid" style="row-gap: 16px">
+      <div class="span-4"><div class="pattern-demo pattern"></div><p class="t-l1" style="margin-top: 8px">.pattern · sidebar</p></div>
+      <div class="span-4"><div class="pattern-demo pattern pattern-lg" style="--pitch: 12px"></div><p class="t-l1" style="margin-top: 8px">.pattern-lg · 12px pitch</p></div>
+      <div class="span-4"><div class="pattern-demo" style="background: #000"><div class="pattern-on-black pattern-fade" style="height: 100%"></div></div><p class="t-l1" style="margin-top: 8px">.pattern-on-black .pattern-fade</p></div>
+    </div>
+  </section>
+
+  <div class="gap"></div>
+
+  <!-- NUMBERS: edge-to-edge band -->
+  <section aria-labelledby="num-h">
+    <div class="band"><div class="inner header" style="align-items: center; text-align: center">
+      <span class="marker">Grid · cell row</span>
+      <h2 class="headline t-h2" id="num-h" style="margin-inline: auto"><span class="tone-2">Same width, four cells,</span> lines instead of gutters</h2>
+    </div></div>
+    <div class="gap-h"></div>
+    <div class="band"><div class="rule"></div></div>
+    <div class="band ruled"><div class="inner cells">
+      <div class="metric"><span class="t-n1">3.9x</span><span class="t-l1">More pipeline from the same budget</span></div>
+      <div class="metric"><span class="t-n1">56%</span><span class="t-l1">More deals your ads influenced</span></div>
+      <div class="metric"><span class="t-n1">47%</span><span class="t-l1">Lower cost per click</span></div>
+      <div class="metric"><span class="t-n1">24%</span><span class="t-l1">Lower cost per qualified lead</span></div>
+    </div></div>
+    <div class="band"><div class="rule"></div></div>
+  </section>
+
+  <div class="gap"></div>
+
+  <!-- COMPONENTS -->
+  <section class="band" aria-labelledby="comp-h">
+    <div class="inner header">
+      <span class="marker">Components</span>
+      <h2 class="headline t-h2" id="comp-h">Flat, ruled, measured. <span class="tone-2">Every variant from the Figma components page.</span></h2>
+      <div class="tabs" role="tablist" aria-label="Component groups" style="margin-top: 8px">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="p-actions" id="t-actions"><b>01.</b>Actions</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-lists" id="t-lists" tabindex="-1"><b>02.</b>Lists</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-cards" id="t-cards" tabindex="-1"><b>03.</b>Cards</button>
+      </div>
+    </div>
+    <div class="gap-h"></div>
+    <div class="inner">
+      <div class="panel" role="tabpanel" id="p-actions" aria-labelledby="t-actions">
+        <p class="t-l1 group-label" style="margin-top: 0">Buttons · default 40 / small 36 / xs 32</p>
+        <div class="row">
+          <button class="btn filled">Start free trial <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
+          <button class="btn outlined">Learn more</button>
+          <button class="btn blur">Export</button>
+          <button class="btn ghost">Ghost</button>
+          <button class="btn filled small">Small</button>
+          <button class="btn outlined xs">Xs</button>
+          <button class="btn outlined icon" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button>
+          <button class="btn filled icon" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
+          <button class="btn filled" disabled>Disabled</button>
+        </div>
+        <p class="t-l1 group-label">Chips</p>
+        <div class="row" style="gap: 8px">
+          <span class="chip red">Critical</span><span class="chip orange">Important</span><span class="chip green">Strategic</span>
+          <span class="chip ink">Rule</span><span class="chip quiet">+15%</span><span class="chip outline">Data charts</span>
+        </div>
+      </div>
+      <div class="panel" role="tabpanel" id="p-lists" aria-labelledby="t-lists" hidden>
+        <div class="grid" style="row-gap: 40px">
+          <div class="span-6 features">
+            <details class="feature" open><summary><span class="idx">01</span><span class="t-h6">Which new ads outlast the rest</span></summary><div class="body t-p2"><p>When a new ad from a competitor outlasts its siblings, it shows up as a signal on that company.</p><p><button class="btn filled small">Learn more</button></p></div></details>
+            <details class="feature"><summary><span class="idx">02</span><span class="t-h6">What changed this week</span></summary><div class="body t-p2"><p>A weekly briefing explains the most important pattern across the brands you track.</p></div></details>
+            <details class="feature"><summary><span class="idx">03</span><span class="t-h6">When they change course</span></summary><div class="body t-p2"><p>Shifts in offer, tone or format, flagged the week they happen.</p></div></details>
+          </div>
+          <div class="span-6 faq">
+            <details open><summary class="t-h6">Do I need to connect my ad account?</summary><p class="answer t-p2">No. You give us websites, not logins, and there's nothing to connect.</p></details>
+            <details><summary class="t-h6">How far back does it go?</summary><p class="answer t-p2">Up to 12 months of ads for each brand.</p></details>
+            <details><summary class="t-h6">How long does it take?</summary><p class="answer t-p2">Less than 30 minutes.</p></details>
+          </div>
+        </div>
+      </div>
+      <div class="panel" role="tabpanel" id="p-cards" aria-labelledby="t-cards" hidden>
+        <div class="grid" style="row-gap: 16px">
+          <article class="span-4 insight"><header><span>Insight from AGOV</span><span>001</span></header><div class="in"><p class="t-h6">Positioning gap</p><p class="t-p2">Nobody else owns speed and urgency.</p></div></article>
+          <article class="span-4 insight second"><header><span>Insight from Focus Lab</span><span>002</span></header><div class="in"><p class="t-h6">Proof overload</p><p class="t-p2">Logos everywhere, few customer quotes.</p></div></article>
+          <article class="span-4 insight third"><header><span>Insight from Afternow</span><span>003</span></header><div class="in"><p class="t-h6">Soft asks</p><p class="t-p2">Most calls to action ask for nothing.</p></div></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gap"></div>
+
+  <!-- CTA: black, always -->
+  <section class="surface-black" aria-labelledby="cta-h">
+    <div class="band ruled" style="padding-block: 0"><div class="inner" style="padding-block: 80px">
+      <div class="grid" style="row-gap: 40px; align-items: end">
+        <div class="span-7 header">
+          <span class="marker">Closing CTA</span>
+          <h2 class="headline t-h2" id="cta-h">Take your seat. <span class="tone-2">Submissions close on 21 October.</span></h2>
+        </div>
+        <div class="span-5 row" style="justify-content: flex-end">
+          <button class="btn outlined">See what's inside</button>
+          <button class="btn filled">Bring your work <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </div></div>
+  </section>
+</main>
+
+<script>
+// Swatches rendered from the token list so the page can't drift from tokens.css.
+const groups = {
+  Neutral: ['0','25','50','75','100','200','300','500','800','850','900','950','1000'].map(n => 'neutral-' + n),
+  'Primary · Secondary · Status': ['primary-200','primary-300','primary-450','primary-850','primary-900','primary-side','secondary-300','secondary-400','danger-450','danger-550','success-300','success-450'],
+  'Brand slots': ['brand-first','brand-second','brand-third','brand-first-10','brand-second-10','brand-third-10'],
+  'Chart (data only)': ['1','2','3','4','5','6','7','8','9','10','11'].map(n => 'chart-' + n)
+};
+const css = getComputedStyle(document.documentElement);
+const host = document.getElementById('swatches');
+for (const [label, names] of Object.entries(groups)) {
+  const h = document.createElement('p'); h.className = 't-l1 group-label'; h.textContent = label; host.append(h);
+  const wrap = document.createElement('div'); wrap.className = 'swatches';
+  for (const n of names) {
+    const v = css.getPropertyValue('--' + n).trim();
+    const d = document.createElement('div'); d.className = 'sw';
+    d.innerHTML = `<i style="background:var(--${n})"></i><span>${n.replace('-', '/')}</span><code>${v}</code>`;
+    wrap.append(d);
+  }
+  host.append(wrap);
+}
+host.firstElementChild.style.marginTop = '0';
+
+// Tabs: click + arrow keys
+const tabs = [...document.querySelectorAll('[role=tab]')];
+function select(t) {
+  tabs.forEach(x => { const on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute('aria-controls')).hidden = !on; });
+  t.focus();
+}
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => select(t));
+  t.addEventListener('keydown', e => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d) select(tabs[(i + d + tabs.length) % tabs.length]); });
+});
+
+// Grid overlay
+const ov = document.getElementById('overlay'), gt = document.getElementById('grid-toggle');
+gt.addEventListener('click', () => { const on = ov.classList.toggle('on'); gt.setAttribute('aria-pressed', on); gt.textContent = on ? 'Hide grid' : 'Show grid'; });
+</script>
+<script src="wave.js" defer></script>
+</body>
+</html>

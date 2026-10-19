@@ -1,0 +1,5 @@
+# Tasks
+
+1. Set up the project and install skills (done, see Skills in CLAUDE.md).
+2. Extract the design system from the DS Report (done: `DESIGN.md`, `design-system/tokens.css`, `design-system/specimen.html`, live wave `design-system/wave.js`). Open questions in `DESIGN.md` §14.
+3. Build the landing page on that design system (later).
