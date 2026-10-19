@@ -498,3 +498,4 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 }
 @media (prefers-reduced-motion: reduce) and (max-width: 999px) { html.js .chain .link.rv.rv.rv.rv.rv { translate: none; } }
 [data-count] { display: inline-block; min-width: 7ch; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }

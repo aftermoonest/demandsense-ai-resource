@@ -37,6 +37,16 @@ Made while you were away (2026-10-19). Each one is reversible; say "revert N" or
 24. **"500-600" counts up** once (DESIGN §11 count-up pattern), width held so nothing shifts.
 25. **WebGL waves fade in** over 1.6s when ready instead of popping.
 
+26. **Smooth scroll for in-page links** (See what's inside, tabs) unless reduced motion.
+
+## Verified
+
+- Headless Chrome at 1512 / 1100 / 768 / 375 / 320: no horizontal overflow, no console errors.
+- Every reveal reaches its end state, with and without reduced motion (155 elements checked).
+- Keyboard: skip link first, visible focus rings, tablist arrow keys.
+- main-room figure passes the hairline validator and look checks; one-lap intro verified.
+- Not verified: Safari/Firefox, real touch devices, WebGL performance on low-end GPUs (5 live waves).
+
 ## Open for you
 
 - Button labels on "Build with", "The Standard" card and both "Two ways in" cards all say "Bring your work" (not on the Vercel site).
