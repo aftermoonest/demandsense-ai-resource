@@ -25,14 +25,13 @@ b { font-weight: 500; color: var(--text); }
 .sec::before { left: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); }
 .sec::after { right: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); }
 .sec.end { padding-bottom: var(--section-gap); }
-.bleed { border-block: 1px solid var(--line); }
+/* Horizontal band rules: solid across the grid and 64px past it (to the edge lines), then fade out to the viewport edge */
+.bleed { --x: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); border-block: 1px solid; border-inline: 0; border-image: linear-gradient(90deg, transparent, var(--line) var(--x), var(--line) calc(100% - var(--x)), transparent) 1; }
 .bleed + .bleed { border-top: 0; }
 .mt { margin-top: var(--header-gap); }
 @media (max-width: 699px) {
   .sec::before, .sec::after { background: linear-gradient(transparent, var(--line) var(--edge-fade), var(--line) calc(100% - var(--edge-fade)), transparent); }
   .sec:not(.surface-black)::before, .sec:not(.surface-black)::after { background: var(--line); }
-  .bleed { margin-inline: var(--edge); }
-  .bleed > .wrap { padding-inline: var(--edge-inset); }
 }
 
 .grid { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); column-gap: var(--gutter); }
@@ -50,7 +49,7 @@ b { font-weight: 500; color: var(--text); }
 
 /* Section header: marker → 16 → headline → 24 → body (DESIGN §15) */
 .head { display: grid; gap: 16px; justify-items: start; }
-.head .body { max-width: 650px; margin-top: 8px; }
+.head .body { max-width: 650px; }
 
 /* ---------- Buttons (DESIGN §8.1) ---------- */
 .btn { display: inline-flex; align-items: center; gap: 16px; height: 40px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); font: 600 14px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; white-space: nowrap; cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out); }
@@ -90,7 +89,7 @@ b { font-weight: 500; color: var(--text); }
 .hero-grid { padding-top: 80px; padding-bottom: 80px; row-gap: 64px; align-items: center; }
 .hero-copy { display: grid; gap: 16px; justify-items: start; }
 .t-display .tone-2 { display: block; }
-.hero .lead { max-width: 520px; margin-top: 8px; color: var(--text-2); }
+.hero .lead { max-width: 520px; color: var(--text-2); }
 .hero .lead b { color: var(--text); }
 .hero .actions { margin-top: 24px; }
 .hero .note { color: var(--text-2); }
@@ -159,8 +158,8 @@ b { font-weight: 500; color: var(--text); }
 .levels .bar { height: 1px; background: linear-gradient(90deg, var(--neutral-950), var(--neutral-100)); }
 
 /* ---------- Explainers: sticky tabs + boards ---------- */
-.tabs { position: sticky; top: 16px; z-index: 2; display: flex; gap: 8px; width: max-content; max-width: 100%; padding: 4px; border-radius: var(--radius-pill); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); overflow-x: auto; scrollbar-width: none; }
-.tab { display: inline-flex; gap: 16px; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--neutral-50); color: var(--neutral-950); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; flex: none; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
+.tabs { position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-block: 16px; background: var(--bg); }
+.tab { display: inline-flex; gap: 16px; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--neutral-50); color: var(--neutral-950); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; justify-content: center; white-space: nowrap; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
 .tab span { color: var(--neutral-500); }
 .tab[aria-current=true] { background: var(--neutral-950); color: var(--neutral-0); }
 .tab[aria-current=true] span { color: var(--neutral-300); }
@@ -312,4 +311,4 @@ b { font-weight: 500; color: var(--text); }
 .foot .lbl { color: var(--text-body); }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; } }
-@media (max-width: 699px) { .tabs { gap: 4px; } .tab { gap: 8px; padding: 0 12px; } }
+@media (max-width: 699px) { .tabs { gap: 4px; } .tab { gap: 6px; padding: 0 8px; } }

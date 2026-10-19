@@ -314,7 +314,7 @@ Three scales of line, from widest to narrowest:
 
 | Line | Spans | Where |
 |---|---|---|
-| Full-bleed horizontal | 0 → 1512 (viewport edge to edge, ignores margins) | Report hero rows; top and bottom of landing cell bands (sample reports, testimonials, numbers); report summary sections |
+| Band horizontal | Solid across the grid and 64px past it (to the edge lines), then fades to 0 opacity toward the viewport edge | Report hero rows; top and bottom of landing cell bands (sample reports, testimonials, numbers); report summary sections |
 | Framed horizontal | Between the two vertical lines only (report: 300 → 1472) | Report section dividers (`divider` 1172×128, line at y=64) |
 | Column horizontal | Inside one column | List rows: feature list, FAQ, hero inbox list, `container` rows |
 
@@ -329,7 +329,9 @@ Three scales of line, from widest to narrowest:
 
 **Horizontal band divider.** `divider` 1172×128 with the line centered (y=64) separates report sections; `is-transparent` keeps the space without the line.
 
-Never: double lines, lines with gaps at the ends (except the mobile fade), dashed lines outside charts, shadows instead of lines.
+Band horizontals are not edge-to-edge (updated 2026-10-19): `border-image: linear-gradient(90deg, transparent, var(--line) X, var(--line) calc(100% - X), transparent)` where X is the edge-line position. Figma still draws them full-bleed; update the comps.
+
+Never: double lines, lines with gaps at the ends (except the band and mobile fades), dashed lines outside charts, shadows instead of lines.
 
 ---
 
@@ -519,7 +521,7 @@ Layers: `--z-raised` 1 · `--z-sticky` 10 · `--z-overlay` 50 · `--z-tip` 60 ·
 [ marker ]                                   (l1, orange square)
 [ two-tone headline, max 650 ]   [ arrows ]  (h2 40px)
 [ 40 ]
-─────────────────────────────────────────── full-bleed line (cell rows only)
+─────────────────────────────────────────── band line, fades past the edge lines (cell rows only)
 │ 64 │ cell │ cell │ cell │ 64 │             edge lines outside the grid, 64 to the cells
 ───────────────────────────────────────────
 ```
