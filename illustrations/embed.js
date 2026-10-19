@@ -13,5 +13,16 @@ window.hairline = (figure) => {
     const read = { set textContent(v) { if (out) out.textContent = v ?? ""; }, get textContent() { return out ? out.textContent : ""; } };
     figure.mount({ stage, svg, read }, Number(host.dataset.value) || mid || lo);
     if (out && !out.textContent) out.textContent = "rest";
+    // One lap of the figure's tour the first time it is seen, so a reader learns it answers the pointer.
+    // Skipped under reduced motion; the kernel hands over to a real pointer by itself.
+    if (!figure.tour || matchMedia("(prefers-reduced-motion: reduce)").matches) continue;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      setTimeout(() => {
+        const lap = HL.tour(stage, figure.tour, (i) => { if (i === figure.tour.length - 1) lap.stop(); });
+      }, 900);
+    }, { threshold: 0.6 });
+    io.observe(stage);
   }
 };

@@ -124,3 +124,22 @@ for (const stack of $$('.stack')) {
   });
   hero.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
 }
+
+// ---------- Numbers count up once (DESIGN §11) ----------
+// "500-600" counts both ends; tabular figures keep the width steady.
+const countIO = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    countIO.unobserve(e.target);
+    const el = e.target, text = el.textContent, nums = text.match(/\d+/g).map(Number);
+    const t0 = performance.now(), dur = 1400;
+    const frame = (now) => {
+      const k = Math.min(1, (now - t0) / dur), ease = 1 - Math.pow(1 - k, 4);
+      let i = 0;
+      el.textContent = text.replace(/\d+/g, () => String(Math.round(nums[i++] * ease)));
+      if (k < 1) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+}, { threshold: 0.8 });
+if (!reduced.matches) $$('[data-count]').forEach((el) => countIO.observe(el));

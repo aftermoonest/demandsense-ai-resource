@@ -479,3 +479,17 @@ main > .sec:first-child { padding-top: var(--section-gap-hero); }
 @media (max-width: 1199px) { .toc li > * { grid-template-columns: 20px minmax(0, 1fr); } .toc .who { grid-column: 2; border-left: 0; padding-left: 0; } }
 @media (max-width: 999px) { #close .c-5 { display: none; } }
 @media (pointer: coarse) { .tab-ind { height: 44px; } }
+
+/* Second motion pass */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+[data-count] { font-variant-numeric: tabular-nums; }
+/* WebGL waves fade in when their first frame is ready instead of popping */
+.hero-wave canvas, .card-wave canvas { animation: wave-in 1600ms var(--ease-out) both; }
+@keyframes wave-in { from { opacity: 0; } }
+/* Icons answer a hover on their row or cell with a small lift */
+.fact .ico, .gets .ico { transition: translate 300ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .fact:hover .ico, .gets li:hover .ico { translate: 0 -3px; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-wave canvas, .card-wave canvas { animation-duration: 1ms; }
+  .fact .ico, .gets .ico { transition: none; }
+}

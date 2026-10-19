@@ -110,6 +110,6 @@ hairline({
   means: "A hall from above: a spotlight walks the stage, and the screen it reaches lights up with your name.",
   rules: [1, 4, 5, 8],
   range: [6, 10, 14],
-  tour: [[150, 120], [250, 175], [205, 145], null],
+  tour: [[150, 120], [250, 175], null],
   mount,
 });
