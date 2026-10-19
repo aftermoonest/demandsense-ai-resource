@@ -115,7 +115,7 @@ b { font-weight: 500; color: var(--text); }
 .sitebar .btn { justify-self: end; }
 .sitebar .anchors a { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; color: var(--neutral-950); transition: color var(--t-fast) var(--ease-out); }
 .sitebar[data-theme=dark] .anchors a { color: var(--neutral-0); }
-@media (hover: hover) { .sitebar .anchors a:hover, .sitebar[data-theme=dark] .anchors a:hover { color: var(--primary-450); } }
+@media (hover: hover) { .sitebar .anchors a:hover { color: var(--primary-450); } .sitebar[data-theme=dark] .anchors a:hover { color: var(--primary-300); } }
 .sitebar .btn { height: 36px; padding: 0 16px; font-size: 13px; }
 .sitebar:not(.on) { background: transparent; box-shadow: none; }
 .sitebar .btn { transition: opacity 200ms var(--ease-out), visibility 0s, background-color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out); }
