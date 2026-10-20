@@ -140,7 +140,7 @@ if (!reduced.matches) $$('[data-count]').forEach((el) => countIO.observe(el));
 // ---------- Links between blocks (boards and the stack hub) ----------
 // A flow is a row of columns; every block links to every block in the next column.
 // Measured from layout offsets (not getBoundingClientRect), so reveal transforms never skew them.
-// Side by side: curves between columns. Stacked: L-shaped lines down a left spine.
+// Side by side: curves between columns. Stacked: boards wire down alternating sides, the hub down a left spine.
 // Once built, a packet runs the flow column by column (TRAVEL each) on a LOOP while it is on screen.
 const COL = 260, TRAVEL = 900;
 function pos(el, box) {
@@ -167,6 +167,11 @@ function drawLinks(box) {
         const x1 = a.r + 4, x2 = b.l - 4, w = x2 - x1;
         d = `M${x1} ${a.y}h${w / 4}L${x2 - w / 4} ${b.y}H${x2}`;
         port(x1, a.y, ld); port(x2, b.y, ld);
+      } else if (box.matches('.flow')) {
+        // boxes centred, hops alternate sides (right, left, right…) so neighbouring hops never share a lane
+        const s = c % 2 ? -1 : 1, xa = (s > 0 ? a.r : a.l) + 4 * s, xb = (s > 0 ? b.r : b.l) + 4 * s, x = xa + 18 * s, r = 6 * s;
+        d = `M${xa} ${a.y}H${x - r}L${x} ${a.y + Math.abs(r)}V${b.y - Math.abs(r)}L${x - r} ${b.y}H${xb}`;
+        port(xa, a.y, ld); port(xb, b.y, ld);
       } else {
         const x = 12, r = 8;
         d = `M${a.l - 4} ${a.y}H${x + r}L${x} ${a.y + r}V${b.y - r}L${x + r} ${b.y}H${b.l - 4}`;
