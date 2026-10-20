@@ -47,10 +47,12 @@ let geometry;
 const HERO = { x: .3313, y: 0, w: .8083, h: .9494, k: 1.37, t0: -1.5 };
 
 // host: positioned element; the canvas is placed inside it by `frame`.
-// Options override settings.json keys; options.frame overrides HERO keys.
+// Options override settings.json keys; options.frame overrides HERO keys, options.frameSm overrides frame below 700px.
+const small = matchMedia('(max-width: 699px)');
 export function mount(host, options = {}) {
   const p = { ...defaults, ...options };
-  const f = { ...HERO, ...options.frame };
+  const fLg = { ...HERO, ...options.frame }, fSm = { ...fLg, ...options.frameSm };
+  let f = fLg;
   geometry ??= makeFoldedGeometry();
 
   const canvas = document.createElement('canvas');
@@ -95,6 +97,7 @@ export function mount(host, options = {}) {
   canvas.style.position = 'absolute';
   const resize = () => {
     const r = host.getBoundingClientRect();
+    f = small.matches ? fSm : fLg;
     // frame.aspect: the view is the hero's (w / aspect tall, anchored at the top), scaled to the host width;
     // the canvas still fills the host height so the ribbon runs on instead of being cut
     const w = r.width * f.w, h = r.height * f.h, hv = f.aspect ? w / f.aspect : h;

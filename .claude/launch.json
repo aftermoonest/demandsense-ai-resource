@@ -50,6 +50,21 @@
         "127.0.0.1"
       ],
       "port": 4183
+    },
+    {
+      "name": "wave-lab",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/aftermoonest/Documents/ChatGPT/Random/stripe-wave-lab",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5190",
+        "--strictPort"
+      ],
+      "port": 5190
     }
   ]
 }
