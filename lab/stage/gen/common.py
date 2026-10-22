@@ -56,7 +56,7 @@ def spot_group(f, cfg, pool_rx, pool_ry, lens_w, lit_inner, hatch=3, ring=True):
 
 import time
 V = str(int(time.time()))
-SRC = open(ROOT + "/index.html", encoding="utf-8").read()
+SRC = open(ROOT + "/landing/index.html", encoding="utf-8").read()
 SEC = re.search(r'<section class="sec" id="stage">.*?</section>', SRC, re.S).group(0)
 
 def emit(num, f, cfg, label, css="", lamp_t=""):
@@ -65,7 +65,7 @@ def emit(num, f, cfg, label, css="", lamp_t=""):
     html = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
             f"<title>Stage lab {num}</title>\n<link rel=\"icon\" href=\"data:,\">\n"
-            "<link rel=\"stylesheet\" href=\"../../landing.css\">\n<link rel=\"stylesheet\" href=\"stage.css?v=" + V + "\">\n"
+            "<link rel=\"stylesheet\" href=\"../../landing/landing.css\">\n<link rel=\"stylesheet\" href=\"stage.css?v=" + V + "\">\n"
             f"<link rel=\"stylesheet\" href=\"{num}.css\">\n<script>document.documentElement.classList.add('js')</script>\n</head>\n<body>\n<main>\n"
             + sec + f"\n</main>\n<script src=\"stage.js?v=" + V + "\"></script>\n<script src=\"" + num + ".js\"></script>\n</body>\n</html>\n")
     open(f"{LAB}/{num}.html", "w", encoding="utf-8").write(html)
@@ -78,7 +78,7 @@ def base():
     sec = SEC
     html = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Stage lab base</title>\n<link rel=\"icon\" href=\"data:,\">\n"
-            "<link rel=\"stylesheet\" href=\"../../landing.css\">\n<script>document.documentElement.classList.add('js')</script>\n</head>\n<body>\n<main>\n"
+            "<link rel=\"stylesheet\" href=\"../../landing/landing.css\">\n<script>document.documentElement.classList.add('js')</script>\n</head>\n<body>\n<main>\n"
             + sec + "\n</main>\n<script src=\"../../illustrations/hairline-kernel.js\"></script>\n<script src=\"../../illustrations/embed.js\"></script>\n"
             "<script type=\"module\" src=\"../../illustrations/followspot.js\"></script>\n</body>\n</html>\n")
     open(f"{LAB}/base.html", "w", encoding="utf-8").write(html)

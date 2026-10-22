@@ -22,7 +22,7 @@ Make **five clearly different 2D variants** of this illustration. Keep the idea:
 6. **Accessibility:** figure `role="img"` with an `aria-label`; decorative parts hidden.
 
 ## Deliverables (variant NN = 01…05)
-- `lab/stage/base.html`: the section as it is now (links `../../landing.css`, `../../design-system/tokens.css`, the kernel, embed.js and followspot.js), for reference.
+- `lab/stage/base.html`: the section as it is now (links `../../landing/landing.css`, `../../design-system/tokens.css`, the kernel, embed.js and followspot.js), for reference.
 - `lab/stage/NN.html` (+ `NN.css`, optional `NN.js`, vanilla, small): same section, your figure in place of the followspot.
 - `lab/stage/NN.json`: `{"title": "2–4 words", "what": "...", "why": "...", "how": "..."}`, 1–3 sentences each, plain English: **what** it shows, **why** this view and these details fit "we paid for the stage, you share the spotlight", **how** it is built (view, parts, motion, reduced motion, mobile).
 - `lab/stage/index.html`: viewer in the style of `lab/hero/index.html` (desktop iframe + phone iframe + what/why/how per variant, base as 00).
