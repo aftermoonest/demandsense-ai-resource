@@ -43,7 +43,7 @@ const own = Astro.slots.has('art');
   /* Desktop: the art covers the whole card behind the copy and the card crops it (Figma 962:39212) */
   .art { position: absolute; inset: 0; z-index: 0; pointer-events: none; translate: 15% 0; } /* nudged right, clear of the copy */
   .copy { position: relative; z-index: 1; }
-  .art > :global(*) { position: absolute; inset: 0; border-radius: 0; }
+  .card .art > :global(*) { position: absolute; inset: 0; border-radius: 0; } /* .card: outranks IsoArt's own .iso-panel rule, which the production build loads later */
   .art :global(img) { object-fit: contain; }
   @media (max-width: 999px) { .close { padding-block: 80px 48px; } .card { --pad: 40px; padding: 64px 40px; } .art { position: relative; inset: auto; aspect-ratio: 4 / 3; margin: -64px -40px 0; translate: none; } .has-art { grid-template-columns: 1fr; gap: 40px; } .has-art .copy { order: 0; } }
   @media (max-width: 699px) { .close { padding-block: 32px; } .card { padding: 32px 24px; } .art { margin: -32px -24px 0; } }
