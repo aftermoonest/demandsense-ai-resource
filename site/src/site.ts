@@ -28,7 +28,8 @@ export const LIB_NAV = [
   { href: '/rules', label: T.rules },
 ];
 
-export const CONTRIBUTE_URL = '/landing/';
+// tool and landing are separate Vercel projects, so link the landing by its own domain
+export const CONTRIBUTE_URL = 'https://demandsense-ai-resource.vercel.app/';
 export const REPO_URL = 'https://github.com/demandsense/the-ai-standard';
 
 // Placeholder skill icons per area until the batch of skill icons lands (brief: illustrations come last)
