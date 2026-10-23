@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import AuthorCard from '../../components/AuthorCard.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { T } from '../../site';
+
+// Practitioners first, by order; DemandSense (not featured) closes the list
+const authors = (await getCollection('authors')).sort((a, b) => (a.data.featured === b.data.featured ? a.data.order - b.data.order : a.data.featured ? -1 : 1));
+const signed = (e: { data: { author?: { id: string } } }) => !!e.data.author && e.data.author.id !== 'demandsense';
+const nWork = (await getCollection('scenarios', signed)).length + (await getCollection('skills', signed)).length;
+const two = (n: number) => String(n).padStart(2, '0');
+---
+<Base title={`${T.authors} · The B2B AI Standard for LinkedIn® Ads`} description="The practitioners who sign the scenarios, skills and rules in the Standard">
+
+  <!-- Whole page on black: hero, list and closing band -->
+  <div class="top surface-black">
+    <SiteHeader />
+    <div class="wrap hero">
+      <div class="copy">
+        <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.authors }]} />
+        <h1 class="headline t-display">The people behind the work. <span class="tone-2">Practitioners who run LinkedIn® Ads every week and sign each routine they hand over</span></h1>
+      </div>
+      <dl class="tally" aria-label="In the library">
+        <div><dt class="lbl">{T.authors}</dt><dd class="t-n3">{two(authors.length)}</dd></div>
+        <div><dt class="lbl">Signed work</dt><dd class="t-n3">{two(nWork)}</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <main id="main" class="surface-black ruled">
+    <section class="blk wrap" aria-labelledby="h-authors">
+      <SectionHead id="h-authors" marker={`All ${T.authors.toLowerCase()}`} count={authors.length} title="Ask them when you need the work done." context="Each profile lists what they wrote and where to reach them" />
+      <ul class="cells" data-reveal>
+        {authors.map((a) => <li><AuthorCard author={a} /></li>)}
+      </ul>
+    </section>
+  </main>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<style>
+  .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
+  .top > :global(:not(.site-header)) { position: relative; }
+  /* Same hero as the hubs (4-line headline room, §8.16) so the title holds its place between Directory and Authors */
+  .hero { display: flex; justify-content: space-between; align-items: end; gap: 40px; padding-block: 40px; }
+  .copy { display: grid; gap: 48px; }
+  .copy .headline { max-width: 760px; min-height: 4lh; }
+  .tally { display: flex; gap: 40px; flex: none; }
+  .tally div { display: grid; gap: 8px; }
+  .tally dt { color: var(--text-2); }
+
+  main { background: var(--bg); color: var(--text); border-top: 1px solid var(--line); } /* hero is black too: the edge lines need a rule to start from */
+  .blk { padding-block: var(--section-ruled-top) 0; }
+  /* Cells as in Directory's featured authors, wrapped into rows: no gaps, each card framed by 1px lines that meet the next one's */
+  .cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .cells > li { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+
+  @media (max-width: 999px) {
+    .hero { flex-direction: column; align-items: start; }
+    .cells { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 699px) {
+    .hero { padding-block: 24px; gap: 24px; }
+    .cells { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+// Temporary review page for the hero / CTA art. Delete before shipping.
+// ?only=<name>        one piece, playing
+// &dark               hero look (black, grey lines, glow) instead of the pastel field
+// &strip=<n>          n still frames across one loop (t = i * period / n), for checking motion frame by frame
+// &from=<t>&to=<t>    strip over a time window instead of the whole loop
+import Base from '../layouts/Base.astro';
+import IsoArt from '../components/IsoArt.astro';
+import { pieces } from '../art';
+---
+<Base title="Art lab">
+  <main class="lab-grid">
+    {Object.keys(pieces).map((n) => [<IsoArt name={n} field="var(--pastel-16)" class="lab" />, <IsoArt name={n} dark class="lab dark" />])}
+  </main>
+</Base>
+<script>
+  import { pieces } from '../art';
+  const q = new URLSearchParams(location.search), only = q.get('only'), dark = q.has('dark'), n = Number(q.get('strip')) || 0;
+  for (const e of document.querySelectorAll<HTMLElement>('[data-iso]')) {
+    if ((only && e.dataset.iso !== only) || e.classList.contains('dark') !== dark) e.remove();
+  }
+  if (n && only) {
+    const host = document.querySelector<HTMLElement>(`[data-iso="${only}"]`)!, piece = pieces[only];
+    const a = Number(q.get('from') ?? 0), b = Number(q.get('to') ?? piece.period);
+    const grid = document.querySelector('.lab-grid')!;
+    grid.classList.add('strip');
+    for (let i = 0; i < n; i++) {
+      const t = a + (b - a) * i / n;
+      const fig = host.cloneNode(true) as HTMLElement;
+      fig.removeAttribute('data-iso'); // clones stay still
+      fig.querySelector('[data-frame]')!.innerHTML = piece.draw(t);
+      const cap = document.createElement('figcaption'); cap.textContent = `t = ${t.toFixed(2)} s`; fig.append(cap);
+      grid.append(fig);
+    }
+    host.remove();
+  }
+</script>
+<style>
+  .lab-grid { display: grid; gap: 24px; padding: 24px; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); background: #111; }
+  .lab-grid.strip { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  :global(.lab) { aspect-ratio: 4 / 3; }
+  :global(.lab.dark) { background: #000; }
+  .lab-grid :global(figcaption) { position: absolute; left: 8px; bottom: 6px; font: 600 11px/1 var(--font-mono); color: #888; }
+</style>

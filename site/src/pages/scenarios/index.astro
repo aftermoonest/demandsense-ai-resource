@@ -1,0 +1,111 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import IsoArt from '../../components/IsoArt.astro';
+import TabBar from '../../components/TabBar.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Sec from '../../components/Sec.astro';
+import ScenarioCard from '../../components/ScenarioCard.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import StepDot from '../../components/StepDot.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { T } from '../../site';
+
+const all = (await getCollection('scenarios')).sort((a, b) => a.data.order - b.data.order);
+const ready = all.filter((s) => s.data.status === 'ready');
+const soon = all.filter((s) => s.data.status === 'soon');
+const two = (n: number) => String(n).padStart(2, '0');
+const steps = [
+  { title: 'Pick the job you already do', text: 'Each scenario names its cadence. Start with the one that matches a report you already owe someone' },
+  { title: 'Run it on the sample client', text: 'One install command, then a run on data that ships with it. You see every catch before you trust it' },
+  { title: 'Point it at your exports', text: 'It reads, flags and ranks. Nothing in your ad account or CRM changes unless a person changes it' },
+];
+---
+<Base type="scenario" title={`${T.scenarios} · The B2B AI Standard for LinkedIn® Ads`} description="Whole routines for LinkedIn® Ads, each with sample data to try before you run it on your own account">
+
+  <div class="top surface-black">
+    <SiteHeader />
+    <div class="wrap hero has-art">
+      <IsoArt name="scenarios" dark place={[-181, -134, 1025, 848]} clip={761} accent="scenario" class="hero-art" />
+      <div class="copy">
+        <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.scenarios }]} />
+        <h1 class="headline t-display">Whole routines, ready to run. <span class="tone-2">Each is a weekly or monthly job your AI does the same way, with sample data to try first</span></h1>
+      </div>
+      <dl class="tally" aria-label="In the library">
+        <div><dt class="lbl">Ready to run</dt><dd class="t-n3">{two(ready.length)}</dd></div>
+        <div><dt class="lbl">In the works</dt><dd class="t-n3">{two(soon.length)}</dd></div>
+      </dl>
+    </div>
+  </div>
+  <TabBar />
+
+  <main id="main" class="ruled">
+    <div class="wrap">
+      <Sec id="h-ready" label="Ready to run" title="Pick one and run it today." context="Each runs end to end on sample data before it touches your account" class="first">
+        <ul class="list" data-reveal>
+          {ready.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}
+        </ul>
+      </Sec>
+
+      <Sec id="h-how" label="How trying one works" title="Watch it run on sample data," context="then point it at your own exports">
+        <ol class="steps" data-reveal>
+          {steps.map((s, i) => (
+            <li class:list={['step', { key: i === 0 }]}>
+              <span class="tick"><StepDot n={i + 1} active={i === 0} /></span>
+              <b class="t-h6">{s.title}</b>
+              <p class="t-p2 body">{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </Sec>
+
+      {soon.length > 0 && (
+        <Sec id="h-soon" label="In the works" title="Being written with their authors." context="Each one gets a page once it runs end to end on sample data">
+          <ul class="list" data-reveal>
+            {soon.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}
+          </ul>
+        </Sec>
+      )}
+    </div>
+  </main>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<style>
+  .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
+  .top > :global(:not(.site-header)) { position: relative; }
+  .hero { display: flex; justify-content: space-between; align-items: end; gap: 40px; padding-block: 40px; }
+  .copy { display: grid; gap: 48px; }
+  .copy .headline { max-width: 760px; min-height: 4lh; } /* room for four lines on every hub, so the tabs sit the same distance below */
+  .tally { display: flex; gap: 40px; flex: none; }
+  .tally div { display: grid; gap: 8px; }
+  .tally dt { color: var(--text-2); }
+
+  main :global(.first) { border-top: 0; }
+  .list { display: grid; gap: var(--gutter); }
+
+  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange */
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .step { display: grid; gap: 8px; align-content: start; padding-right: 32px; }
+  .step:last-child { padding-right: 0; }
+  .tick { position: relative; z-index: 0; display: flex; align-items: center; height: 56px; margin-bottom: 8px; }
+  .tick::after { content: ''; position: absolute; z-index: -1; left: 0; right: -32px; top: 50%; height: 1px; background: var(--line); }
+  .step:last-child .tick::after { right: 0; background: linear-gradient(90deg, var(--line), transparent); }
+  .step .body { max-width: 36ch; }
+
+  @media (max-width: 999px) {
+    .hero { flex-direction: column; align-items: start; }
+    .steps { grid-template-columns: 1fr; gap: 24px; }
+    .step { grid-template-columns: 48px minmax(0, 1fr); column-gap: 16px; padding: 0; position: relative; }
+    .step > * { grid-column: 2; }
+    .step > .tick { grid-column: 1; grid-row: 1 / span 2; height: 48px; margin: 0; }
+    .tick::after { display: none; }
+    .step:not(:last-child)::before { content: ''; position: absolute; left: 23.5px; top: 48px; bottom: -24px; width: 1px; background: var(--line); }
+  }
+  @media (max-width: 699px) {
+    .hero { padding-block: 24px; gap: 24px; }
+  }
+</style>

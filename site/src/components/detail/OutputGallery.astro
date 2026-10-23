@@ -1,0 +1,80 @@
+---
+// "What comes back": slot "lead" sits above the gallery, the default slot below it. One big image with thumbnails below (DESIGN §8.14). Arrows sit in the section head; thumbs and arrows pick, the stage crossfades.
+import Sec from '../Sec.astro';
+import { arrow } from '../../arrows';
+interface Item { title: string; caption: string; src?: string }
+interface Props { id?: string; label?: string; title: string; context?: string; items: Item[] }
+const { id = 'h-back', label = 'What comes back', title, context, items } = Astro.props;
+---
+<Sec id={id} label={label} title={title} context={context} small>
+  <Fragment slot="act">
+    <button class="btn outlined icon xs" type="button" data-prev aria-label="Previous output" disabled><Fragment set:html={arrow('left')} /></button>
+    <button class="btn filled icon xs" type="button" data-next aria-label="Next output" disabled={items.length < 2}><Fragment set:html={arrow('right')} /></button>
+  </Fragment>
+  <slot name="lead" />
+  <div class="gal" data-gal>
+    <div class="stage">
+      {items.map((o, i) => (
+        <figure class:list={['slide', { on: i === 0 }]} aria-hidden={i === 0 ? undefined : 'true'}>
+          {o.src ? <img src={i === 0 ? o.src : undefined} data-src={o.src} alt={`${o.title}: ${o.caption}`} /> : <span class="ph pattern" role="img" aria-label={`${o.title} (image to come)`} />}
+        </figure>
+      ))}
+    </div>
+    <ul class="strip" aria-label="Outputs">
+      {items.map((o, i) => (
+        <li><button class="thumb" type="button" aria-label={`Show ${o.title}`} aria-current={i === 0 ? 'true' : undefined}>
+          {o.src ? <img src={o.src} alt="" loading="lazy" /> : <span class="ph pattern" />}
+        </button></li>
+      ))}
+    </ul>
+  </div>
+  <slot />
+</Sec>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gal]').forEach((gal) => {
+    const sec = gal.closest('section')!;
+    const prev = sec.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = sec.querySelector<HTMLButtonElement>('[data-next]')!;
+    const frames = [...gal.querySelectorAll<HTMLElement>('.slide')];
+    const thumbs = [...gal.querySelectorAll<HTMLButtonElement>('.thumb')];
+    let cur = 0;
+    const show = (i: number) => {
+      cur = Math.max(0, Math.min(frames.length - 1, i));
+      // Big images load only when shown: a gallery can hold 20+ screenshots
+      const img = frames[cur].querySelector<HTMLImageElement>('img[data-src]:not([src])');
+      if (img) img.src = img.dataset.src!;
+      frames.forEach((f, k) => { f.classList.toggle('on', k === cur); f.toggleAttribute('aria-hidden', k !== cur); });
+      thumbs.forEach((t, k) => t.toggleAttribute('aria-current', k === cur));
+      thumbs[cur].scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      prev.disabled = cur === 0;
+      next.disabled = cur === frames.length - 1;
+    };
+    thumbs.forEach((t, k) => (t.onclick = () => show(k)));
+    prev.onclick = () => show(cur - 1);
+    next.onclick = () => show(cur + 1);
+    gal.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') show(cur + 1); if (e.key === 'ArrowLeft') show(cur - 1); });
+  });
+</script>
+
+<style>
+  /* The stage fills the content column; thumbnails crop at the vertical lines (--pad from the detail frame) */
+  .gal { display: grid; gap: var(--gutter); }
+  .stage { position: relative; aspect-ratio: 16 / 10; border-radius: var(--radius-4); box-shadow: inset 0 0 0 1px var(--line-card); background: var(--bg-subtle); overflow: hidden; }
+  .stage::after { content: ''; position: absolute; inset: 0; z-index: var(--z-raised); border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-card); pointer-events: none; } /* slides paint over the stage's own inset ring */
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity var(--t-base) var(--ease-out); }
+  .slide.on { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: cover; }
+  .ph { position: absolute; inset: 0; opacity: .5; }
+  .strip { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 7 * var(--gutter)) / 8); gap: var(--gutter); margin-inline: calc(-1 * var(--pad, 0px)); padding: 4px var(--pad, 0px); scroll-padding-inline: var(--pad, 0px); overflow-x: auto; scrollbar-width: none; }
+  .strip::-webkit-scrollbar { display: none; }
+  .thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; border: 0; border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; cursor: pointer; transition: box-shadow var(--t-fast) ease; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb::after { content: ''; position: absolute; inset: 0; z-index: var(--z-raised); border-radius: inherit; box-shadow: inset 0 0 0 1px var(--neutral-100); pointer-events: none; transition: opacity var(--t-fast) ease; } /* over the image, which hides the inset ring */
+  .thumb[aria-current]::after { opacity: 0; }
+  .thumb[aria-current] { box-shadow: 0 0 0 2px var(--neutral-950); }
+  @media (hover: hover) and (pointer: fine) { .thumb:not([aria-current]):hover { box-shadow: 0 0 0 2px var(--neutral-200); } }
+  @media (prefers-reduced-motion: reduce) { .slide { transition: none; } }
+  @media (max-width: 999px) { .strip { grid-auto-columns: calc((100% - 5 * var(--gutter)) / 6); } }
+  @media (max-width: 699px) { .strip { grid-auto-columns: 20%; } }
+</style>

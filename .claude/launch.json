@@ -65,6 +65,17 @@
         "--strictPort"
       ],
       "port": 5190
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "site",
+        "run",
+        "dev"
+      ],
+      "port": 4321
     }
   ]
 }

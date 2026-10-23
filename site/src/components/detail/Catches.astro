@@ -1,0 +1,41 @@
+---
+// "What it catches" (scenario and skill pages): the lead number, then findings that share its value column.
+import Sec from '../Sec.astro';
+interface Finding { value: string; title: string; text: string }
+interface Props { label?: string; headline: string; context?: string; body?: string; note?: string; findings?: Finding[]; stat?: { value: string } }
+const { label = 'What it catches', headline, context, body, note, findings = [], stat } = Astro.props;
+---
+<Sec id="h-catches" label={label} title={headline} context={context} small class="first">
+  <div class="lead-stat" data-reveal>
+    {stat && <p class="t-n1 num">{stat.value}</p>}
+    <div class="ls-copy">
+      {body && <p class="t-p1 body">{body}</p>}
+    </div>
+  </div>
+  {findings.length > 0 && (
+    <ul class="finds" data-reveal>
+      {findings.map((f) => (
+        <li><p class="t-n3 val">{f.value}</p><div><p class="t-h6 ft">{f.title}</p><p class="t-p2 body">{f.text}</p></div></li>
+      ))}
+    </ul>
+  )}
+  {note && <p class="lbl-2 note">{note}</p>}
+</Sec>
+
+<style>
+  /* Lead number and findings share one value column, so every description starts on the same line */
+  .lead-stat, .finds > li { --vcol: 260px; }
+  .lead-stat { display: grid; grid-template-columns: var(--vcol) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .lead-stat:not(:has(.num)) { grid-template-columns: minmax(0, 1fr); } /* no lead number: the body takes the row */
+  .num { color: var(--text); font-size: 112px; line-height: .9; }
+  .ls-copy { display: grid; gap: 16px; max-width: 620px; }
+  .finds > li { display: grid; grid-template-columns: var(--vcol) minmax(0, 1fr); gap: 24px; padding-block: 20px; border-top: 1px solid var(--line); }
+  .finds > li:last-child { border-bottom: 1px solid var(--line); }
+  .ft { color: var(--text); margin-bottom: 4px; }
+  .note { color: var(--text-2); }
+  @media (max-width: 699px) {
+    .lead-stat { grid-template-columns: 1fr; gap: 16px; }
+    .num { font-size: 80px; }
+    .finds > li { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+// Tall scenario card (brief): illustration on top, category + cadence chips, title, 3-line description, author.
+// `wide` (Scenarios hub): illustration left, text right, one card per row.
+// Whole card is the link; no button. "Soon" cards are greyed, carry a Coming soon chip and don't link (no page yet).
+import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { AREAS } from '../site';
+import ScenarioCover from './ScenarioCover.astro';
+import Byline from './Byline.astro';
+interface Props { scenario: CollectionEntry<'scenarios'>; wide?: boolean }
+const { scenario, wide = false } = Astro.props;
+const { id, data } = scenario;
+const author = await getEntry(data.author);
+const soon = data.status === 'soon';
+const Tag = soon ? 'div' : 'a';
+---
+<Tag data-type="scenario" class:list={['scard', { soon, wide }]} href={soon ? undefined : `/scenarios/${id}`} style={data.cover ? `--cover: var(--pastel-${data.cover}); --cover-200: var(--pastel-${data.cover}-200); --cover-450: var(--pastel-${data.cover}-450)` : undefined}>
+  <div class="art" aria-hidden="true">
+    {data.illustration
+      ? <img src={data.illustration} alt="" loading="lazy" />
+      : <ScenarioCover />}
+  </div>
+  <div class="txt">
+    <p class="chips">
+      <span class="chip">{AREAS[data.category]}</span>
+      {soon ? <span class="chip out soon-chip">Coming soon</span> : <span class="chip out">{data.cadence}</span>}
+    </p>
+    <h3 class:list={[wide ? 't-h4' : 't-h5']}>{data.title}</h3>
+    <p class:list={['desc body', wide ? 't-p1' : 't-p2']}>{data.description}</p>
+    <Byline author={author} class="by" />
+  </div>
+</Tag>
+
+<style>
+  .scard { position: relative; display: grid; grid-template-rows: auto 1fr; height: 100%; border-radius: var(--radius-4); overflow: hidden; background: var(--neutral-0); transition: background-color var(--t-fast) var(--ease-out); }
+  /* One outline around the whole card, drawn above the cover so the pastel fill doesn't hide it */
+  .scard::after { content: ''; position: absolute; inset: 0; z-index: var(--z-raised); border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-card); pointer-events: none; }
+  .art { position: relative; aspect-ratio: 16 / 10; display: grid; place-items: center; padding: 8%; background: var(--cover, var(--bg-subtle)); overflow: hidden; }
+  .art img { width: 100%; height: 100%; object-fit: cover; }
+  .txt { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 24px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .desc { align-self: start; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .txt :global(.by) { margin-top: 12px; }
+  .wide { grid-template-rows: none; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 400px; }
+  .wide .art { aspect-ratio: auto; }
+  /* Art never sets the card's height and is never cropped: it fits inside the panel at every width */
+  .art > :global(svg) { position: absolute; inset: 8%; width: 84%; height: 84%; }
+  .soon-chip { color: var(--neutral-500); }
+  .wide .txt { padding: 40px; gap: 16px; }
+  .wide .desc { max-width: 520px; }
+  @media (max-width: 699px) { .wide { grid-template-columns: none; grid-template-rows: auto 1fr; min-height: 0; } .wide .art { aspect-ratio: 16 / 10; } .wide .txt { padding: 24px; } }
+  .soon .art { filter: grayscale(1); opacity: .6; }
+  .soon h3, .soon .desc { color: var(--text-2); }
+  @media (hover: hover) and (pointer: fine) {
+    /* The whole card takes the cover's pastel, so art and text read as one surface */
+    a.scard:hover { background: var(--cover, var(--bg-subtle)); }
+    /* Chips firm up on the pastel: category goes black, cadence gets a black stroke */
+    .chips .chip { transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
+    a.scard:hover .chip:not(.out) { background: var(--neutral-950); color: var(--neutral-0); }
+    a.scard:hover .chip.out { box-shadow: inset 0 0 0 1px var(--neutral-950); }
+  }
+</style>

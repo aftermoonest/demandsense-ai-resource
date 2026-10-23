@@ -27,6 +27,7 @@
   --primary-300: #7ba0ff;
   --primary-450: #3875f6;
   --primary-550: #2556c4;   /* conversion button hover: 1.6:1 vs 450 (brief §0.5 asks ≥1.4) */
+  --primary-650: #004ebf;   /* detail-page CTA card (Figma 982:39318) */
   --primary-850: #001a4c;
   --primary-900: #00113a;
   --primary-side: #78d7ff;
@@ -47,6 +48,11 @@
   --brand-second-10: #02bcfd1a; --brand-second-25: #02bcfd40;
   --brand-third-10: #1764ff1a;  --brand-third-25: #1764ff40;
 
+  /* ---------- Primitives: item types (DESIGN §4.6). Same hexes as the brand slots, own names: they mean different things ---------- */
+  --scenario-300: #fa8c16;
+  --skill-300: #02bcfd;
+  --rule-300: #1764ff;
+
   /* ---------- Primitives: chart (categorical, data only) ---------- */
   --chart-1: #531aa0;
   --chart-2: #7e003f;
@@ -59,6 +65,18 @@
   --chart-9: #55e4db;
   --chart-10: #c0526e;
   --chart-11: #0080a4;
+
+  /* ---------- Primitives: pastel (scenario cover backgrounds; Figma custom-palette 942:23484, step 25) ---------- */
+  --pastel-1: #fff2f4;  --pastel-2: #fff2f1;  --pastel-3: #fff2ef;  --pastel-4: #fff3ed;  --pastel-5: #fef3e9;
+  --pastel-6: #fff4e0;  --pastel-7: #fefa85;  --pastel-8: #e5ffad;  --pastel-9: #dbffd1;  --pastel-10: #d5ffe4;
+  --pastel-11: #cffff2;  --pastel-12: #cefeff;  --pastel-13: #e4f9ff;  --pastel-14: #ecf6fe;  --pastel-15: #f0f5ff;
+  --pastel-16: #f4f4ff;  --pastel-17: #f7f3ff;  --pastel-18: #fbf2ff;  --pastel-19: #fff1fc;  --pastel-20: #fff2f6;
+  /* Pastel families (Figma custom-palette 946:35915): -200 = light accent, -450 = accent, same column as --pastel-N.
+     Art on a --pastel-N cover takes its accents from these, never from another family (DESIGN §4.1) */
+  --pastel-1-200: #ffa3be; --pastel-1-450: #d24a7e;  --pastel-2-200: #fea5a5; --pastel-2-450: #d64c53;  --pastel-3-200: #ffa88a; --pastel-3-450: #d35322;  --pastel-4-200: #feaa6a; --pastel-4-450: #c06300;  --pastel-5-200: #ffac29; --pastel-5-450: #ac7001;
+  --pastel-6-200: #e6b700; --pastel-6-450: #987800;  --pastel-7-200: #c7c302; --pastel-7-450: #838001;  --pastel-8-200: #9ccd32; --pastel-8-450: #638800;  --pastel-9-200: #64d463; --pastel-9-450: #169027;  --pastel-10-200: #03d891; --pastel-10-450: #018e5e;
+  --pastel-11-200: #00d5b9; --pastel-11-450: #018c79;  --pastel-12-200: #00d2d7; --pastel-12-450: #018a8d;  --pastel-13-200: #00cff0; --pastel-13-450: #01889f;  --pastel-14-200: #5ec8ff; --pastel-14-450: #0285b4;  --pastel-15-200: #8bc1ff; --pastel-15-450: #0380d6;
+  --pastel-16-200: #a4bcff; --pastel-16-450: #3875f6;  --pastel-17-200: #bab6ff; --pastel-17-450: #7269f4;  --pastel-18-200: #d1aeff; --pastel-18-450: #975de6;  --pastel-19-200: #efa1fe; --pastel-19-450: #b353cc;  --pastel-20-200: #ff9edf; --pastel-20-450: #c74ca8;
 
   /* ---------- Interaction (Figma neutral/interaction/*) ---------- */
   --hover-on-0: var(--neutral-200);        /* white fill hovered */
@@ -82,6 +100,7 @@
   --line-card: var(--neutral-75);          /* card / media borders */
   --line-field: var(--neutral-1000-10);    /* input underline */
   --accent: var(--secondary-300);          /* section marker, focus, current */
+  --accent-on: var(--neutral-950);         /* number or label on an accent fill */
   --action: var(--neutral-950);            /* primary button */
   --action-text: var(--neutral-0);
   --action-brand: var(--primary-450);      /* conversion button (form submit) */
@@ -114,7 +133,11 @@
   --columns: 12;            /* col = (1304 - 11*16)/12 = 94px */
   --section-gap: 208px;     /* between landing sections */
   --section-gap-hero: 128px;/* hero -> first section */
-  --header-gap: 40px;       /* section header -> content */
+  --header-gap: 40px;       /* section header (headline, or body if any) -> content */
+  --gap-overline: 16px;     /* overline (section marker) -> headline */
+  --gap-body: 16px;         /* headline -> body */
+  --section-ruled-top: 120px;   /* divider (or surface edge) -> next overline */
+  --section-ruled-bottom: 80px; /* section content -> next divider (or surface edge) */
   --edge-fade: 5%;          /* mobile edge-line fade at top/bottom */
 
   /* ---------- Motion ---------- */
@@ -149,11 +172,11 @@
 
 /* Tablet / small desktop */
 @media (max-width: 999px) {
-  :root { --edge: 24px; --edge-inset: 40px; --columns: 8; --section-gap: 160px; --section-gap-hero: 96px; --header-gap: 32px; }
+  :root { --edge: 24px; --edge-inset: 40px; --columns: 8; --section-gap: 160px; --section-gap-hero: 96px; --header-gap: 32px; --section-ruled-top: 104px; }
 }
 /* Mobile (375 base) */
 @media (max-width: 699px) {
-  :root { --edge: 16px; --edge-inset: 16px; --columns: 4; --section-gap: 104px; --section-gap-hero: 64px; --header-gap: 24px; }
+  :root { --edge: 16px; --edge-inset: 16px; --columns: 4; --section-gap: 104px; --section-gap-hero: 64px; --header-gap: 24px; --section-ruled-top: 80px; --section-ruled-bottom: 64px; }
 }
 
 /* Black surface: hero, CTA, strategic summary. Same names, inverted values. */
@@ -173,6 +196,11 @@
   background: var(--bg);
   color: var(--text);
 }
+
+/* Item-type scope (DESIGN §4.6): a scenario, skill or rule page (on body) and every card or row of that type re-point the accent */
+[data-type="scenario"] { --accent: var(--scenario-300); --accent-on: var(--neutral-950); }
+[data-type="skill"] { --accent: var(--skill-300); --accent-on: var(--neutral-950); }
+[data-type="rule"] { --accent: var(--rule-300); --accent-on: var(--neutral-0); }
 
 /* ---------- Dot patterns (Figma 04 · Patterns; pattern fills at scale .25 of a 24px tile) ----------
    Tile = --pitch, dot diameter = pitch / 3 (8px dot in a 24px tile), dot centered.
@@ -196,7 +224,7 @@
 
 /* ---------- Text styles (Figma local styles; % tracking = em/100) ---------- */
 .t-h1 { font: 500 56px/1.05 var(--font-sans); letter-spacing: -.04em; }
-.t-display { font: 500 48px/1.05 var(--font-sans); letter-spacing: -.04em; } /* landing hero */
+.t-display { font: 500 48px/1.05 var(--font-sans); letter-spacing: -.04em; } /* page title (h1) on every page */
 .t-h2 { font: 500 40px/1.1 var(--font-sans); letter-spacing: -.04em; }
 .t-h3 { font: 500 32px/1.1 var(--font-sans); letter-spacing: -.04em; }
 .t-h4 { font: 500 28px/1.1 var(--font-sans); letter-spacing: -.04em; }
@@ -313,7 +341,7 @@ p, li, dd, figcaption, blockquote { text-wrap: pretty; }
 .tab-switch > [aria-selected=true] { background: var(--bg-muted); box-shadow: inset 0 -2px 0 var(--text); color: var(--text); }
 
 /* One hot block: the single accent-filled element on a screen. Never two. */
-.hot-block { background: var(--accent); color: var(--neutral-950); border-radius: var(--radius-4); }
+.hot-block { background: var(--accent); color: var(--accent-on); border-radius: var(--radius-4); }
 
 /* Prompt chips: suggested questions, right-aligned like a chat. */
 .prompt-chips { display: grid; justify-items: end; gap: 8px; }

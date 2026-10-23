@@ -1,0 +1,22 @@
+---
+// Detail-page CTA (Figma 982:39318): a blue card at the end of the content column, two-tone headline left, white button right.
+// Only scenario, skill and rule pages carry one; the footer SubmitBand stays the same on every page.
+import { arrow } from '../../arrows';
+import { CONTRIBUTE_URL } from '../../site';
+interface Props { title: string; context?: string; button?: string; href?: string }
+const { title, context = 'Put it in the Standard', button = 'Bring your work', href = CONTRIBUTE_URL } = Astro.props;
+---
+<aside class="cta surface-black" data-reveal>
+  <p class="t-h4 headline">{title} {context && <span class="tone-2">{context}</span>}</p>
+  <a class="btn filled" href={href}>{button} <Fragment set:html={arrow('right', 'go')} /></a>
+</aside>
+
+<style>
+  .cta { display: flex; gap: 24px; align-items: flex-start; padding: 64px; border-radius: var(--radius-4); background: var(--primary-650); }
+  .headline { flex: 1; min-width: 0; text-wrap: balance; }
+  /* On the blue the second tone is white at 60%, not the neutral grey */
+  .headline .tone-2 { color: rgb(255 255 255 / .6); }
+  .btn { flex: none; }
+  @media (max-width: 999px) { .cta { flex-direction: column; gap: 32px; padding: 40px; } }
+  @media (max-width: 699px) { .cta { padding: 32px 24px; } }
+</style>

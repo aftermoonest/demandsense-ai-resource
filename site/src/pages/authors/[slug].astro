@@ -1,0 +1,146 @@
+---
+// Author page: black sticky profile card on the left, the author's work on the right, grouped as scenarios, skills, rules.
+// White top, so the site header stays filled (DESIGN §8.16).
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Sec from '../../components/Sec.astro';
+import ScenarioCard from '../../components/ScenarioCard.astro';
+import SkillCard from '../../components/SkillCard.astro';
+import RuleRow from '../../components/RuleRow.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { arrow } from '../../arrows';
+import { T } from '../../site';
+
+export async function getStaticPaths() {
+  return (await getCollection('authors')).map((a) => ({ params: { slug: a.id }, props: { author: a } }));
+}
+interface Props { author: CollectionEntry<'authors'> }
+const { id, data } = Astro.props.author;
+const mine = (e: { data: { author?: { id: string } } }) => e.data.author?.id === id;
+const ready = <E extends { data: { order: number; status: string } }>(a: E, b: E) =>
+  a.data.status === b.data.status ? a.data.order - b.data.order : a.data.status === 'soon' || a.data.status === 'next' ? 1 : -1;
+const scenarios = (await getCollection('scenarios', mine)).sort(ready);
+const skills = (await getCollection('skills', mine)).sort(ready);
+const rules = (await getCollection('rules', mine)).sort((a, b) => a.data.number - b.data.number);
+const initials = data.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
+const job = [data.role, data.company].filter(Boolean).join(', ');
+const first = data.name.split(' ')[0];
+const n = (k: number, one: string, many: string) => (k === 1 ? `One ${one}.` : `${k} ${many}.`);
+
+// Social glyphs by link label; anything else gets the globe
+const GLYPH: Record<string, string> = {
+  linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3zm-1.08 16.17h1.7L7.4 4.74H5.58l11.09 14.43z"/></svg>',
+  github: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>',
+  web: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.75 5.6 3.75 9S14.5 18.4 12 21M12 3C9.5 5.6 8.25 8.6 8.25 12S9.5 18.4 12 21"/></svg>',
+};
+const glyph = (label: string) => GLYPH[label.toLowerCase()] ?? GLYPH.web;
+const go = arrow('right');
+---
+<Base title={`${data.name} · ${T.authors} · The B2B AI Standard for LinkedIn® Ads`} description={data.about}>
+  <SiteHeader />
+
+  <main id="main">
+    <div class="frame">
+      <aside class="aside" aria-label={`About ${data.name}`}>
+        <div class="crumbs"><Breadcrumbs items={[{ label: T.authors, href: '/authors' }, { label: data.name }]} /></div>
+        <div class="stick" data-reveal>
+          <div class="pcard surface-black">
+            <span class="photo">
+              {data.photo
+                ? <img src={data.photo} alt="" />
+                : <><span class="pattern dots" aria-hidden="true" /><span class="ini t-n2" aria-hidden="true">{initials}</span></>}
+            </span>
+            <div class="who">
+              <h1 class="t-h4">{data.name}</h1>
+              {job && <p class="t-p2 job">{job}</p>}
+            </div>
+            {data.about && <p class="t-p2 body">{data.about}</p>}
+            {data.links.length > 0 && (
+              <ul class="soc">
+                {data.links.map((l) => (
+                  <li><a class="btn outlined icon" href={l.url} target="_blank" rel="noopener" aria-label={`${data.name} on ${l.label}`} title={l.label} set:html={glyph(l.label)} /></li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      <div class="content">
+        {scenarios.length > 0 && (
+          <Sec id="h-scenarios" label={T.scenarios} title={n(scenarios.length, 'whole routine', 'whole routines')} context={`Skills chained into a weekly or monthly job, as ${first} runs it`} small>
+            <ul class="scs" data-reveal>{scenarios.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}</ul>
+          </Sec>
+        )}
+        {skills.length > 0 && (
+          <Sec id="h-skills" label={T.skills} title={n(skills.length, 'single check', 'single checks')} context="Each reads an export, applies one rule and hands back a list or a flag" small>
+            <ul class="grid2" data-reveal>{skills.map((s) => <li><SkillCard skill={s} /></li>)}</ul>
+          </Sec>
+        )}
+        {rules.length > 0 && (
+          <Sec id="h-rules" label={T.rules} title={n(rules.length, 'rule', 'rules')} context="What an experienced advertiser checks before trusting a number" small>
+            <ul class="rrows" data-reveal>{rules.map((r) => <li><RuleRow rule={r} /></li>)}</ul>
+          </Sec>
+        )}
+        {scenarios.length + skills.length + rules.length === 0 && (
+          <Sec id="h-work" label="Work" title="Nothing published yet." context={`${first}’s first scenario or skill is on its way`} small>
+            <p><a class="btn outlined" href="/directory">Browse the directory <Fragment set:html={go} /></a></p>
+          </Sec>
+        )}
+      </div>
+    </div>
+  </main>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<style>
+  /* The scenario page's frame (DetailFrame): card column with no line of its own, then the work between two vertical lines */
+  .frame { --pad: 64px; display: grid; grid-template-columns: 420px minmax(0, 1fr); max-width: 1512px; margin-inline: auto; padding-right: var(--edge); }
+  .aside { padding: 40px 40px var(--section-ruled-bottom); } /* the card stops level with the content's end */
+  .crumbs { padding-bottom: 80px; }
+  .stick { position: sticky; top: calc(var(--site-bar, 72px) + 40px); }
+  /* first label level with the card top: aside padding + one breadcrumb line (12px/1.4) + crumbs gap */
+  .content { min-width: 0; padding: calc(40px + 12px * 1.4 + 80px) var(--pad) var(--section-ruled-bottom); box-shadow: inset 1px 0 var(--line), inset -1px 0 var(--line); }
+  .content :global(.sec::before) { left: calc(-1 * var(--pad)); right: calc(-1 * var(--pad)); width: auto; translate: none; background: var(--line); }
+  .content :global(.sec:first-child) { padding-top: 0; }
+  .content :global(.sec:first-child::before) { display: none; }
+
+  .pcard { display: grid; gap: 24px; padding: 32px; border-radius: var(--radius-4); }
+  .photo { position: relative; display: grid; place-items: center; width: 140px; height: 140px; border-radius: 50%; background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; }
+  .dots { position: absolute; inset: 0; --dot: var(--neutral-850); }
+  .ini { position: relative; color: var(--text-meta); }
+  .who { display: grid; gap: 4px; }
+  .job { color: var(--text-2); }
+  .soc { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .soc svg { width: 18px; height: 18px; }
+
+  .scs { display: grid; gap: var(--gutter); }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+  .rrows { border-block: 1px solid var(--line); }
+  .rrows > li + li { border-top: 1px solid var(--line); }
+
+  @media (max-width: 1350px) { .frame { --pad: 40px; grid-template-columns: 380px minmax(0, 1fr); } .aside { padding-inline: var(--edge) 32px; } }
+  @media (max-width: 1199px) { .grid2 { grid-template-columns: 1fr; } }
+  @media (max-width: 999px) {
+    .frame { --pad: var(--edge-inset); display: block; padding: 0; }
+    .aside { padding: 40px var(--margin); border-bottom: 1px solid var(--line); }
+    .stick { position: static; }
+    .content { margin-inline: var(--edge); padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
+    .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 699px) {
+    .aside { padding-block: 24px; }
+    .crumbs { padding-bottom: 48px; }
+    .pcard { padding: 24px; }
+    .photo { width: 112px; height: 112px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .soc .btn { width: 44px; height: 44px; }
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+// Inner-page trail (brief: on every inner page). Last item is the current page, not a link.
+interface Props { items: { label: string; href?: string }[] }
+const { items } = Astro.props;
+---
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {items.map((c, i) => (
+      <li>
+        {c.href && i < items.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  ol { display: flex; flex-wrap: wrap; gap: 8px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; color: var(--text-2); }
+  li { display: inline-flex; gap: 8px; min-width: 0; }
+  li + li::before { content: '/'; color: var(--text-meta); }
+  a { transition: color var(--t-fast) ease; }
+  [aria-current] { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (hover: hover) and (pointer: fine) { a:hover { color: var(--text); } }
+</style>

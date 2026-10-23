@@ -1,0 +1,20 @@
+---
+// Block heading row: marker + count, two-tone headline on the left; actions (link, rail arrows) on the right via the default slot.
+interface Props { id: string; marker: string; count?: number; title: string; context?: string }
+const { id, marker, count, title, context } = Astro.props;
+---
+<div class="shead">
+  <div class="l">
+    <p class="marker">{marker}{count != null && <span class="cnt">{String(count).padStart(2, '0')}</span>}</p>
+    <h2 id={id} class="headline t-h4">{title} {context && <span class="tone-2">{context}</span>}</h2>
+  </div>
+  <div class="r"><slot /></div>
+</div>
+
+<style>
+  .shead { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: var(--header-gap); }
+  .l { display: grid; gap: var(--gap-overline); }
+  .cnt { margin-left: 6px; padding: 0 6px; border-radius: var(--radius-2); background: var(--bg-muted); color: var(--text-body); font-variant-numeric: tabular-nums; }
+  .r { display: flex; gap: 8px; align-items: center; flex: none; }
+  @media (max-width: 699px) { .shead { flex-direction: column; align-items: start; } .r :global(.desk) { display: none; } }
+</style>

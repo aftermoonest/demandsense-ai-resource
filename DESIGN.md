@@ -73,7 +73,8 @@ The headline is one continuous text block with two color spans. Same size, same 
 | Black | `neutral/0` #fff | `neutral/300` #aaadb3 (report uses #767980 on large sizes) |
 
 - Sizes in use: hero 48 (landing) / 56 (report), section 40, report section 28, feature block 24, quote 28/1.4.
-- Optional **section marker** above: 8px orange square + Geist Mono 12 uppercase (`chip`, micro). It labels the section ("FAQ", "WHAT YOU'LL GET"). It is not a second headline and never a sentence.
+- **Page title (h1) = `display`** (`.t-display`, 48 / 1.05, mobile 36) on every page of the landing and the tool: Directory, hubs and detail pages alike (Agov, 22 Oct). One h1 per page; no other size for page titles.
+- Optional **section marker** above: 8px accent square (orange; the item type colour on scenario, skill and rule pages, §4.6) + Geist Mono 12 uppercase (`chip`, micro). It labels the section ("FAQ", "WHAT YOU'LL GET"). It is not a second headline and never a sentence.
 - No body paragraph under the section headline. If one line of support is unavoidable (form card: "Pick the two your buyers mention most"), use `p1` in `neutral/800`, 8px below.
 - Quotes use the same trick inverted: gray sentence, black highlights on the key phrases.
 - Max line: 650px for hero and section headlines, 514px in report headers.
@@ -109,6 +110,10 @@ Every section's main header (the top-level headline and its body) divides the co
 
 **Chart (categorical)**: 1 `#531aa0` · 2 `#7e003f` · 3 `#7c0f99` · 4 `#00ac6f` · 5 `#ff6a4b` · 6 `#55c0f9` · 7 `#ffae6f` · 8 `#ffb900` · 9 `#55e4db` · 10 `#c0526e` · 11 `#0080a4`.
 
+**Pastel** (scenario cover backgrounds, Figma `colors/custom-palette` `942:23484`, step 25 of each hue column): 1 `#fff2f4` · 2 `#fff2f1` · 3 `#fff2ef` · 4 `#fff3ed` · 5 `#fef3e9` · 6 `#fff4e0` · 7 `#fefa85` · 8 `#e5ffad` · 9 `#dbffd1` · 10 `#d5ffe4` · 11 `#cffff2` · 12 `#cefeff` · 13 `#e4f9ff` · 14 `#ecf6fe` · 15 `#f0f5ff` · 16 `#f4f4ff` · 17 `#f7f3ff` · 18 `#fbf2ff` · 19 `#fff1fc` · 20 `#fff2f6`. Tokens `--pastel-1` … `--pastel-20`. A scenario picks one with `cover: <1–20>` in its frontmatter; without it the cover falls back to `--bg-subtle`. Skill cards take a cover by area (`AREA_COVER` in `site/src/site.ts`).
+
+**Art on a pastel cover stays in its cover's colour family** (rule, 2026-10-23). Every illustration or icon on a `--pastel-N` cover takes its accents (lit screen, beacon, keys, cards, cable, glow, the icon's highlight stroke) from the same hue column of Figma `colors/custom-palette` `946:35915`, never from primary blue or another hue: `--pastel-N-450` is the accent, `--pastel-N-200` the light accent. Neutrals (plates, edges, detail lines) stay neutral. The card sets `--cover-450` / `--cover-200` on the cover; `ScenarioCover` and the skill icon read them (fallback: primary 450 / 200 when no cover is set). A new art piece on a cover reads these two variables rather than hardcoding a colour.
+
 The extended Figma palette (4 ramps and the 20×20 hue grid, Figma `colors/custom-palette` `103:1364`) is a picking source, not a token set. Promote a value to a variable before using it.
 
 ### 4.2 Semantic roles
@@ -126,6 +131,9 @@ The extended Figma palette (4 ramps and the 20×20 hue grid, Figma `colors/custo
 | `--action` (primary button) | 950 | 0 |
 | `--action-brand` (form submit) | primary/450 | primary/450 |
 | `--accent` (section marker, focus ring, current) | secondary/300 | secondary/300 |
+| `--accent-on` (number or label on an accent fill) | 950 | 950 |
+
+On a scenario, skill or rule page `--accent` becomes that item's type colour (§4.6).
 
 ### 4.3 Interaction
 
@@ -165,6 +173,24 @@ Figma components that miss AA as drawn (measured in the rendered specimen). Kept
 
 ---
 
+### 4.6 Item type colours *(AI Resource site, decided 2026-10-23)*
+
+Each item type has its own accent. It replaces the orange `--accent` everywhere the accent belongs to that item: the section marker squares, the active step dot, quote and gate bars, focus rings.
+
+| Type | Token | Hex | `--accent-on` |
+|---|---|---|---|
+| Scenario | `--scenario-300` | `#fa8c16` (same as secondary/300) | neutral/950 |
+| Skill | `--skill-300` | `#02bcfd` | neutral/950 |
+| Rule | `--rule-300` | `#1764ff` | neutral/0 (950 on this blue is 4.2:1, white 5:1) |
+
+The hexes match the brand slots (first/second/third) but the names are separate: brand slots stay for compared companies in charts.
+
+How it is applied: `[data-type="scenario|skill|rule"]` (tokens.css) re-points `--accent` and `--accent-on`. `Base` takes `type` and sets it on `body` for the hub and detail pages of that type; `ScenarioCard`, `SkillCard` and `RuleRow` carry their own `data-type`, so a rule row on a skill page stays blue; Directory sections carry the type of what they list. Components keep reading `--accent`; never hardcode a type hex.
+
+Stays brand orange (`secondary/300`): pages that are not one item type (landing, Directory hero and Featured authors, author pages, art lab), the header, tab bar, submit band and footer, the wave, severity chips. Illustrations follow their own rules (§4.1, §8.17).
+
+Contrast: like orange, skill cyan as text on white is under 3:1 (2.2:1), so use it for fills and large numbers only, never for body copy.
+
 ## 5. Typography
 
 Fonts: **Inter** (Medium 500 everywhere; SemiBold 600 only for side tabs and brand names) and **Geist Mono** (Medium 500 for numbers, SemiBold 600 for labels). Both are bundled locally in the report (`assets/InterVariable.ttf`, `GeistMono-Medium.ttf`, `GeistMono-SemiBold.ttf`). No other weights.
@@ -172,7 +198,7 @@ Fonts: **Inter** (Medium 500 everywhere; SemiBold 600 only for side tabs and bra
 | Token | Font | Size / LH / Tracking | Use |
 |---|---|---|---|
 | headline/h1 | Inter 500 | 56 / 1.05 / -4% | Report hero title |
-| display *(landing)* | Inter 500 | 48 / 1.05 / -4% | Landing hero headline |
+| display | Inter 500 | 48 / 1.05 / -4% | Page title (h1) on every page: landing hero, tool Directory, hubs, detail pages |
 | headline/h2 | Inter 500 | 40 / 1.1 / -4% | Landing section headline |
 | headline/h3 | Inter 500 | 32 / 1.1 / -4% | Report summary headlines |
 | headline/h4 | Inter 500 | 28 / 1.1 / -4% | Report section header, form card title |
@@ -318,6 +344,28 @@ The report build has two extra cut points, both in component CSS, not tokens:
 - **700 vs 699**: the share popup collapses at `max-width: 700px`, everything else at 699. Use 699.
 - **Touch** (`hover: none`, `pointer: coarse`): chart keys get `cursor: pointer`; tooltips open on tap (§10).
 
+
+### 6.6 Section spacing *(AI Resource site, decided 2026-10-23)*
+
+One set of vertical gaps for every site page: Directory, the four hubs, scenario / skill / rule detail pages and the author profile. Values are tokens in `design-system/tokens.css`; pages use the tokens, never their own numbers. `Sec.astro` and `SectionHead.astro` already apply them, so a new section gets them for free.
+
+| Gap | Token | Desktop | Tablet (700–999) | Mobile (<700) |
+|---|---|---|---|---|
+| Overline (section marker) → headline | `--gap-overline` | 16 | 16 | 16 |
+| Headline → body | `--gap-body` | 16 | 16 | 16 |
+| Header (headline, or body if any) → section content | `--header-gap` | 40 | 32 | 24 |
+| Divider → next overline | `--section-ruled-top` | 120 | 104 | 80 |
+| Section content → next divider | `--section-ruled-bottom` | 80 | 80 | 64 |
+| Section → section with no divider (content → next overline) | `--section-gap` | 208 | 160 | 104 |
+
+- **Headline → body** is the rule-page hero rhythm (title → lead). It holds wherever a body follows a headline: page heroes, the closing card, a stacked section header (§3.1 on mobile). When the body sits beside the headline (§3.1 split) there is no vertical gap.
+- **With a divider** the line is the separator: 120 above the next overline, 80 under the last content. The gap is deliberately asymmetric so the line reads as belonging to the section below it.
+- **A surface edge counts as a divider**: hero → first section, white → black band and back ("Get it", "The prompt", Featured authors), detail sidebar border on tablet. Inside a black band the same 120 / 80 apply.
+- **Without a divider** (two white sections in a row with no line, as on the landing) the whole gap is `--section-gap`, split however the sections need, never less.
+- A section that ends on a bordered grid (`.flush`) has no bottom gap: the grid's own border meets the next divider.
+- The first section in a column with no line or edge above it (author profile, level with the card) starts at 0; its top is set by what it aligns to.
+- Not covered here: hero internals, card internals, the closing band's card, component padding (§6.2).
+
 ---
 
 ## 7. Dividers and edge lines
@@ -424,6 +472,8 @@ All cards: radius 4 (dark card radius 2), no shadow.
 - **Testimonial card**: 708 cell with left/right lines, pad 40, gap 40: logo, quote (28/1.4, gray with black highlights), 120px photo (radius 4, 1px `neutral/100`) + name h6 20 + role l0 14 `neutral/500` + G2 rating (l0 black, 16px stars); side lines `neutral/100`; quote highlight `#0b0c0d` (hardcoded).
 - **Form card** (hero/CTA): white, radius 4, pad 40, gap 80 between fields block and submit block. Title h4 two-tone, support p1 `neutral/800`.
 
+- **Step dot** (`site/src/components/StepDot.astro`, Figma `number` `938:23476`): the one timeline marker. 48px: 24px disc in `--line` with a mono number in `--text`, halos at 36px (`--line` 50%) and 48px (`--line` 25%), on `--bg` so it masks the timeline line. `active`: `--accent` disc, `--accent-on` number, two ripples scaling 1 → 2 and fading .45 → 0 over 2.4s, 1.2s apart; under reduced motion one static ring (scale 1.5, 25%). Works on white and black surfaces through tokens. Use it for every numbered timeline (Scenarios hub "How trying one works", scenario page "How it finds them").
+
 ### 8.7 Data components
 
 - **metric**: cell 358 × 270, pad 80 / 40, gap 12, centered: n1 64px value + l1 caption `neutral/800` (2 lines max).
@@ -454,7 +504,9 @@ All cards: radius 4 (dark card radius 2), no shadow.
 
 ### 8.10 Icons
 
-24×24 line icons, `currentColor`, exported from Figma as SVG (never redrawn). Sizes in use: 12 (inside buttons' check rows), 16 (small buttons, chips), 18 (default buttons), 20 (FAQ, feature check), 24, 28 (conversion arrow). Set: arrow ×4, chevron ×4, check, check-circle, cross, link, minus, plus, square, play, no-card, chart-gantt, medal, newspaper, signpost, lightbulb, carousel, file-check, filter, gallery, gift, list, placeholder, scales, smile, speak, target, star, linkedin, g2.
+24×24 line icons, `currentColor`, exported from Figma as SVG (never redrawn).
+
+**Arrows: only the Figma `icon/arrow` set** (`116:2219`: up, down, right, left), exported to `design-system/icons/arrow-{up,down,left,right}.svg` (filled, `currentColor`). Use them for every arrow: buttons, slider prev/next, links, list marks. Outbound links use the up arrow turned 45°. Never draw or import another arrow (Agov, 23 Oct). In the tool: `arrow(dir, class)` from `site/src/arrows.ts`. Sizes in use: 12 (inside buttons' check rows), 16 (small buttons, chips), 18 (default buttons), 20 (FAQ, feature check), 24, 28 (conversion arrow). Set: arrow ×4, chevron ×4, check, check-circle, cross, link, minus, plus, square, play, no-card, chart-gantt, medal, newspaper, signpost, lightbulb, carousel, file-check, filter, gallery, gift, list, placeholder, scales, smile, speak, target, star, linkedin, g2.
 
 ### 8.11 Dot patterns
 
@@ -520,6 +572,7 @@ Layers: `--z-raised` 1 · `--z-sticky` 10 · `--z-overlay` 50 · `--z-tip` 60 ·
 ### 8.14 Scroll, bleed, print
 
 - **Rails**: `scroll-snap-type: x mandatory`, children `scroll-snap-align: start`, scrollbar hidden (`.scroll-snap-x`). Arrows and keys still step one card.
+- **Rails crop at the vertical edge lines, never at their container** (Agov, 22 Oct): the scroller runs out past the grid to the edge lines (`margin-inline: -edge-inset`, same `padding-inline` and `scroll-padding-inline`; `.to-edges` in the tool), so cards rest on the grid and slide under the lines. Applies to every horizontal rail and tab strip.
 - **Overlay scrollers**: `overscroll-behavior: contain` (`.scroll-contain`).
 - **Bleed** (`--bleed`): `edge + max(0, (100vw − 1512) / 2)`. Used with negative margins to push a band (ad rows, wide tables) from the main column to the viewport edge on any screen width.
 - **Print** (report is printed): hide nav, skip link, toast, dialogs and `[data-action]`; kill transitions and show every reveal in its end state (`opacity: 1; transform: none`, including charts); force colors with `print-color-adjust: exact`; the report scales to `zoom: .65` at 1172 wide; dividers do not break pages (`break-after: avoid`).
@@ -559,6 +612,72 @@ Code: `tokens.css` (section "Figures and infographics"), `word-reveal.js`. Visua
 **Rejected (do not add):** square brackets anywhere in UI chrome (type tags, action labels `[ CLICK TO CHAT ]`), meta-left list rows, pixel-mosaic photo filter (S9, parked), dotted row dividers, accent-coloured category line above a headline. Mega headline (96–112px) and a 100vh hero are parked. Stat strip stays optional.
 
 ---
+
+### 8.16 Site header and library tab bar *(AI Resource site, decided 2026-10-23; do not change without asking)*
+
+The site's own two nav bars (the main site header, and the Directory / Scenarios / Skills / Rules pill tabs on the hub pages). Not the demandsense.com chrome in §8.8.
+
+- **Always black.** Both bars stay on the black surface on every page and at every scroll position. They never flip to white, whatever section is under them.
+- **At the very top (page not scrolled), over a black hero** (Directory, hubs, Authors): the site header is transparent (the hero and its wave show through) and has no bottom line.
+- **Over a white or light top** (detail pages with a tinted or white hero): the header stays filled black with its line even at the very top. A transparent header over a light surface is never used.
+- **Once the page scrolls:** the site header fills black and gets its 1px bottom line (`--line` on black). Fill and line fade in together, 200ms `--ease-out`; nothing else changes.
+- **Tab bar:** sits in the black hero; once it sticks under the site header it stays black, tightens its bottom padding (24 → 12) and takes over the single bottom line for the whole stack (the header drops its own while the tabs are stuck).
+- Hub heroes reserve four headline lines (`min-height: 4lh` on the h1) so the tabs sit at the same height on all four hubs.
+
+### 8.17 Illustration style *(AI Resource site, extracted 2026-10-23 from 7 reference images in `docs/illustration-refs/`)*
+
+Applies to every illustration on the site: hub heroes, footer CTA, scenario covers, skill and rule art. Metaphors per slot: [`docs/illustration-metaphors.md`](docs/illustration-metaphors.md). Built with `anatomy` (object construction) and `iso-glow` (live parts, travelling pulses), restyled to this spec: their shading and glow are dropped.
+
+**Camera.** True isometric, one angle for every piece (horizontal edges at ±30°). One object or one tight group, centred, floating on a flat field, filling about half the frame with generous air. No ground plane, no horizon, no cast shadow.
+
+**Ink.** One near-black ink, `--neutral-950`, for every line. Never coloured strokes.
+
+| Line | Width at 1× | Use |
+|---|---|---|
+| Silhouette | 1.5 | Outer contour of each part |
+| Detail | 1 | Inner edges, ribs, rings, glyphs, text-stand-in bars |
+| Figure | 2–2.5 | Only for organic figures (people, clouds); hand-drawn feel, slight wobble allowed |
+
+Round joins and caps. Lines close cleanly at corners; no sketchy overshoot except on figures.
+
+**Fill: three tones of one hue, plus white.** No gradients, no shading ramps, no glow, no blur.
+
+| Role | Token | Where |
+|---|---|---|
+| Field | `--pastel-N` (cover) | Background behind the object |
+| Body | `--pastel-N-200` at ~45% | Side faces, rims, stacked slices, back sheets, "on" keys |
+| Tint | `--pastel-N-200` at ~20% | Inner faces, panels, coin faces, grid lines (as stroke at full 200 when thin) |
+| Paper | `#fff` | Top faces, front sheets, the face the eye lands on |
+
+Top faces read lightest (paper), sides darker (body). That is the only "lighting".
+
+**Black accents.** Solid `--neutral-950` fills, used sparingly as punctuation, never as a large area:
+- *Thickness slab:* one visible edge of a thin object (laptop base, phone, calendar spine, the front sheet of a stack) is a solid black extrusion 3–5 px deep.
+- *Arrowheads and pins:* solid filled triangles at the end of every dashed path; solid dots at origins.
+- *One dark part:* at most one solid black element per piece (a screen, a visor, a slot, a ring binding).
+
+**Dashed paths.** The motion vocabulary. Ink, 1.5–2.5 wide, dash about 2× gap (e.g. 8 / 5), butt caps. Curved, straight or zigzag, they show direction or flow, start from a dot or from behind the object and end in a solid triangle head. They may pass behind the object (break at the occluding edge). At most three per piece; one is typical.
+
+**Glyphs and details.** Outline glyphs (currency, check, plus, percent) drawn as shapes, not type. **No words or numbers inside a drawing** (the "Send" button in ref-3 is the one thing we don't take). Text stand-ins are rounded bars in tint. Motion marks: three short parallel strokes for speed, scalloped arcs for puffs. Repeated identical slices (coin stacks, sheets, keys) give rhythm.
+
+**Corners.** Devices and plates: small radius (about 0.5–1.2 world units, the CLAUDE.md "edgy" rule). Paper and cards: sharp. Discs and cylinders stay round.
+
+**Slot types.**
+
+| Slot | Size | Colour | Motion |
+|---|---|---|---|
+| Hub heroes (directory, scenarios, skills, rules), footer CTA | Big | Coloured: up to three pastel hues in one piece, each part keeps its hue's three tones; ink and black accents shared | Auto, looping |
+| Scenario | Big | Monochrome from the scenario's `cover` hue | Static on card; auto on the scenario page |
+| Skill | Small | Monochrome from the skill's area cover | Static |
+| Rule | Small | Monochrome from the rule's area cover | Static |
+
+Small slots drop detail-weight lines under ~1px rendered and keep at most one dashed path.
+
+**Motion (auto only).** No hover, press, focus or key triggers. The part that does the work moves along iso axes or along its dashed path; dashed paths march (`stroke-dashoffset`). Loops of 3–8 s with a rest beat. Every move eases with Figma's "Slow" spring (mass 1, stiffness 80, damping 20: no overshoot, long soft settle), about a second per move; only steady rotations and marching dashes run linear. Each frame is redrawn from the piece's pure `draw(t)`, so moving parts stay in correct depth order. Pause when off-screen. `prefers-reduced-motion`: show the rest frame, no loop. Every animated piece ships its rest frame as a static SVG, which is also the card/static variant.
+
+**Heroes and footer CTA: no panel, big, cropped** (decided 2026-10-23). The art sits straight on the section: on the black hub hero and on the white CTA card, with no pastel field behind it. It is scaled up around the piece's `focus` (the part that matters) and bleeds off the hero's right and bottom edges, or the CTA card's edges; the section crops it. On black heroes the art switches to the iso-glow look (`dark`): faces `--neutral-950` (tops) and `--neutral-1000` (sides), hairlines a 55/45 mix of `--neutral-500` and `--neutral-800` at 0.6px (detail `--neutral-800` at 0.45px, dashes 0.9px), dashed paths and heads in the hairline grey; only the live part (`.lit`: the open drawer, the plucked teeth and pins, the die and finding card, the parts that pass the gauge) is primary blue with a soft, wide glow (SVG blur 10, 70% opacity). The art fills the right of the hero from under the header to the hero's bottom edge, starts where the headline ends and bleeds off the right; hidden below 1000px. The footer CTA keeps the coloured light version. Pastel fields stay for cards (scenario covers, skill and rule art).
+
+**Build.** Kernel `site/src/art/iso.ts` (projection, `box`, `cyl`, `cylX/Y`, `curve`, `arrow`, `hue`). Each piece is a module exporting a `Piece` with a pure `draw(t)`; register it in `site/src/art/index.ts` and place it with `<IsoArt name="…" field="var(--pastel-N)" />`, which renders the rest frame at build time and replays `draw(t)` every frame while on screen, at 0.6× speed. Hub heroes add `has-art` to `.hero` (`<IsoArt … dark place={[right, top, w, h]} clip={w} class="hero-art" />`): copy then tally stack on the left on every hub (the directory shows entries and practitioners) so all four heroes are one height. Each piece's size and position come from the designer's layout in Figma `962:39212` ("Section 2", at 1512 wide): `place` pins the SVG to the hero's right edge and the top of the black band, `clip` is how far the visible box reaches in from the right. The art runs from under the header to the bottom of the black hero, with 160px fades into the black at the top and the bottom, and never changes the hero's size. The footer CTA art is pinned the same way inside the card, behind the copy; below 1000px it falls back to a fitted 4:3 box above the copy. The footer CTA uses `zoom={1.45}` and bleeds to the card's edges. Hues follow the item type colours (2026-10-23): a = scenario `#FA8C16`, b = skill `#02BCFD`, c = rule `#1764FF` (`--scenario-300`, `--skill-300`, `--rule-300`, set once on `.iso-panel` in `IsoArt.astro`). On a black hero the glow takes the hero's own type (`accent="scenario|skill|rule"`); the directory's open drawer takes its bank's colour. Pieces: directory = card-catalogue cabinet (`catalogue.ts`), footer CTA = card tray with a blank card filing itself (`tray.ts`).
 
 ## 9. Page patterns
 
@@ -621,6 +740,7 @@ From the report build (`report-v2.css`, `report-v2.js`, `tone-overlay.css`) and 
 | Button (all types) | One step toward contrast (§4.3); report build shortcut `filter: brightness(.94)` | `scale(.97)` on `:active`, fill `neutral/500` |
 | Side nav link | label `neutral/500` → `neutral/950` | current: `neutral/50` fill (`aria-current`) |
 | Table / matrix row | row fill `neutral/25`, 150ms | — |
+| Card (rule, scenario, skill, author) | fill `neutral/25` (`--bg-subtle`), 150ms; no stroke change, no image scale, no arrow | — |
 | Tone scale row | row fill `neutral/50`, both end pills turn black with white text | click or Enter opens the side panel; same style on `:focus-visible` |
 | FAQ row | bottom line `neutral/100` → `neutral/950` | open: `neutral/50` fill, line hidden |
 | Text field | underline → `neutral/950` | same on focus |

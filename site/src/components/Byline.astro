@@ -1,0 +1,23 @@
+---
+// "By [avatar] Name" for every author mention: 20px round photo, initials until the photo arrives (DESIGN §8.9 avatars).
+import type { CollectionEntry } from 'astro:content';
+interface Props { author?: CollectionEntry<'authors'>; link?: boolean; class?: string }
+const { author, link = false, class: cls } = Astro.props;
+if (!author) return;
+const { id, data } = author;
+const initials = data.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
+const Name = link ? 'a' : 'span';
+---
+<span class:list={["byline lbl", cls]}>
+  By
+  <span class="av" aria-hidden="true">{data.photo ? <img src={data.photo} alt="" loading="lazy" /> : initials}</span>
+  <Name class="name" href={link ? `/authors/${id}` : undefined}>{data.name}</Name>
+</span>
+
+<style>
+  .byline { display: inline-flex; align-items: center; gap: 8px; }
+  .av { display: grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; overflow: hidden; background: var(--bg-muted); box-shadow: inset 0 0 0 1px var(--line-card); color: var(--text-2); font: 600 8px/1 var(--font-mono); }
+  .av img { width: 100%; height: 100%; object-fit: cover; }
+  a.name { color: var(--text); border-bottom: 1px solid var(--line); transition: border-color var(--t-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { a.name:hover { border-color: var(--text); } }
+</style>

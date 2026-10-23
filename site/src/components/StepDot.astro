@@ -1,0 +1,26 @@
+---
+// Timeline step dot (Figma "number" 938:23476): 24px disc, 36px and 48px halos, mono number.
+// `active`: accent disc (item-type colour on scenario/skill/rule pages) sending a soft ripple; static ring under reduced motion. Tokens only, so it works on white and black surfaces.
+interface Props { n: number | string; active?: boolean }
+const { n, active = false } = Astro.props;
+---
+<span class:list={['sdot', { active }]} aria-hidden="true"><i>{n}</i></span>
+
+<style>
+  /* Own stacking context: the ripple paints above the dot's background (which masks the timeline line) and below the disc */
+  .sdot { position: relative; isolation: isolate; display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; background: var(--bg); }
+  .sdot::before, .sdot::after { content: ''; position: absolute; z-index: -1; border-radius: 50%; }
+  .sdot::before { inset: 0; background:
+    radial-gradient(circle, transparent, color-mix(in srgb, var(--line) 50%, transparent) 18px, transparent 18.5px),
+    radial-gradient(circle, transparent, color-mix(in srgb, var(--line) 25%, transparent) 24px, transparent 24.5px); }
+  i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--line); color: var(--text); font: 600 12px/1 var(--font-mono); font-style: normal; }
+
+  .active i { background: var(--accent); color: var(--accent-on); }
+  .active::before, .active::after { inset: 12px; background: var(--accent); opacity: 0; animation: sdot-ripple 2.4s var(--ease-out) infinite; }
+  .active::after { animation-delay: 1.2s; }
+  @keyframes sdot-ripple { from { transform: scale(1); opacity: .45; } to { transform: scale(2); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .active::before { animation: none; transform: scale(1.5); opacity: .25; }
+    .active::after { animation: none; }
+  }
+</style>

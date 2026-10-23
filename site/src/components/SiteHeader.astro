@@ -1,0 +1,54 @@
+---
+// Site-level header on every page (black, never flips to white; transparent at the very top over black): logo, Directory, Authors, actions. The library tab bar is a second level, hubs only.
+import { SITE_NAV, T, CONTRIBUTE_URL } from '../site';
+const path = Astro.url.pathname;
+---
+<header class="site-header surface-black" data-site-header>
+  <div class="wrap bar">
+    <a class="logo" href="/" aria-label="The B2B AI Standard for LinkedIn® Ads, home">
+      <span class="name">The B2B AI Standard <span class="tone-2">for LinkedIn® Ads</span></span>
+      <span class="lbl-2">Maintained by DemandSense</span>
+    </a>
+    <nav class="nav" aria-label="Site">
+      {SITE_NAV.map((n) => <a href={n.href} aria-current={n.match.some((m) => path.startsWith(m)) ? 'page' : undefined}>{n.label}</a>)}
+    </nav>
+    <div class="end">
+      <a class="btn ghost sm submit" href={CONTRIBUTE_URL}>Submit your work</a>
+      <a class="btn filled sm" href="/scenarios">Try <span class="long">your first</span><span class="short">a</span> {T.scenario.toLowerCase()}</a>
+    </div>
+  </div>
+</header>
+<div class="site-spacer" aria-hidden="true"></div>
+
+<script>
+  // At the very top and over a black section: transparent, no line. Fill and line appear once the page scrolls; over a light top (detail pages) it stays filled (DESIGN.md §8.16)
+  const h = document.querySelector<HTMLElement>('[data-site-header]');
+  const sync = () => {
+    if (!h) return;
+    const under = document.elementsFromPoint(innerWidth / 2, h.offsetHeight + 1).find((el) => !h.contains(el));
+    h.classList.toggle('at-top', scrollY <= 0 && !!under?.closest('.surface-black'));
+  };
+  addEventListener('scroll', sync, { passive: true });
+  addEventListener('resize', sync);
+  sync();
+</script>
+
+<style>
+  /* Always fixed and black (never flips to white); transparent with no line only at the very top. The spacer keeps its place in the flow */
+  .site-header { position: fixed; inset: 0 0 auto; z-index: var(--z-sticky); background: var(--bg); color: var(--text); box-shadow: inset 0 -1px 0 var(--line); transition: background-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out); }
+  .site-header.tabs-stuck, .site-header.at-top { box-shadow: none; }
+  .site-header.at-top { background-color: transparent; }
+  .site-spacer { height: var(--site-bar); }
+  .bar { display: flex; align-items: center; gap: 32px; height: var(--site-bar); }
+  .logo { display: grid; gap: 2px; margin-right: auto; }
+  .name { font: 500 16px/1.2 var(--font-sans); letter-spacing: -.04em; }
+  .logo .lbl-2 { color: var(--text-2); }
+  .nav { display: flex; gap: 24px; }
+  .nav a { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; color: var(--text-2); transition: color var(--t-fast) ease; }
+  .nav a[aria-current] { color: var(--text); }
+  .end { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+  @media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--text); } }
+    .short { display: none; }
+  /* Phones: logo + site nav only; the "Try" button would push the bar past 375px */
+  @media (max-width: 699px) { .end, .name .tone-2, .logo .lbl-2 { display: none; } .nav { gap: 16px; } .short { display: inline; } .bar { flex-wrap: nowrap; gap: 16px; } .name { white-space: nowrap; } }
+</style>

@@ -1,0 +1,91 @@
+---
+// Related work on detail pages (skill, rule): pill tabs (DESIGN §8.4), one per kind given. Scenarios and skills slide in a rail
+// that runs to the content's vertical lines and crops there (arrows on the tabs row); rules are a plain row list.
+// Needs --pad (the content column's side padding) from DetailFrame.
+import type { CollectionEntry } from 'astro:content';
+import ScenarioCard from '../ScenarioCard.astro';
+import SkillCard from '../SkillCard.astro';
+import RuleRow from '../RuleRow.astro';
+import { arrow } from '../../arrows';
+import { T } from '../../site';
+interface Props { scenarios?: CollectionEntry<'scenarios'>[]; skills?: CollectionEntry<'skills'>[]; rules?: CollectionEntry<'rules'>[] }
+const { scenarios = [], skills = [], rules = [] } = Astro.props;
+const tabs = [
+  { label: T.scenarios, n: scenarios.length, kind: 'sc' },
+  { label: T.skills, n: skills.length, kind: 'sk' },
+  { label: T.rules, n: rules.length, kind: 'ru' },
+].filter((t) => t.n);
+---
+<div class="rel" data-rel>
+  <div class="rbar">
+    <div class="rtabs" role="tablist" aria-label="Related">
+      {tabs.map((t, i) => (
+        <button class="rtab" type="button" role="tab" id={`rt-${i}`} aria-controls={`rp-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{t.label}<span class="n">{String(t.n).padStart(2, '0')}</span></button>
+      ))}
+    </div>
+    <div class="rarr" data-rarr>
+      <button class="btn outlined icon xs" type="button" data-rail-prev aria-label="Previous" disabled><Fragment set:html={arrow('left')} /></button>
+      <button class="btn filled icon xs" type="button" data-rail-next aria-label="Next"><Fragment set:html={arrow('right')} /></button>
+    </div>
+  </div>
+  {tabs.map((t, i) => (
+    <ul class:list={[t.kind === 'ru' ? 'rlist' : 'rrail scroll-snap-x', t.kind]} role="tabpanel" id={`rp-${i}`} aria-labelledby={`rt-${i}`} hidden={i > 0} data-reveal>
+      {t.kind === 'sc' && scenarios.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}
+      {t.kind === 'sk' && skills.map((s) => <li><SkillCard skill={s} /></li>)}
+      {t.kind === 'ru' && rules.map((r) => <li><RuleRow rule={r} /></li>)}
+    </ul>
+  ))}
+</div>
+
+<script>
+  import { rail } from '../../rail';
+  // Tabs swap the panel; the arrows drive whichever rail is showing and hide on the rules list
+  document.querySelectorAll<HTMLElement>('[data-rel]').forEach((box) => {
+    const tabs = [...box.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const panels = [...box.querySelectorAll<HTMLElement>('[role=tabpanel]')];
+    const arr = box.querySelector<HTMLElement>('[data-rarr]')!;
+    let cur = 0;
+    const sync = rail(() => panels[cur], box.querySelector('[data-rail-prev]')!, box.querySelector('[data-rail-next]')!);
+    panels.forEach((p) => p.addEventListener('scroll', sync, { passive: true }));
+    const pick = (i: number, focus = false) => {
+      cur = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, k) => { t.setAttribute('aria-selected', String(k === cur)); t.tabIndex = k === cur ? 0 : -1; });
+      panels.forEach((p, k) => (p.hidden = k !== cur));
+      if (focus) tabs[cur].focus();
+      arr.hidden = !panels[cur].classList.contains('rrail');
+      sync();
+    };
+    tabs.forEach((t, k) => (t.onclick = () => pick(k)));
+    box.querySelector('[role=tablist]')!.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k === 'ArrowRight') pick(cur + 1, true);
+      if (k === 'ArrowLeft') pick(cur - 1, true);
+    });
+    pick(0);
+  });
+</script>
+
+<style>
+  .rel { display: grid; gap: var(--header-gap); margin-top: calc(24px - var(--header-gap)); } /* tabs sit closer to the headline than to the cards */
+  .rbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .rtabs, .rarr { display: flex; gap: 8px; }
+  .rarr[hidden] { display: none; }
+  .rtab { display: inline-flex; align-items: center; gap: 12px; height: 36px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); background: var(--bg-muted); color: var(--text); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; white-space: nowrap; cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
+  .rtab .n { color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .rtab[aria-selected='true'] { background: var(--neutral-950); color: var(--neutral-0); }
+  .rtab[aria-selected='true'] .n { color: var(--neutral-500); }
+  .rtab:active { transform: scale(.97); }
+  @media (hover: hover) and (pointer: fine) { .rtab[aria-selected='false']:hover { background: var(--bg-subtle); } }
+  [role=tabpanel][hidden] { display: none; }
+  [role=tabpanel]:not([hidden]) { animation: rin var(--t-base) var(--ease-out); }
+  @keyframes rin { from { opacity: 0; transform: translateY(4px); } }
+  .rrail { display: grid; grid-auto-flow: column; gap: var(--gutter); margin-inline: calc(-1 * var(--pad)); padding-inline: var(--pad); scroll-padding-inline: var(--pad); }
+  .rrail > li { min-width: 0; }
+  .rrail.sc { grid-auto-columns: 88%; }
+  .rrail.sk { grid-auto-columns: calc((100% - 2 * var(--gutter)) / 3.2); }
+  .rlist { border-block: 1px solid var(--line); }
+  .rlist > li + li { border-top: 1px solid var(--line); }
+  @media (max-width: 999px) { .rrail.sk { grid-auto-columns: 45%; } }
+  @media (max-width: 699px) { .rrail.sk { grid-auto-columns: 80%; } }
+  @media (prefers-reduced-motion: reduce) { [role=tabpanel]:not([hidden]) { animation: none; } }
+</style>

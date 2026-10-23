@@ -1,0 +1,211 @@
+---
+// One template for every rule page (Figma DS Report 919:23330): the rule, signs and what to do, who runs it, where it runs, previous/next.
+// Shares the hero ticket, sidebar frame and section heads with the scenario and skill pages.
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DetailHero from '../../components/detail/DetailHero.astro';
+import DetailFrame from '../../components/detail/DetailFrame.astro';
+import Sec from '../../components/Sec.astro';
+import RelatedTabs from '../../components/detail/RelatedTabs.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import DetailCta from '../../components/detail/DetailCta.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { AREAS, AREA_COVER, AREA_ICON, T } from '../../site';
+import { icon } from '../../icons';
+import { arrow } from '../../arrows';
+
+export async function getStaticPaths() {
+  const rules = (await getCollection('rules')).sort((a, b) => a.data.number - b.data.number);
+  // Previous / next wrap around, so the first rule links back to the last and the last on to the first
+  const at = (i: number) => (rules.length > 1 ? rules[(i + rules.length) % rules.length] : undefined);
+  return rules.map((r, i) => ({ params: { slug: r.id }, props: { rule: r, prev: at(i - 1), next: at(i + 1) } }));
+}
+interface Props { rule: CollectionEntry<'rules'>; prev?: CollectionEntry<'rules'>; next?: CollectionEntry<'rules'> }
+const { rule, prev, next } = Astro.props;
+const { id, data: d } = rule;
+const p = d.page;
+const author = await getEntry(d.author);
+const nn = (n: number) => String(n).padStart(2, '0');
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
+const applies = (await getCollection('skills', (s) => s.data.rules.some((r) => r.id === id))).sort(byOrder);
+const skills = applies.filter((s) => s.data.status === 'ready');
+const scenarios = (await getCollection('scenarios', (s) => s.data.rules.some((r) => r.id === id))).sort(byOrder);
+const hasRule = p.advises || p.adds || p.reason;
+// Run it lists everything, the ones built on this rule first (same as the skill page's Related)
+const own = (ids: string[], x: string) => Number(ids.includes(x));
+const skIds = applies.map((s) => s.id), scIds = scenarios.map((s) => s.id);
+const ready = (s: { data: { status: string } }) => Number(s.data.status === 'ready');
+const relSk = (await getCollection('skills')).sort((a, b) => own(skIds, b.id) - own(skIds, a.id) || ready(b) - ready(a) || a.data.order - b.data.order);
+const relSc = (await getCollection('scenarios')).sort((a, b) => own(scIds, b.id) - own(scIds, a.id) || ready(b) - ready(a) || a.data.order - b.data.order);
+const toc = [['h-rule', 'The rule', hasRule], ['h-signs', 'If you see this', p.signs.length], ['h-voices', 'Who runs it this way', p.voices.length], ['h-run', 'Run it', true]]
+  .filter(([, , on]) => on).map(([href, label]) => ({ label: label as string, href: `#${href}` }));
+const facts: [string, string][] = [
+  ['Area', AREAS[d.area]],
+  ['Applied by', skills.length ? `${skills.length} ${(skills.length === 1 ? T.skill : T.skills).toLowerCase()}` : 'No skill yet'],
+  ...(scenarios.length ? [['Built on it', `${scenarios.length} ${(scenarios.length === 1 ? T.scenario : T.scenarios).toLowerCase()}`] as [string, string]] : []),
+];
+const ext = arrow('up', 'ext');
+const count = (n: number, one: string, many: string) => (n === 1 ? one : `${n} ${many}`);
+const cta = {
+  headline: 'Run this rule differently?',
+  context: 'Tell us where it breaks',
+  note: 'Every rule in the Standard comes from a specialist’s own accounts. Send the case where it fails and the number you use instead, and we test it with you',
+  button: 'Propose a change',
+  ...p.cta,
+};
+---
+<Base type="rule" title={`${d.title} · ${T.rules} · The B2B AI Standard for LinkedIn® Ads`} description={d.why}>
+  <DetailHero cover={AREA_COVER[d.area]} crumbs={[{ label: 'Directory', href: '/directory' }, { label: T.rules, href: '/rules' }, { label: d.title }]}
+    chips={[{ label: AREAS[d.area] }, { label: `${T.rule} ${nn(d.number)}`, out: true }]} author={author} title={d.title} lead={d.lead ?? d.why} facts={facts}>
+    <Fragment slot="actions">
+      <a class="btn filled" href="#h-run">See where it runs</a>
+      <a class="btn outlined" href="/rules">All {T.rules.toLowerCase()}</a>
+    </Fragment>
+    <Fragment slot="art" set:html={icon(AREA_ICON[d.area])} />
+  </DetailHero>
+
+  <DetailFrame toc={toc}>
+    {hasRule && (
+      <Sec id="h-rule" label="The rule" title="What the Standard adds." context="On top of what LinkedIn® advises, and why it holds" small class="flush">
+        {(p.advises || p.adds) && (
+          <div class="pair" data-reveal>
+            {p.advises && (
+              <div class="box">
+                <p class="lbl-2 k">What LinkedIn® advises</p>
+                <p class="t-p1">{p.advises.text}</p>
+                {p.advises.source && (p.advises.url ? <a class="src ul" href={p.advises.url} rel="noopener">{p.advises.source}</a> : <p class="src">{p.advises.source}</p>)}
+              </div>
+            )}
+            {p.adds && (
+              <div class="box adds">
+                <p class="lbl-2 k">What the Standard adds</p>
+                <p class="t-p1">{p.adds}</p>
+              </div>
+            )}
+          </div>
+        )}
+        {(p.reason || p.mattersLess) && (
+          <div class="pair" data-reveal>
+            {p.reason && <div class="box"><p class="lbl-2 k">Why it holds</p><p class="t-p1 body">{p.reason}</p></div>}
+            {p.mattersLess && <div class="box"><p class="lbl-2 k">When it matters less</p><p class="t-p1 body">{p.mattersLess}</p></div>}
+          </div>
+        )}
+      </Sec>
+    )}
+
+    {p.signs.length > 0 && (
+      <Sec id="h-signs" label="If you see this" title={`${count(p.signs.length, 'One sign', 'signs')} in your account.`} context="What you see on the left, what to do about it on the right" small class="flush">
+        <table class="signs" data-reveal>
+          <thead><tr><th class="lbl-2" scope="col">You see</th><th class="lbl-2" scope="col">Do this</th></tr></thead>
+          <tbody>
+            {p.signs.map((s) => <tr><th class="t-h6" scope="row">{s.see}</th><td class="t-p2 body">{s.do}</td></tr>)}
+          </tbody>
+        </table>
+      </Sec>
+    )}
+
+    {p.voices.length > 0 && (
+      <Sec id="h-voices" label="Who runs it this way" title={`${count(p.voices.length, 'One specialist', 'specialists')} who check this.`} context="In their own words, with where they said it" small>
+        <ul class="voices" data-reveal>
+          {p.voices.map((v) => (
+            <li class="voice">
+              <p class="t-p2 who">
+                {v.author ? <a class="name ul" href={`/authors/${v.author.id}`}>{v.name}</a> : <span class="name">{v.name}</span>}{v.company && `, ${v.company}`}{v.context && <span class="tone-2"> · {v.context}</span>}
+              </p>
+              <blockquote class="t-p1 q">“{v.quote}”</blockquote>
+              {v.source && (v.url ? <a class="src ul" href={v.url} rel="noopener">{v.source} <Fragment set:html={ext} /></a> : <p class="src">{v.source}</p>)}
+              {v.note && <p class="src">{v.note}</p>}
+            </li>
+          ))}
+        </ul>
+      </Sec>
+    )}
+
+    <Sec id="h-run" label="Run it" title={skills.length || scenarios.length ? 'Where it runs.' : 'Not in a skill yet.'} context={skills.length || scenarios.length ? 'The skills that apply it today and the scenarios built on it' : 'Apply it by hand for now, or send us the way you check it'} small>
+      <RelatedTabs scenarios={relSc} skills={relSk} />
+    </Sec>
+
+    <DetailCta title={cta.headline} context={cta.context} button={cta.button} />
+
+    <nav class="pn" aria-label={`Other ${T.rules.toLowerCase()}`}>
+      {[['pv', 'Previous', prev], ['nx', 'Next', next]].map(([cls, dir, r]) => r ? (
+        <a class={cls} href={`/rules/${r.id}`} aria-label={`${dir} rule: ${r.data.title}`}>
+          <span class="pic" aria-hidden="true" set:html={icon(AREA_ICON[r.data.area])} />
+          <span class="txt">
+            <span class="kick"><span class="chip">{AREAS[r.data.area]}</span><span class="lbl num">{T.rule} {nn(r.data.number)}</span></span>
+            <span class="t-h6 title">{r.data.title}</span>
+          </span>
+        </a>
+      ) : <span />)}
+    </nav>
+  </DetailFrame>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<style>
+  .k { color: var(--text-2); }
+  .src { margin-top: auto; padding-top: 8px; font-size: 13px; line-height: 1.4; color: var(--text-2); }
+  .ul { border-bottom: 1px solid var(--text-meta); transition: border-color var(--t-fast) var(--ease-out); }
+
+  /* The rule: LinkedIn's advice in an outlined card, the Standard's addition on the tint with a dark top rule (Figma 919:23330) */
+  /* The rule pair: grid cards between the content lines, split by a vertical line (like "Using it") */
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-inline: calc(-1 * var(--pad)); border-block: 1px solid var(--line); }
+  .pair + .pair { margin-top: calc(-1 * var(--header-gap)); border-top: 0; } /* second row of the same grid */
+  .pair:last-child { border-bottom: 0; } /* the section is flush: the grid ends on the next divider */
+  .box { display: flex; flex-direction: column; gap: 12px; padding: 40px 32px; color: var(--text); }
+  .box:first-child { padding-left: var(--pad); }
+  .box:last-child { padding-right: var(--pad); }
+  .box + .box { box-shadow: inset 1px 0 var(--line); }
+  .adds { background: var(--bg-subtle); }
+  .box.adds { box-shadow: inset 1px 0 var(--line), inset 0 2px 0 var(--neutral-950); }
+
+  /* If you see this: two-column table, dark rule under the head, hairlines between rows */
+  .signs { width: 100%; border-collapse: collapse; text-align: left; }
+  .signs thead th { padding-bottom: 12px; border-bottom: 2px solid var(--neutral-950); color: var(--text-2); font-weight: 600; }
+  .signs th, .signs td { vertical-align: top; }
+  .signs tbody th, .signs tbody td { padding-block: 24px; border-bottom: 1px solid var(--line); }
+  .signs tbody th { width: 50%; padding-right: 40px; color: var(--text); }
+  /* the section is flush: the last row ends on the next section's divider, no second line */
+  .signs tbody tr:last-child > *, .signs tbody tr:last-child { border-bottom: 0; }
+
+  /* Who runs it this way: quote cards on the tint, dark top rule, accent bar on the quote */
+  .voices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+  .voice { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--bg-subtle); box-shadow: inset 0 2px 0 var(--neutral-950); border-radius: 0 0 var(--radius-4) var(--radius-4); }
+  .voices > :only-child { grid-column: span 1; }
+  .who .name { color: var(--text); }
+  .q { padding-left: 16px; border-left: 2px solid var(--accent); color: var(--text); }
+
+
+  /* Previous / next: two card-buttons splitting the row between the content lines */
+  .pn { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: var(--section-ruled-bottom) calc(-1 * var(--pad)) calc(-1 * var(--section-ruled-bottom)); border-top: 1px solid var(--line); } /* last thing on the page: runs straight into the closing band */
+  .pn > * + * { box-shadow: inset 1px 0 var(--line); }
+  /* Each card: the rule's area figure (no tile, as in rule rows), then area chip + number and title; both left-aligned */
+  .pn a { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 24px; align-items: center; padding: 40px var(--pad); transition: background-color var(--t-fast) var(--ease-out); } /* figure no taller than the text, so the space above and below match */
+  .pic { display: block; aspect-ratio: 1; }
+  .pic :global(.hl) { width: 100%; height: 100%; transition: transform 300ms var(--ease-out); }
+  .txt { display: grid; gap: 12px; align-content: start; }
+  .kick { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .num { color: var(--text-2); }
+  .title { max-width: 32ch; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .ul:hover { border-color: var(--text); }
+    .pn a:hover { background: var(--bg-subtle); }
+    .pn a:hover .pic :global(.hl) { transform: translateY(-2px); }
+  }
+  @media (max-width: 999px) { .voices { grid-template-columns: 1fr; } }
+  @media (max-width: 699px) {
+    .pair { grid-template-columns: 1fr; }
+    .box { padding-inline: var(--pad); }
+    .box + .box, .box.adds { box-shadow: inset 0 1px 0 var(--line); }
+    .signs thead { display: none; }
+    .signs tbody tr { display: grid; gap: 8px; padding-block: 20px; border-bottom: 1px solid var(--line); }
+    .signs tbody th, .signs tbody td { width: auto; padding: 0; border: 0; }
+    .pn { grid-template-columns: 1fr; }
+    .pn > * + * { box-shadow: inset 0 1px var(--line); }
+    .pn > span { display: none; }
+    .pn a { grid-template-columns: 80px minmax(0, 1fr); gap: 16px; }
+  }
+</style>

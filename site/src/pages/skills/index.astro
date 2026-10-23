@@ -1,0 +1,145 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import IsoArt from '../../components/IsoArt.astro';
+import TabBar from '../../components/TabBar.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Sec from '../../components/Sec.astro';
+import SkillCard from '../../components/SkillCard.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { AREAS, T, type Area } from '../../site';
+
+// Ready first, then "next version", each in their own order
+const all = (await getCollection('skills')).sort((a, b) => (a.data.status === b.data.status ? a.data.order - b.data.order : a.data.status === 'ready' ? -1 : 1));
+const nReady = all.filter((s) => s.data.status === 'ready').length;
+const two = (n: number) => String(n).padStart(2, '0');
+const areas = Object.entries(AREAS) as [Area, string][];
+const countIn = (a: Area) => all.filter((s) => s.data.area === a).length;
+---
+<Base type="skill" title={`${T.skills} · The B2B AI Standard for LinkedIn® Ads`} description="Single checks for LinkedIn® Ads: each reads an export, applies one rule and gives back a list or a flag">
+
+  <div class="top surface-black">
+    <SiteHeader />
+    <div class="wrap hero has-art">
+      <IsoArt name="skills" dark place={[-54, -188, 810, 864]} clip={756} accent="skill" class="hero-art" />
+      <div class="copy">
+        <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.skills }]} />
+        <h1 class="headline t-display">Single checks, ready to run. <span class="tone-2">Each reads an export, applies one rule and hands back a list. None change your account</span></h1>
+      </div>
+      <dl class="tally" aria-label="In the library">
+        <div><dt class="lbl">Ready to run</dt><dd class="t-n3">{two(nReady)}</dd></div>
+        <div><dt class="lbl">Next version</dt><dd class="t-n3">{two(all.length - nReady)}</dd></div>
+      </dl>
+    </div>
+  </div>
+  <TabBar />
+
+  <main id="main" class="ruled">
+    <div class="wrap">
+      <Sec id="h-catalogue" label="Catalogue" title="Use one on its own," context="or as a step inside a scenario" class="first">
+        <div class="filters" data-filters>
+          <div class="areas" role="group" aria-label="Filter by area">
+            <button class="fchip" type="button" aria-pressed="true" data-area="">All <span class="n">{two(all.length)}</span></button>
+            {areas.map(([key, label]) => (
+              <button class="fchip" type="button" aria-pressed="false" data-area={key}>{label} <span class="n">{two(countIn(key))}</span></button>
+            ))}
+          </div>
+          <label class="toggle">
+            <input type="checkbox" data-ready-only />
+            <span class="track" aria-hidden="true"></span>
+            <span class="lbl">Ready to run only</span>
+          </label>
+        </div>
+
+        <ul class="grid" data-reveal data-grid>
+          {all.map((s) => <li data-area={s.data.area} data-status={s.data.status}><SkillCard skill={s} /></li>)}
+        </ul>
+        <p class="empty t-p1 body" data-empty hidden>No ready {T.skills.toLowerCase()} in this area yet. Turn off “Ready to run only” to see what’s coming</p>
+      </Sec>
+    </div>
+  </main>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<script>
+  // Area chips + "ready only": filter the grid in place
+  const root = document.querySelector('[data-filters]');
+  const items = [...document.querySelectorAll<HTMLElement>('[data-grid] > li')];
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+  const readyOnly = document.querySelector<HTMLInputElement>('[data-ready-only]');
+  let area = '';
+  const apply = () => {
+    let shown = 0;
+    for (const li of items) {
+      const on = (!area || li.dataset.area === area) && (!readyOnly?.checked || li.dataset.status === 'ready');
+      li.hidden = !on;
+      if (on) shown++;
+    }
+    if (empty) empty.hidden = shown > 0;
+  };
+  root?.querySelectorAll<HTMLButtonElement>('[data-area]').forEach((b) => b.addEventListener('click', () => {
+    area = b.dataset.area ?? '';
+    root.querySelectorAll('[data-area]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    apply();
+  }));
+  readyOnly?.addEventListener('change', apply);
+</script>
+
+<style>
+  .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
+  .top > :global(:not(.site-header)) { position: relative; }
+  .hero { display: flex; justify-content: space-between; align-items: end; gap: 40px; padding-block: 40px; }
+  .copy { display: grid; gap: 48px; }
+  /* Catalogue headline on two lines: claim, then context */
+  :global(#h-catalogue + .headline .tone-2) { display: block; }
+  .copy .headline { max-width: 760px; min-height: 4lh; } /* room for four lines on every hub, so the tabs sit the same distance below */
+  .tally { display: flex; gap: 40px; flex: none; }
+  .tally div { display: grid; gap: 8px; }
+  .tally dt { color: var(--text-2); }
+
+  /* Filters: area chips wrap on the left, the toggle sits on the right of the same row */
+  .filters { display: flex; justify-content: space-between; align-items: start; gap: 24px 40px; }
+  .areas { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toggle { flex: none; }
+  .fchip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 0; border-radius: var(--radius-pill); background: var(--bg-muted); color: var(--text); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; white-space: nowrap; cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out); }
+  .fchip .n { color: var(--text-body); font-variant-numeric: tabular-nums; transition: color var(--t-fast) var(--ease-out); }
+  .fchip[aria-pressed=true] { background: var(--neutral-950); color: var(--neutral-0); }
+  .fchip[aria-pressed=true] .n { color: var(--neutral-300); }
+  .fchip:active { transform: scale(.97); }
+
+  /* Labeled toggle (DESIGN §8.3): 40×20 track, pill knob */
+  .toggle { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+  .toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .track { position: relative; width: 40px; height: 20px; border-radius: 1000px; background: var(--neutral-100); transition: background-color var(--t-fast) var(--ease-out); }
+  .track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 16px; border-radius: 1000px; background: var(--neutral-0); transition: translate var(--t-base) var(--ease-out); }
+  .toggle input:checked + .track { background: var(--neutral-950); }
+  .toggle input:checked + .track::after { translate: 12px 0; }
+  .toggle input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .toggle .lbl { color: var(--text); }
+
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); }
+  .grid > li[hidden] { display: none; }
+  /* Cards that come back after a filter change fade up instead of popping in */
+  .grid > li { animation: skill-in 240ms var(--ease-out); }
+  @keyframes skill-in { from { opacity: 0; translate: 0 8px; } }
+  .empty { padding-block: 40px; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fchip:not([aria-pressed=true]):hover { background: var(--hover-on-50); }
+    .toggle:hover input:not(:checked) + .track { background: var(--neutral-200); }
+  }
+  @media (prefers-reduced-motion: reduce) { .fchip:active { transform: none; } .grid > li { animation: none; } }
+  @media (max-width: 999px) {
+    .hero { flex-direction: column; align-items: start; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .filters { flex-direction: column; }
+  }
+  @media (max-width: 699px) {
+    .hero { padding-block: 24px; gap: 24px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>

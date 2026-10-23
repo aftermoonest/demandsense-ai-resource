@@ -1,0 +1,63 @@
+---
+// Detail-page body (scenario, skill, rule): the report grid (report-v2 .analysis). Sidebar first on the 1512 canvas with no line of its own;
+// the vertical lines frame only the content column, whose right line sits on the page edge line. Sections go in the default slot.
+import Sidebar from '../Sidebar.astro';
+interface Props { toc: { label: string; href: string }[] }
+const { toc } = Astro.props;
+---
+<main id="main">
+  <div class="frame">
+    <div class="aside">
+      <!-- Sticky as one piece: the nav on top, the dot pattern below it fills the rest of the viewport (DESIGN §8.11) -->
+      <div class="aside-in">
+        <Sidebar label="On this page" items={toc} />
+        <div class="pattern side-pat" aria-hidden="true" />
+      </div>
+    </div>
+    <div class="content"><slot /></div>
+  </div>
+</main>
+
+<script>
+  // Sidebar scroll-spy: the last section whose heading has passed the sticky bar is current
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.aside a[href^="#"]')];
+  const heads = links.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean) as HTMLElement[];
+  let raf = 0;
+  const spy = () => {
+    raf = 0;
+    const line = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) + 8;
+    let i = 0;
+    heads.forEach((h, k) => { if (h.getBoundingClientRect().top <= line) i = k; });
+    links.forEach((a, k) => (k === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
+  };
+  addEventListener('scroll', () => { raf ||= requestAnimationFrame(spy); }, { passive: true });
+  spy();
+</script>
+
+<style>
+  .frame { --pad: 64px; display: grid; grid-template-columns: 338px minmax(0, 1fr); max-width: 1512px; margin-inline: auto; padding-right: var(--edge); }
+  .aside { padding: calc(var(--section-ruled-top) + 8px) 38px 0 var(--margin); } /* first nav item level with the first overline */
+  /* min(): on a short page the viewport-tall pattern must not stretch the row past the content */
+  .aside-in { position: sticky; top: calc(var(--site-bar, 72px) + 40px); height: min(calc(100dvh - var(--site-bar, 72px) - 40px), 100%); display: flex; flex-direction: column; gap: 24px; width: 220px; max-width: 100%; }
+  .aside-in :global(.side) { position: static; flex: none; }
+  .side-pat { flex: 1 1 0; min-height: 0; }
+  /* --pad and --vcol are read by the sections inside (gallery strip, tiles, lead stat) */
+  .content { --vcol: 260px; container-type: inline-size; min-width: 0; padding: 0 var(--pad) var(--section-ruled-bottom); box-shadow: inset 1px 0 var(--line), inset -1px 0 var(--line); }
+  @media (min-width: 700px) { .content :global(.headline) { max-width: 65cqi; } }
+  /* Section dividers run between the two content lines */
+  .content :global(.sec::before) { left: calc(-1 * var(--pad)); right: calc(-1 * var(--pad)); width: auto; translate: none; background: var(--line); }
+  .content :global(.sec:first-child::before) { display: none; }
+  /* A section that ends on a grid (.flush) meets the next divider: no gap, no second line */
+  .content :global(.sec.flush) { padding-bottom: 0; }
+  @media (max-width: 1350px) {
+    .frame { --pad: 40px; grid-template-columns: 290px minmax(0, 1fr); }
+    .aside { padding-right: 16px; }
+  }
+  @media (max-width: 999px) {
+    .frame { --pad: var(--edge-inset); display: block; padding: 0; }
+    .aside { padding: 16px var(--margin); border-bottom: 1px solid var(--line); }
+    .aside-in { position: static; height: auto; width: auto; }
+    .side-pat { display: none; }
+    .content { margin-inline: var(--edge); }
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+// "Runs with": one logo tile per connector, its name in a tooltip on hover and focus.
+// Logos live in design-system/logos, in brand colours (Simple Icons, DS Report mark); list/target are Figma line icons.
+// A CRM export is any CRM, so it shows the most common ones stacked.
+const raw = import.meta.glob('../../../design-system/logos/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const logo = (n: string) => raw[`../../../design-system/logos/${n}.svg`] ?? '';
+// Connector names are free text in content; match the known ones, generic exports and sources fall back to line icons
+const pick = (name: string) =>
+  /crm/i.test(name) ? 'crm' : /claude/i.test(name) ? 'claude' : /linkedin/i.test(name) ? 'linkedin' : /demandsense/i.test(name) ? 'demandsense' : /signal|source/i.test(name) ? 'target' : 'list';
+interface Props { items: string[] }
+const { items: all } = Astro.props;
+// Stacked CRM logos go last so single logos lead the row
+const items = [...all.filter((n) => pick(n) !== 'crm'), ...all.filter((n) => pick(n) === 'crm')];
+---
+<ul class="conns">
+  {items.map((name) => (
+    <li class="conn" tabindex="0" aria-label={name}>
+      {pick(name) === 'crm'
+        ? <span class="stack" aria-hidden="true">{['salesforce', 'hubspot', 'zoho'].map((n) => <span class="dot" set:html={logo(n)} />)}</span>
+        : <span class="ic" aria-hidden="true" set:html={logo(pick(name))} />}
+      <span class="tip" role="tooltip">{name}</span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .conns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .conn { position: relative; display: grid; place-items: center; height: 36px; color: var(--neutral-950); border-radius: 18px; outline-offset: 2px; }
+  /* Every logo sits on a white disc with a 1px ring; a CRM export shows three discs overlapping */
+  .ic, .dot { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--neutral-0); box-shadow: inset 0 0 0 1px var(--line-card); transition: box-shadow var(--t-fast) var(--ease-out); }
+  .ic :global(svg), .dot :global(svg) { width: 18px; height: 18px; }
+  .stack { display: flex; }
+  .dot { box-shadow: 0 0 0 2px var(--neutral-0), inset 0 0 0 1px var(--line-card); }
+  .dot + .dot { margin-left: -12px; }
+  /* Tooltip: dark, 4px above, small caret (DESIGN §8.5 chip tooltip, inverted for a white card) */
+  .tip { position: absolute; bottom: calc(100% + 8px); left: 50%; z-index: var(--z-tip); padding: 4px 8px; border-radius: var(--radius-2); background: var(--neutral-950); color: var(--neutral-0); font: 500 14px/1.4 var(--font-sans); letter-spacing: -.03em; white-space: nowrap; pointer-events: none; opacity: 0; translate: -50% 4px; transition: opacity var(--t-fast) var(--ease-out), translate var(--t-fast) var(--ease-out); }
+  .tip::after { content: ''; position: absolute; top: 100%; left: 50%; translate: -50% 0; border: 4px solid transparent; border-top-color: var(--neutral-950); }
+  .conn:focus-visible .tip { opacity: 1; translate: -50% 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .conn:hover .ic, .conn:hover .dot { box-shadow: 0 0 0 2px var(--neutral-0), inset 0 0 0 1px var(--neutral-300); }
+    .conn:hover .tip { opacity: 1; translate: -50% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tip { transition: opacity var(--t-fast) var(--ease-out); translate: -50% 0; } }
+</style>

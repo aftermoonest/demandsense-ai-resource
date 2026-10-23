@@ -1,0 +1,61 @@
+---
+// "How it works" (scenario and skill pages): the site's horizontal timeline, one column per step; phase labels sit above the line.
+// Needs a container (container-type: inline-size) around it to stack when narrow.
+import { getEntry, type CollectionEntry } from 'astro:content';
+import Sec from '../Sec.astro';
+import StepDot from '../StepDot.astro';
+import { arrow } from '../../arrows';
+import { T } from '../../site';
+interface Step { phase?: string; title: string; text: string; note?: string; skill?: { collection: 'skills'; id: string }; key?: boolean }
+interface Props { label?: string; context?: string; steps: Step[] }
+const { label = 'How it finds them', context = 'Each one applies a rule of the Standard, and stops the run when the data can’t carry it' } = Astro.props;
+const steps = await Promise.all(Astro.props.steps.map(async (s) => ({ ...s, skillEntry: s.skill ? (await getEntry(s.skill)) as CollectionEntry<'skills'> | undefined : undefined })));
+const phased = steps.some((s) => s.phase);
+const go = arrow('right');
+---
+<Sec id="h-how" label={label} title={`${steps.length} steps, in order.`} context={context} small>
+  <ol class="flow" style={`--n: ${steps.length}`} data-reveal>
+    {steps.map((s, i) => (
+      <li class:list={['stop', { key: s.key }]}>
+        {phased && <p class="lbl phase">{s.phase !== steps[i - 1]?.phase ? s.phase : ''}</p>}
+        <span class="tick"><StepDot n={i + 1} active={s.key} /></span>
+        <div class="stop-copy">
+          <p class="t-h6">{s.title}</p>
+          <p class="t-p2 body">{s.text}</p>
+          {s.note && <p class="t-p2 gate">{s.note}</p>}
+          {s.skillEntry && <a class="skill lbl" href={`/skills/${s.skillEntry.id}`}>{T.skill} · {s.skillEntry.data.title} <Fragment set:html={go} /></a>}
+        </div>
+      </li>
+    ))}
+  </ol>
+  <slot />
+</Sec>
+
+<style>
+  .flow { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
+  .stop { display: grid; align-content: start; padding-right: 32px; }
+  .stop:last-child { padding-right: 0; }
+  .phase { min-height: 1lh; color: var(--text-2); margin-bottom: 8px; }
+  .phase:empty { visibility: hidden; }
+  .tick { position: relative; z-index: 0; display: flex; align-items: center; height: 56px; margin-bottom: 8px; }
+  .tick::after { content: ''; position: absolute; z-index: -1; left: 0; right: -32px; top: 50%; height: 1px; background: var(--line); }
+  .stop:last-child .tick::after { right: 0; background: linear-gradient(90deg, var(--line), transparent); }
+  .stop-copy { display: grid; gap: 8px; align-content: start; }
+  .stop-copy .body, .gate { max-width: 36ch; }
+  .gate { padding-left: 12px; border-left: 2px solid var(--accent); color: var(--text); margin-top: 4px; }
+  .skill { display: inline-flex; align-items: center; gap: 6px; justify-self: start; margin-top: 8px; color: var(--text); }
+  .skill :global(svg) { width: 14px; height: 14px; transition: transform var(--t-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .skill:hover :global(svg) { transform: translateX(3px); } }
+  /* Too narrow for one column per step: stack, the line runs down the dots */
+  @container (max-width: 760px) {
+    .flow { grid-template-columns: 1fr; gap: 24px; }
+    .stop { position: relative; grid-template-columns: 48px minmax(0, 1fr); column-gap: 16px; padding: 0; }
+    .stop > * { grid-column: 2; }
+    .phase { min-height: 0; margin: 0; }
+    .phase:empty { display: none; }
+    .stop > .tick { grid-column: 1; grid-row: 1 / span 2; align-self: start; height: 48px; margin: 0; }
+    .tick::after { display: none; }
+    .stop-copy { padding-top: 12px; }
+    .stop:not(:last-child)::before { content: ''; position: absolute; left: 23.5px; top: 48px; bottom: -24px; width: 1px; background: var(--line); }
+  }
+</style>

@@ -1,0 +1,157 @@
+---
+import { arrow } from '../arrows';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import IsoArt from '../components/IsoArt.astro';
+import TabBar from '../components/TabBar.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ScenarioCard from '../components/ScenarioCard.astro';
+import SkillCard from '../components/SkillCard.astro';
+import RuleRow from '../components/RuleRow.astro';
+import AuthorCard from '../components/AuthorCard.astro';
+import SubmitBand from '../components/SubmitBand.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { T } from '../site';
+
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
+// Ready first, then what's coming: the slider shows the library's breadth, not just the two live ones
+const scenarios = (await getCollection('scenarios')).sort((a, b) => (a.data.status === b.data.status ? byOrder(a, b) : a.data.status === 'ready' ? -1 : 1));
+const allSkills = await getCollection('skills');
+const skills = allSkills.sort((a, b) => (a.data.status === b.data.status ? byOrder(a, b) : a.data.status === 'ready' ? -1 : 1)).slice(0, 8);
+const rules = (await getCollection('rules', (r) => r.data.featured)).sort((a, b) => a.data.number - b.data.number);
+const nRules = (await getCollection('rules')).length;
+const nAuthors = (await getCollection('authors')).length;
+const two = (n: number) => String(n).padStart(2, '0');
+const authors = (await getCollection('authors', (a) => a.data.featured)).sort(byOrder);
+const go = arrow('right', 'go');
+const small = arrow('right');
+---
+<Base title="Directory · The B2B AI Standard for LinkedIn® Ads">
+
+  <div class="top surface-black">
+    <SiteHeader />
+    <div class="wrap hero has-art">
+      <IsoArt name="directory" dark place={[-146, -166, 915, 972]} clip={770} class="hero-art" />
+      <div class="copy">
+        <Breadcrumbs items={[{ label: 'Directory' }]} />
+        <h1 class="headline t-display">The directory. <span class="tone-2">Every scenario, skill and rule in the Standard, each signed by the practitioner who runs it that way</span></h1>
+      </div>
+      <dl class="tally" aria-label="In the Standard">
+        <div><dt class="lbl">Entries</dt><dd class="t-n3">{two(scenarios.length + allSkills.length + nRules)}</dd></div>
+        <div><dt class="lbl">Practitioners</dt><dd class="t-n3">{two(nAuthors)}</dd></div>
+      </dl>
+    </div>
+  </div>
+  <TabBar />
+
+  <main id="main">
+    <div class="ruled">
+    <section class="blk wrap" data-type="scenario" aria-labelledby="h-scenarios">
+      <SectionHead id="h-scenarios" marker={T.scenarios} count={scenarios.length} title="Whole routines, ready to run." context="Skills chained into a weekly or monthly job, with sample data to try first">
+        <button class="btn outlined icon xs desk" type="button" data-rail-prev aria-label="Previous scenarios" disabled><Fragment set:html={arrow('left')} /></button>
+          <button class="btn filled icon xs desk" type="button" data-rail-next aria-label="Next scenarios"><Fragment set:html={small} /></button>
+      </SectionHead>
+      <ul class="rail scroll-snap-x to-edges" data-rail data-reveal>
+        {scenarios.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}
+      </ul>
+      <div class="below">
+        <a class="btn brand" href="/scenarios">Explore all {scenarios.length} {T.scenarios.toLowerCase()} <Fragment set:html={go} /></a>
+      </div>
+    </section>
+
+    <section class="blk wrap bleed" data-type="skill" aria-labelledby="h-skills">
+      <SectionHead id="h-skills" marker={T.skills} count={allSkills.length} title="Single checks." context="Each reads an export, applies one rule and hands back a list or a flag" />
+      <ul class="grid4" data-reveal>
+        {skills.map((s) => <li><SkillCard skill={s} /></li>)}
+      </ul>
+      <div class="below"><a class="btn brand" href="/skills">Explore all {allSkills.length} {T.skills.toLowerCase()} <Fragment set:html={go} /></a></div>
+    </section>
+
+    <section class="blk wrap bleed" data-type="rule" aria-labelledby="h-rules">
+      <SectionHead id="h-rules" marker={T.rules} count={nRules} title="Three rules to start with." context="What an experienced advertiser checks before trusting a number" />
+      <ul class="rows" data-reveal>
+        {rules.map((r) => <li><RuleRow rule={r} /></li>)}
+      </ul>
+      <div class="below"><a class="btn brand" href="/rules">Explore all {nRules} {T.rules.toLowerCase()} <Fragment set:html={go} /></a></div>
+    </section>
+
+    </div>
+
+    <!-- Authors run on black into the closing band, with their own edge lines -->
+    <div class="surface-black ruled">
+    <section class="blk wrap last" aria-labelledby="h-authors">
+      <SectionHead id="h-authors" marker="Featured authors" title="The people behind the work." context="Ask them when you need the work done rather than the method">
+        <button class="btn outlined icon xs desk" type="button" data-rail-prev aria-label="Previous authors" disabled><Fragment set:html={arrow('left')} /></button>
+        <button class="btn filled icon xs desk" type="button" data-rail-next aria-label="Next authors"><Fragment set:html={small} /></button>
+      </SectionHead>
+      <ul class="rail cells scroll-snap-x to-edges" data-rail data-reveal>
+        {authors.map((a) => <li><AuthorCard author={a} /></li>)}
+      </ul>
+      <div class="below"><a class="btn brand" href="/authors">Explore all {authors.length} {T.authors.toLowerCase()} <Fragment set:html={go} /></a></div>
+    </section>
+    </div>
+  </main>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<script>
+  import { rail } from '../rail';
+  // Rails (scenarios, authors): each section's arrows step one card; disabled at the ends
+  document.querySelectorAll<HTMLElement>('[data-rail]').forEach((r) => {
+    const sec = r.closest('section')!;
+    const prev = sec.querySelector<HTMLButtonElement>('[data-rail-prev]');
+    const next = sec.querySelector<HTMLButtonElement>('[data-rail-next]');
+    if (prev && next) r.addEventListener('scroll', rail(() => r, prev, next), { passive: true });
+  });
+</script>
+
+<style>
+  .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
+  .top > :global(:not(.site-header)) { position: relative; }
+  /* Same hero rhythm as the hub pages, so the title doesn't jump when switching tabs */
+  .hero { padding-block: 40px; }
+  .copy { display: grid; gap: 48px; }
+  .tally { display: flex; gap: 40px; flex: none; }
+  .tally div { display: grid; gap: 8px; }
+  .tally dt { color: var(--text-2); }
+  .copy .headline { max-width: 760px; min-height: 4lh; } /* room for four lines on every hub, so the tabs sit the same distance below */
+
+  .blk { padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
+  .last { padding-bottom: 0; } /* the black closing band follows with its own top padding */
+
+  /* Rail: the hub's wide card at 8 columns, so the next one shows; cropped at the edge lines */
+  .rail { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 11 * var(--gutter)) / 12 * 8 + 7 * var(--gutter)); gap: var(--gutter); }
+  .rail > li { min-width: 0; }
+  /* Grid cards: no gaps, cells split by 1px lines; the lines above and below belong to the cards, so they stop at the cards instead of reaching the edge lines */
+  .cells { grid-auto-columns: 25%; gap: 0; }
+  .cells > li { border-block: 1px solid var(--line); }
+  .cells > li { box-shadow: inset 1px 0 var(--line); }
+  .cells > li:last-child { box-shadow: inset 1px 0 var(--line), inset -1px 0 var(--line); }
+
+  .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); }
+  /* Rule rows: lines run edge line to edge line, one above the first row and one below the last close the list */
+  .rows { margin-inline: calc(-1 * var(--edge-inset)); border-block: 1px solid var(--line); }
+  /* the whole row is the link: hover fills edge line to edge line */
+  .rows :global(.rrow) { margin-inline: 0; padding-inline: var(--edge-inset); border-radius: 0; }
+  .rows > li + li { border-top: 1px solid var(--line); }
+  .below { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 40px; }
+
+  @media (max-width: 999px) {
+    .rail { grid-auto-columns: 85%; }
+    .cells { grid-auto-columns: 50%; }
+    .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 699px) {
+    .hero { padding-block: 24px; }
+    .rail { grid-auto-columns: 88%; }
+    .cells { grid-auto-columns: 80%; }
+    .grid4 { grid-template-columns: 1fr; }
+    .grid4 > li:nth-child(n + 5) { display: none; }
+    .below { margin-top: 24px; }
+    .below > .btn { flex: 1; }
+  }
+</style>

@@ -1,0 +1,119 @@
+---
+// Scenario cover: an isometric signal desk drawn with the iso-glow kernel at build time.
+// Hairline objects on the card's pastel; only what is live (screen, lead card, keys, mast light) takes the accent and glows.
+// Accents come from the cover's own colour family (--cover-450/-200, set by the card; DESIGN §4.1).
+const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);
+const pts = [[0, 0, 0], [240, 0, 0], [0, 180, 0], [240, 180, 0], [24, 24, 150], [200, 36, 118]];
+const d = pts.map(([x, y, z]) => [(x - y) * C, (x + y) * S - z]);
+const m = 12, x0 = Math.min(...d.map((p) => p[0])) - m, y0 = Math.min(...d.map((p) => p[1])) - m;
+const W = Math.max(...d.map((p) => p[0])) + m - x0, H = Math.max(...d.map((p) => p[1])) + m - y0;
+const f = (n: number) => n.toFixed(2);
+const P = (x: number, y: number, z: number) => [(x - y) * C - x0, (x + y) * S - z - y0];
+const D = (x: number, y: number, z: number) => [(x - y) * C, (x + y) * S - z];
+const plane = (o: number[], u: number[], v: number[]) => { const O = P(o[0], o[1], o[2]), U = D(u[0], u[1], u[2]), V = D(v[0], v[1], v[2]); return `matrix(${[...U, ...V, ...O].map(f).join(' ')})`; };
+const TOP = (x: number, y: number, z: number) => plane([x, y, z], [1, 0, 0], [0, 1, 0]);
+const FRONT = (x: number, y: number, z: number) => plane([x, y, z], [1, 0, 0], [0, 0, -1]);
+const SIDE = (x: number, y: number, z: number) => plane([x, y, z], [0, -1, 0], [0, 0, -1]);
+const on = (t: string, inner: string) => `<g transform="${t}">${inner}</g>`;
+const rect = (t: string, w: number, h: number, r = 0, cls = 'face') => on(t, `<rect class="${cls}" width="${w}" height="${h}" rx="${r}"/>`);
+const box = (x: number, y: number, z: number, w: number, dd: number, h: number, cls = '') =>
+  rect(SIDE(x + w, y + dd, z + h), dd, h, 0, `face ${cls}`) + rect(FRONT(x, y + dd, z + h), w, h, 0, `face ${cls}`) + rect(TOP(x, y, z + h), w, dd, 0, `face top ${cls}`);
+// Rounded box: one rounded top plus one continuous wall along the visible outline (iso-glow kernel).
+const rounded = (x: number, y: number, z: number, w: number, dd: number, h: number, r: number) => {
+  const n = 10, z1 = z + h, q = Math.PI / 4, Hh = Math.PI / 2;
+  const arc = (cx: number, cy: number, a0: number, a1: number) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; });
+  const ring = [...arc(x + w - r, y + r, -Hh, 0), ...arc(x + w - r, y + dd - r, 0, Hh), ...arc(x + r, y + dd - r, Hh, 2 * Hh), ...arc(x + r, y + r, 2 * Hh, 3 * Hh)];
+  const vis = [...arc(x + w - r, y + r, -q, 0), ...arc(x + w - r, y + dd - r, 0, Hh), ...arc(x + r, y + dd - r, Hh, 3 * q)];
+  const d3 = (ps: number[][]) => 'M' + ps.map((p) => P(p[0], p[1], p[2]).map(f).join(' ')).join('L') + 'Z';
+  return `<path class="face" d="${d3([...vis.map(([a, b]) => [a, b, z]), ...vis.slice().reverse().map(([a, b]) => [a, b, z1])])}"/><path class="face top" d="${d3(ring.map(([a, b]) => [a, b, z1]))}"/>`;
+};
+const path = (ps: number[][], cls: string) => `<path class="${cls}" d="M${ps.map((p) => P(p[0], p[1], p[2]).map(f).join(' ')).join('L')}"/>`;
+const lines = (a0: number, a1: number, step: number, b0: number, b1: number, vertical = true) => {
+  let s = ''; for (let a = a0; a <= a1 + 1e-6; a += step) s += vertical ? `<line class="detail" x1="${a}" y1="${b0}" x2="${a}" y2="${b1}"/>` : `<line class="detail" x1="${b0}" y1="${a}" x2="${b1}" y2="${a}"/>`;
+  return s;
+};
+
+let svg = '';
+// Ground plate with an inset line and four screws
+svg += rounded(0, 0, 0, 240, 180, 8, 1.2);
+svg += on(TOP(0, 0, 8), `<rect class="detail" x="10" y="10" width="220" height="160" rx="1"/>` + [[18, 18], [222, 18], [18, 162], [222, 162]].map(([cx, cy]) => `<circle class="detail" cx="${cx}" cy="${cy}" r="2.4"/>`).join(''));
+
+// Rack tower, back left: vents on the side, drive bays and status lights on the front
+svg += box(24, 24, 8, 44, 44, 96);
+svg += on(SIDE(68, 68, 104), lines(6, 38, 4, 8, 40) + `<rect class="detail" x="6" y="52" width="32" height="36" rx="2"/>` + lines(58, 82, 6, 10, 34, false));
+svg += on(FRONT(24, 68, 104), [10, 26, 42, 58].map((y, i) => `<rect class="face recess" x="5" y="${y}" width="34" height="11" rx="1.5"/><circle class="led${i === 1 ? ' hot' : ''}" cx="33" cy="${y + 5.5}" r="2"/>` + lines(9, 25, 4, y + 3, y + 8)).join('') + `<rect class="detail" x="5" y="76" width="34" height="14" rx="1.5"/>`);
+// Mast on the tower with a lit beacon
+svg += box(44, 44, 104, 4, 4, 34);
+svg += `<ellipse class="halo" filter="url(#sc-bloom)" cx="${f(P(46, 46, 142)[0])}" cy="${f(P(46, 46, 142)[1])}" rx="14" ry="14"/>`;
+svg += box(42, 42, 138, 8, 8, 6, 'lit');
+for (const r of [12, 20]) svg += on(TOP(46, 46, 150), `<circle class="ring" cx="0" cy="0" r="${r}"/>`);
+
+// Cable from the tower to the monitor stand, lit
+svg += path([[68, 58, 22], [84, 58, 8], [84, 72, 8], [138, 72, 8], [138, 64, 8]], 'wire-under');
+svg += path([[68, 58, 22], [84, 58, 8], [84, 72, 8], [138, 72, 8], [138, 64, 8]], 'wire hot');
+
+// Monitor, back right: stand, neck, thin screen with a lit chart
+svg += box(118, 40, 8, 42, 24, 4);
+svg += box(135, 44, 12, 8, 6, 34);
+svg += box(92, 36, 40, 112, 8, 78);
+svg += `<ellipse class="halo" filter="url(#sc-bloom)" cx="${f(P(148, 44, 80)[0])}" cy="${f(P(148, 44, 80)[1])}" rx="60" ry="40"/>`;
+const bars = [22, 34, 28, 46, 40, 56];
+svg += on(FRONT(92, 44, 118),
+  `<rect class="glass hot" filter="url(#sc-soft)" x="6" y="6" width="100" height="62" rx="2"/>` +
+  `<rect class="scr" x="12" y="12" width="26" height="3" rx="1"/><rect class="scr dim" x="12" y="18" width="16" height="2" rx="1"/>` +
+  bars.map((h, i) => `<rect class="scr${i === 5 ? '' : ' dim'}" x="${14 + i * 14}" y="${62 - h * .7}" width="8" height="${h * .7}" rx="1"/>`).join('') +
+  `<polyline class="scr-line" points="${bars.map((h, i) => `${18 + i * 14},${56 - h * .8}`).join(' ')}"/>` +
+  `<circle class="scr" cx="88" cy="${56 - 56 * .8}" r="2.4"/>`);
+svg += on(SIDE(204, 44, 118), `<rect class="detail" x="2" y="4" width="4" height="70" rx="1"/>`);
+
+// Keyboard, front left, a few keys lit
+svg += box(24, 104, 8, 92, 40, 6);
+let keys = '';
+for (let r = 0; r < 4; r++) for (let c = 0; c < 10; c++) {
+  const w = r === 3 && c === 3 ? 36 : 6.6; if (r === 3 && c > 3 && c < 8) continue;
+  const hot = (r === 1 && c === 6) || (r === 2 && c === 2) || (r === 0 && c === 8);
+  keys += `<rect class="${hot ? 'key hot' : 'key'}" x="${5 + c * 8.4}" y="${5 + r * 8}" width="${w}" height="6" rx="1.2"/>`;
+}
+svg += on(TOP(24, 104, 14), keys);
+
+// Lead cards, front right: a stack, the top one flagged
+svg += box(150, 104, 8, 54, 36, 3);
+svg += box(152, 101, 11, 54, 36, 3);
+svg += box(154, 98, 14, 54, 36, 3, 'lit');
+svg += on(TOP(154, 98, 17), `<circle class="mark" cx="9" cy="9" r="4"/><rect class="mark" x="17" y="6" width="22" height="2.4" rx="1"/><rect class="mark" x="17" y="11" width="14" height="2" rx="1"/>` + lines(20, 30, 5, 6, 46, false));
+
+// Signal dots travelling in from the edge toward the cards
+for (const [x, y, k] of [[226, 150, .35], [218, 138, .6], [212, 126, 1]] as const) svg += `<circle class="sig" style="opacity:${k}" cx="${f(P(x, y, 8)[0])}" cy="${f(P(x, y, 8)[1])}" r="2.2"/>`;
+---
+<svg class="sc-cover" viewBox={`0 0 ${f(W)} ${f(H)}`} aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="sc-soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+    <filter id="sc-bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9" /></filter>
+  </defs>
+  <Fragment set:html={svg} />
+</svg>
+
+<style>
+  .sc-cover { --body: var(--neutral-0); --deck: var(--neutral-0); --edge: var(--neutral-800); --detail: var(--neutral-200); --recess: var(--neutral-25); --accent: var(--cover-450, var(--primary-450)); --accent-hi: var(--cover-200, var(--primary-200)); display: block; width: 100%; height: 100%; overflow: visible; }
+  .sc-cover :global(*) { vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+  .sc-cover :global(.face) { fill: var(--body); stroke: var(--edge); stroke-width: 1; }
+  .sc-cover :global(.face.top) { fill: var(--deck); }
+  .sc-cover :global(.face.recess) { fill: var(--recess); stroke: var(--detail); }
+  .sc-cover :global(.face.lit) { fill: var(--accent); stroke: var(--accent); }
+  .sc-cover :global(.face.top.lit) { fill: var(--accent-hi); }
+  .sc-cover :global(.detail) { fill: none; stroke: var(--detail); stroke-width: 1; }
+  .sc-cover :global(.ring) { fill: none; stroke: var(--accent); stroke-width: 1; stroke-dasharray: 2 4; opacity: .7; }
+  .sc-cover :global(.led) { fill: var(--detail); }
+  .sc-cover :global(.led.hot), .sc-cover :global(.sig) { fill: var(--accent); }
+  .sc-cover :global(.glass.hot) { fill: var(--accent); stroke: var(--accent); }
+  .sc-cover :global(.halo) { fill: var(--accent); opacity: .22; }
+  .sc-cover :global(.scr) { fill: var(--neutral-0); }
+  .sc-cover :global(.scr.dim) { opacity: .45; }
+  .sc-cover :global(.scr-line) { fill: none; stroke: var(--neutral-0); stroke-width: 1.5; }
+  .sc-cover :global(.key) { fill: var(--body); stroke: var(--detail); stroke-width: 1; }
+  .sc-cover :global(.key.hot) { fill: var(--accent); stroke: var(--accent); }
+  .sc-cover :global(.mark) { fill: var(--neutral-0); stroke: none; }
+  .sc-cover :global(.wire) { fill: none; stroke: var(--edge); stroke-width: 1; }
+  .sc-cover :global(.wire.hot) { stroke: var(--accent); stroke-width: 1.5; }
+  .sc-cover :global(.wire-under) { fill: none; stroke: var(--neutral-0); stroke-width: 4; }
+</style>

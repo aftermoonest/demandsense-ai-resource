@@ -1,0 +1,80 @@
+---
+// One template for every scenario page (brief). Only ready scenarios get a page; "soon" cards don't link.
+import { getCollection, getEntry, getEntries, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DetailHero from '../../components/detail/DetailHero.astro';
+import DetailFrame from '../../components/detail/DetailFrame.astro';
+import Catches from '../../components/detail/Catches.astro';
+import OutputGallery from '../../components/detail/OutputGallery.astro';
+import GetIt from '../../components/detail/GetIt.astro';
+import UsingTiles from '../../components/detail/UsingTiles.astro';
+import StepFlow from '../../components/detail/StepFlow.astro';
+import Connectors from '../../components/Connectors.astro';
+import ScenarioCover from '../../components/ScenarioCover.astro';
+import Sec from '../../components/Sec.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import DetailCta from '../../components/detail/DetailCta.astro';
+import RuleRow from '../../components/RuleRow.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { arrow } from '../../arrows';
+import { AREAS, T } from '../../site';
+
+export async function getStaticPaths() {
+  const ready = await getCollection('scenarios', (s) => s.data.status === 'ready');
+  return ready.map((s) => ({ params: { slug: s.id }, props: { scenario: s } }));
+}
+interface Props { scenario: CollectionEntry<'scenarios'> }
+const { scenario } = Astro.props;
+const d = scenario.data;
+const p = d.page;
+const author = await getEntry(d.author);
+const rules = (await getEntries(d.rules)).sort((a, b) => a.data.number - b.data.number);
+// Sidebar: this page's own sections, in page order
+const toc = [['h-catches', 'What it catches', p.catches], ['h-back', 'What comes back', p.comesBack], ['h-get', 'Get it', p.get], ['h-using', 'Using it', p.using.length], ['h-how', 'How it finds them', p.steps.length], ['h-rules', `The ${T.rules.toLowerCase()} it applies`, rules.length]]
+  .filter(([, , on]) => on).map(([id, label]) => ({ label: label as string, href: `#${id}` }));
+const facts = [['First run', d.firstRun], ['You need', d.youNeed], ['You get', d.youGet]].filter(([, v]) => v) as [string, string][];
+// Closing CTA: the shared submit band with this scenario's copy; content can override any field
+const cta = {
+  headline: 'Find out what’s in your own list.',
+  context: 'The first thing it tells you is how much of last month’s engagement came from companies nobody can call',
+  button: 'Get the install command',
+  note: 'Reads your exports. Changes nothing. About ten minutes the first time',
+  ...p.cta,
+};
+---
+<Base type="scenario" title={`${d.title} · ${T.scenarios} · The B2B AI Standard for LinkedIn® Ads`} description={d.description}>
+  <DetailHero cover={d.cover} crumbs={[{ label: 'Directory', href: '/directory' }, { label: T.scenarios, href: '/scenarios' }, { label: d.title }]}
+    chips={[{ label: AREAS[d.category] }, { label: d.cadence, out: true }]} author={author} title={d.title} lead={d.description} facts={facts}>
+    <Fragment slot="actions">
+      {p.get && <a class="btn filled" href="#h-get">Get the install command</a>}
+      {p.get?.source && <a class="btn outlined" href={p.get.source} rel="noopener">Source on GitHub <Fragment set:html={arrow('up', 'ext')} /></a>}
+    </Fragment>
+    {d.connectors.length > 0 && <div slot="facts"><dt class="lbl">Runs with</dt><dd><Connectors items={d.connectors} /></dd></div>}
+    <Fragment slot="art">{d.illustration ? <img src={d.illustration} alt="" /> : <ScenarioCover />}</Fragment>
+  </DetailHero>
+
+  <DetailFrame toc={toc}>
+    {p.catches && <Catches {...p.catches} stat={d.stat} />}
+    {p.comesBack && <OutputGallery title={p.comesBack.headline} context={p.comesBack.context} items={p.comesBack.items} />}
+    {p.get && <GetIt {...p.get} />}
+    {p.using.length > 0 && <UsingTiles headline={p.usingHead?.headline} context={p.usingHead?.context} items={p.using} />}
+    {p.steps.length > 0 && <StepFlow steps={p.steps} />}
+    {rules.length > 0 && (
+      <Sec id="h-rules" label={`The ${T.rules.toLowerCase()} it applies`} title={`${rules.length === 1 ? 'One rule' : `${rules.length} ${T.rules.toLowerCase()}`} of the Standard.`} context="Each step above leans on one of them. Open a rule to see what it checks and why" small>
+        <ul class="rrows" data-reveal>
+          {rules.map((r) => <li><RuleRow rule={r} /></li>)}
+        </ul>
+      </Sec>
+    )}
+    {p.get ? <DetailCta title={cta.headline} context={cta.context} button={cta.button} href="#h-get" /> : <DetailCta title={`Run a ${T.scenario.toLowerCase()} we don’t have yet?`} />}
+  </DetailFrame>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<style>
+  /* The rules it applies: the directory's rule rows */
+  .rrows > li + li { border-top: 1px solid var(--line); }
+  /* shortcut: empty slot until the illustration-system thread ships the closing-card figure */
+</style>

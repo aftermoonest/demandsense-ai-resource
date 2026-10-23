@@ -1,0 +1,33 @@
+---
+import '../styles/site.css';
+import { checked } from '../check';
+await checked;
+// type: scenario/skill/rule pages take that item's colour as the accent (DESIGN §4.6)
+interface Props { title: string; description?: string; type?: 'scenario' | 'skill' | 'rule' }
+const { title, type, description = 'Rules, skills and scenarios for running LinkedIn® Ads with AI, each written by a named practitioner' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content={description}>
+<link rel="icon" href="data:,">
+<link rel="preload" href="/design-system/fonts/InterVariable.ttf" as="font" type="font/ttf" crossorigin>
+<script is:inline>document.documentElement.classList.add('motion-ready')</script>
+<slot name="head" />
+</head>
+<body data-type={type}>
+<a class="skip-link btn filled" href="#main">Skip to content</a>
+<slot />
+<script>
+  // Reveal on view: one build per block, runs once
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('[data-reveal]').forEach((el) => {
+    [...el.children].forEach((c, i) => (c as HTMLElement).style.setProperty('--i', String(i)));
+    io.observe(el);
+  });
+</script>
+</body>
+</html>

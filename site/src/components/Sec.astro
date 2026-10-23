@@ -1,0 +1,35 @@
+---
+// Section frame for scenario pages (DESIGN §3.1): marker above a two-tone headline in the left half,
+// optional body in the right half, content below. Never marker-left / headline-right.
+// Slot "act" (rail arrows, links) sits at the right end of the headline row, as in SectionHead.
+interface Props { id: string; label: string; title?: string; context?: string; body?: string; small?: boolean; class?: string }
+const { id, label, title, context, body, small = false, class: cls } = Astro.props;
+---
+<section class:list={['sec', { small }, cls]} aria-labelledby={id}>
+  <div class="head">
+    <div class="l">
+      <h2 class="marker" id={id}>{label}</h2>
+      {title && <p class:list={['headline', small ? 't-h4' : 't-h2']}>{title} {context && <span class="tone-2">{context}</span>}</p>}
+    </div>
+    {body && <p class="r t-p1 body">{body}</p>}
+    {Astro.slots.has('act') && <div class="act"><slot name="act" /></div>}
+  </div>
+  <slot />
+</section>
+
+<style>
+  /* Spacing tokens (DESIGN §6.6): divider -> overline, content -> next divider, header -> content */
+  .sec { position: relative; display: grid; gap: var(--header-gap); padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
+  /* Divider runs viewport-wide: solid between the edge lines, fading past them (DESIGN §7 band rule) */
+  .sec::before { content: ''; position: absolute; top: 0; left: 50%; width: 100vw; height: 1px; translate: -50% 0; --x: max(var(--edge), calc(50vw - var(--content-max) / 2 - var(--edge-inset))); background: linear-gradient(90deg, transparent, var(--line) var(--x), var(--line) calc(100% - var(--x)), transparent); }
+  .first::before { display: none; }
+  .head { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-body) var(--gutter); align-items: end; }
+  .l { display: grid; gap: var(--gap-overline); justify-items: start; }
+  .r { max-width: 520px; }
+  .head:not(:has(.r)) { grid-template-columns: minmax(0, 1fr); } /* no body: the headline may run past the half */
+  .small .head { grid-template-columns: minmax(0, 1fr); }
+  .sec .head:has(> .act) { grid-template-columns: minmax(0, 1fr) auto; gap: 24px; }
+  .act { display: flex; gap: 8px; align-items: center; }
+  @media (max-width: 999px) { .head { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 699px) { .sec .head:has(> .act) { grid-template-columns: minmax(0, 1fr); } }
+</style>

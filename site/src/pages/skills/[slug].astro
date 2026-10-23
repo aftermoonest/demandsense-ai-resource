@@ -1,0 +1,114 @@
+---
+// One template for every skill page (Figma 919:23317), built on the scenario page's parts. Only ready skills get a page;
+// "next version" cards link to their rule instead (SkillCard).
+import { getCollection, getEntry, getEntries, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import DetailHero from '../../components/detail/DetailHero.astro';
+import DetailFrame from '../../components/detail/DetailFrame.astro';
+import PromptTabs from '../../components/detail/PromptTabs.astro';
+import OutputGallery from '../../components/detail/OutputGallery.astro';
+import StepFlow from '../../components/detail/StepFlow.astro';
+import UsingTiles from '../../components/detail/UsingTiles.astro';
+import Sec from '../../components/Sec.astro';
+import RelatedTabs from '../../components/detail/RelatedTabs.astro';
+import SubmitBand from '../../components/SubmitBand.astro';
+import DetailCta from '../../components/detail/DetailCta.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { arrow } from '../../arrows';
+import { icon } from '../../icons';
+import { AREAS, AREA_COVER, AREA_ICON, T } from '../../site';
+
+export async function getStaticPaths() {
+  const ready = await getCollection('skills', (s) => s.data.status === 'ready');
+  return ready.map((s) => ({ params: { slug: s.id }, props: { skill: s } }));
+}
+interface Props { skill: CollectionEntry<'skills'> }
+const { skill } = Astro.props;
+const d = skill.data;
+const p = d.page;
+const author = d.author ? await getEntry(d.author) : undefined;
+const scenarios = await getCollection('scenarios', (s) => s.data.status === 'ready' && s.data.skills.some((k) => k.id === skill.id));
+const rules = (await getEntries(d.rules)).sort((a, b) => a.data.number - b.data.number);
+// Related rails list everything, this skill's own scenarios and rules first
+const own = (ids: string[], id: string) => Number(ids.includes(id));
+const scIds = scenarios.map((s) => s.id), ruIds = rules.map((r) => r.id);
+const relSc = (await getCollection('scenarios')).sort((a, b) => own(scIds, b.id) - own(scIds, a.id) || Number(b.data.status === 'ready') - Number(a.data.status === 'ready') || a.data.order - b.data.order);
+const relRu = (await getCollection('rules')).sort((a, b) => own(ruIds, b.id) - own(ruIds, a.id) || a.data.number - b.data.number);
+const cover = AREA_COVER[d.area];
+const toc = [['h-does', 'What it does', p.does], ['h-prompt', 'The prompt', p.prompt], ['h-back', 'The output', p.output], ['h-how', 'How it works', p.steps.length], ['h-when', 'Use it when', p.useWhen.length], ['h-related', 'Related', relSc.length + relRu.length]]
+  .filter(([, , on]) => on).map(([id, label]) => ({ label: label as string, href: `#${id}` }));
+const facts = [['Changes', d.changes], ['First run', d.firstRun]].filter(([, v]) => v) as [string, string][];
+const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+---
+<Base type="skill" title={`${d.title} · ${T.skills} · The B2B AI Standard for LinkedIn® Ads`} description={d.description}>
+  <DetailHero cover={cover} crumbs={[{ label: 'Directory', href: '/directory' }, { label: T.skills, href: '/skills' }, { label: d.title }]}
+    chips={[{ label: AREAS[d.area] }, { label: T.skill, out: true }]} author={author} title={d.title} lead={d.description} facts={facts}>
+    <Fragment slot="actions">
+      {p.prompt && <a class="btn filled" href="#h-prompt">Copy the prompt</a>}
+      {p.prompt?.source && <a class="btn outlined" href={p.prompt.source} rel="noopener">Source on GitHub <Fragment set:html={arrow('up', 'ext')} /></a>}
+    </Fragment>
+    <Fragment slot="art">
+      {d.illustration ? <img src={d.illustration} alt="" /> : <span class="kart" style={`--cover-450: var(--pastel-${cover}-450)`} set:html={icon(d.icon ?? AREA_ICON[d.area])} />}
+    </Fragment>
+  </DetailHero>
+
+  <DetailFrame toc={toc}>
+    {p.does && (
+      <Sec id="h-does" label="What it does" title={p.does.headline} context={p.does.context} small>
+        <div class="prose" data-reveal>{p.does.body.map((b) => <p class="t-p1 body">{b}</p>)}</div>
+      </Sec>
+    )}
+
+    {p.prompt && <PromptTabs headline={p.prompt.headline} context={p.prompt.context} tabs={p.prompt.tabs} install={p.prompt.install} />}
+
+    {p.output && (
+      <OutputGallery label="The output" title={p.output.headline} context={p.output.context} items={p.output.items}>
+        {p.output.stats.length > 0 && (
+          <ul class="stats" data-reveal>
+            {p.output.stats.map((s) => <li><p class="t-n2 sv">{s.value}</p><p class="t-p2 body">{s.label}</p></li>)}
+          </ul>
+        )}
+        {p.output.note && <p class="t-p1 body onote" set:html={bold(p.output.note)} />}
+      </OutputGallery>
+    )}
+
+    {p.steps.length > 0 && (
+      <StepFlow label="How it works" context="Each one has to finish before the next one starts" steps={p.steps}>
+        {p.stepsNote && <p class="t-h6 stop-note">{p.stepsNote.headline} {p.stepsNote.context && <span class="tone-2">{p.stepsNote.context}</span>}</p>}
+      </StepFlow>
+    )}
+
+    {p.useWhen.length > 0 && <UsingTiles id="h-when" label="Use it when" headline={`${p.useWhen.length} moments it pays off.`} context="If one of these is this week, run it" items={p.useWhen} />}
+
+    {(relSc.length > 0 || relRu.length > 0) && (
+      <Sec id="h-related" label="Related" title={scenarios.length ? `Part of a ${T.scenario.toLowerCase()}.` : `The ${T.rules.toLowerCase()} it applies.`} context={p.partOf ?? (scenarios.length ? `Run it on its own, or as one step of the routine` : undefined)} small>
+        <RelatedTabs scenarios={relSc} rules={relRu} />
+      </Sec>
+    )}
+    <DetailCta title={`Built a ${T.skill.toLowerCase()} we don’t have yet?`} />
+  </DetailFrame>
+
+  <SubmitBand />
+  <SiteFooter />
+</Base>
+
+<style>
+  /* Skills have no cover illustration yet: the card icon, drawn large, in the area's colour */
+  .kart { position: absolute; inset: 12%; display: block; }
+  .kart :global(.hl) { --hairline-hi: var(--cover-450); width: 100%; height: 100%; }
+  @media (max-width: 999px) { .kart { position: static; width: min(100%, 360px); aspect-ratio: 1; margin-inline: auto; } }
+
+  .prose { display: grid; gap: 20px; max-width: 680px; margin-top: calc(var(--gap-body) - var(--header-gap)); } /* the body belongs to the headline (DESIGN §6.6 headline -> body) */
+  .onote { max-width: 680px; }
+  .onote :global(strong) { color: var(--text); font-weight: inherit; }
+
+  /* The output: three counts below the gallery */
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
+  .stats li { display: grid; gap: 8px; align-content: start; padding-top: 20px; border-top: 1px solid var(--line); }
+  .sv { color: var(--text); }
+  .body { color: var(--text-body); }
+
+  .stop-note { max-width: 680px; padding-top: 32px; border-top: 1px solid var(--line); }
+
+  @media (max-width: 699px) { .stats { grid-template-columns: 1fr; } }
+</style>

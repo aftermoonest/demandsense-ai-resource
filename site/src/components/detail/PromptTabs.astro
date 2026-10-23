@@ -1,0 +1,88 @@
+---
+// "The prompt" (skill pages): a black band like the scenario's "Get it", with one white block, a tab per way of running it (sample, your exports, DemandSense), each with Copy.
+// Below it, the install command for people who would rather not paste a prompt.
+import Sec from '../Sec.astro';
+import CopyButton from '../CopyButton.astro';
+interface Code { label: string; text: string }
+interface Props { headline: string; context?: string; tabs: Code[]; install?: Code[] }
+const { headline, context, tabs, install = [] } = Astro.props;
+---
+<Sec id="h-prompt" label="The prompt" title={headline} context={context} small class="get-band surface-black">
+  <div class="pr" data-tabs>
+    <div class="code">
+      <div class="bar">
+        <div class="tabs" role="tablist" aria-label="Run it on">
+          {tabs.map((t, i) => <button class="tab lbl" type="button" role="tab" id={`pt-${i}`} aria-controls={`pp-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{t.label}</button>)}
+        </div>
+        <CopyButton data-copy-tab />
+      </div>
+      {tabs.map((t, i) => <pre class="panel" id={`pp-${i}`} role="tabpanel" aria-labelledby={`pt-${i}`} hidden={i !== 0}><code>{t.text}</code></pre>)}
+    </div>
+    <p class="sr-only" aria-live="polite" data-tab-status></p>
+    {install.length > 0 && (
+      <details class="inst">
+        <summary class="t-p2 body">Rather not paste it? <span class="ul">Install it instead</span></summary>
+        {install.map((o) => (
+          <div class="code light">
+            <div class="bar"><span class="lbl">{o.label}</span></div>
+            <pre><code>{o.text}</code></pre>
+          </div>
+        ))}
+      </details>
+    )}
+  </div>
+</Sec>
+
+<script>
+  import { copied } from '../../copy';
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((box) => {
+    const tabs = [...box.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const panels = [...box.querySelectorAll<HTMLElement>('[role=tabpanel]')];
+    const status = box.querySelector('[data-tab-status]');
+    let cur = 0;
+    const pick = (i: number, focus = false) => {
+      cur = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, k) => { t.setAttribute('aria-selected', String(k === cur)); t.tabIndex = k === cur ? 0 : -1; });
+      panels.forEach((p, k) => (p.hidden = k !== cur));
+      if (focus) tabs[cur].focus();
+    };
+    tabs.forEach((t, k) => (t.onclick = () => pick(k)));
+    box.querySelector('[role=tablist]')!.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k === 'ArrowRight') pick(cur + 1, true);
+      if (k === 'ArrowLeft') pick(cur - 1, true);
+    });
+    const copy = box.querySelector<HTMLButtonElement>('[data-copy-tab]')!;
+    copy.onclick = async () => {
+      try { await navigator.clipboard.writeText(panels[cur].textContent ?? ''); } catch { return; }
+      copied(copy);
+      if (status) status.textContent = 'Prompt copied';
+      setTimeout(() => { if (status) status.textContent = ''; }, 2000);
+    };
+  });
+</script>
+
+<style>
+  .pr { display: grid; gap: 16px; }
+  /* Code blocks stay on the white surface tokens inside the black band */
+  .code { --text: var(--neutral-950); --text-2: var(--neutral-500); --line: var(--neutral-100); --line-card: var(--neutral-100); border-radius: var(--radius-4); overflow: hidden; background: var(--neutral-0); color: var(--text); }
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 0 8px 0 20px; min-height: 52px; border-bottom: 1px solid var(--line); }
+  .tabs { display: flex; gap: 24px; align-self: stretch; overflow-x: auto; scrollbar-width: none; }
+  .tab { position: relative; padding: 0; border: 0; background: none; color: var(--text-2); white-space: nowrap; cursor: pointer; transition: color var(--t-fast) ease; }
+  .tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--text); transform: scaleX(0); transition: transform var(--t-base) var(--ease-out); }
+  .tab[aria-selected='true'] { color: var(--text); }
+  .tab[aria-selected='true']::after { transform: none; }
+  @media (hover: hover) and (pointer: fine) { .tab:hover { color: var(--text); } }
+  pre { margin: 0; padding: 20px; overflow-x: auto; white-space: pre-wrap; font: 500 14px/1.7 var(--font-mono); letter-spacing: 0; color: var(--text); }
+  .panel:not([hidden]) { animation: pin var(--t-base) var(--ease-out); }
+  @keyframes pin { from { opacity: 0; transform: translateY(4px); } }
+  .inst summary { cursor: pointer; list-style: none; }
+  .inst summary::-webkit-details-marker { display: none; }
+  .inst[open] summary { margin-bottom: 16px; }
+  .inst[open] .code { animation: pin var(--t-base) var(--ease-out); }
+  .light { box-shadow: inset 0 0 0 1px var(--line-card); }
+  .light .lbl { color: var(--text-2); }
+  .ul { color: var(--text); border-bottom: 1px solid var(--text-meta); transition: border-color var(--t-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .inst summary:hover .ul { border-color: var(--text); } }
+  @media (prefers-reduced-motion: reduce) { .panel:not([hidden]), .inst[open] .code { animation: none; } .tab::after { transition: none; } }
+</style>

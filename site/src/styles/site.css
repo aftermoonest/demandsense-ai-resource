@@ -1,0 +1,107 @@
+/* Base for the tool. Tokens come from the shared design system; page-specific styles live in each component. */
+@import url(/design-system/tokens.css);
+
+@font-face { font-family: 'Inter'; src: url(/design-system/fonts/InterVariable.ttf) format('truetype'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(/design-system/fonts/GeistMono-Medium.ttf) format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url(/design-system/fonts/GeistMono-SemiBold.ttf) format('truetype'); font-weight: 600; font-display: swap; }
+
+:root { --site-bar: 72px; } /* fixed site header height */
+/* Site grid is wider than the report's: from 1000px up the edge lines sit 16px from the 1512 canvas edge; content keeps its 64px inset (80 from the edge) */
+@media (min-width: 1000px) { :root { --edge: 16px; --content-max: 1352px; } }
+html { scroll-padding-top: calc(var(--site-bar) + 72px); }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.04em; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; font: inherit; }
+ul, ol { list-style: none; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.tone-2 { color: var(--text-2); }
+.headline { text-wrap: balance; max-width: calc(min(100vw - 2 * var(--margin), var(--content-max)) * .65); } /* 65% of the grid; columns that are their own container use 65cqi */
+@media (max-width: 699px) { .headline { max-width: none; } }
+.body { color: var(--text-body); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Frame (DESIGN §6–7): grid wrap; vertical edge lines 64px outside the grid */
+.wrap { max-width: calc(var(--content-max) + 2 * var(--margin)); margin-inline: auto; padding-inline: var(--margin); }
+.ruled { position: relative; }
+.ruled::before, .ruled::after { content: ''; position: absolute; z-index: var(--z-raised); top: 0; bottom: 0; width: 1px; background: var(--line); pointer-events: none; } /* above cards that slide under them in rails */
+.ruled::before { left: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); }
+.ruled::after { right: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); }
+/* Band rule: solid between the edge lines, fades out past them */
+.bleed { --x: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); border-top: 1px solid; border-image: linear-gradient(90deg, transparent, var(--line) var(--x), var(--line) calc(100% - var(--x)), transparent) 1; }
+
+/* Horizontal rails crop only at the vertical edge lines, never at the content box: they run out to the lines and snap back to the grid */
+.to-edges { margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); }
+
+/* Outbound-link arrow: the Figma up arrow turned 45° (only Figma arrows are used, see DESIGN §8.10) */
+svg.ext { rotate: 45deg; }
+
+/* Labels and markers */
+.marker { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text); }
+.marker::before { content: ''; width: 8px; height: 8px; margin: 4px; background: var(--accent); flex: none; }
+.lbl { font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text-body); }
+.lbl-2 { font: 600 10px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text-body); }
+
+/* Buttons (DESIGN §8.1) */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; height: 40px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); background: none; color: var(--text); font: 600 14px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; white-space: nowrap; cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out); }
+.btn.sm { height: 36px; padding: 0 14px; font-size: 12px; }
+.btn.xs { height: 32px; padding: 0 12px; font-size: 12px; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn.filled { background: var(--action); color: var(--action-text); }
+.btn.brand { background: var(--action-brand); color: var(--neutral-0); }
+.btn.outlined { box-shadow: inset 0 0 0 1px var(--line); }
+.btn.icon { width: 40px; padding: 0; }
+/* Large: the landing hero size (56 high, 16px label, 28px arrow) */
+.btn.lg { height: 56px; padding: 0 28px; gap: 16px; font-size: 16px; }
+.btn.lg svg { width: 28px; height: 28px; }
+.btn svg { transition: translate var(--t-fast) var(--ease-out); }
+.btn:active { transform: scale(.97); }
+.btn[disabled] { opacity: .4; cursor: not-allowed; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .btn.filled:hover { background: var(--hover-on-950); }
+  .surface-black .btn.filled:hover { background: var(--neutral-200); }
+  .btn.brand:hover { background: #2f68e0; }
+  .btn.outlined:hover { box-shadow: inset 0 0 0 1px var(--text); }
+  .btn.ghost:hover { background: var(--bg-muted); }
+  .btn:hover svg.go { translate: 4px 0; }
+}
+@media (pointer: coarse) { .btn.sm, .btn.xs { position: relative; } .btn.sm::after, .btn.xs::after { content: ''; position: absolute; inset: -6px; } }
+
+/* Chips (DESIGN §8.5, §9.5) */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: var(--radius-2); background: var(--bg-muted); color: var(--text); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; white-space: nowrap; }
+.chip.out { background: none; box-shadow: inset 0 0 0 1px var(--line); }
+.chip.dark { background: var(--neutral-950); color: var(--neutral-0); }
+
+/* Reveal on view: gated by .motion-ready so no-JS shows everything (DESIGN §11) */
+.motion-ready [data-reveal] > * { opacity: 0; transform: translateY(8px); transition: opacity 300ms var(--ease-out), transform 300ms var(--ease-out); transition-delay: calc(var(--i, 0) * var(--stagger-row) * 2); }
+.motion-ready [data-reveal].in > * { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .motion-ready [data-reveal] > * { transform: none; }
+  .btn:active { transform: none; }
+  .btn svg { transition: none; }
+}
+
+/* Static hairline icons (illustrations/icons): kernel palette mapped to tokens, as on the landing */
+.hl { --hairline-plate: var(--neutral-0); --hairline-hi: var(--primary-450); --hairline-edge: var(--neutral-800); --hairline-mid: var(--neutral-300); --hairline-lo: var(--neutral-100); --hairline-stroke: 1; display: block; overflow: visible; }
+.surface-black .hl { --hairline-plate: var(--neutral-1000); --hairline-hi: var(--primary-300); --hairline-edge: var(--neutral-300); --hairline-mid: var(--neutral-500); --hairline-lo: var(--neutral-800); }
+.hl :where(path, polygon, ellipse, line) { fill: var(--hairline-plate); stroke: var(--hairline-mid); stroke-width: var(--hairline-stroke); vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+.hl :where(.nf) { fill: none; } .hl :where(.fo) { stroke: none; }
+.hl :where(.sil) { stroke: var(--hairline-edge); } .hl :where(.hi) { stroke: var(--hairline-hi); } .hl :where(.lo) { stroke: var(--hairline-lo); }
+.hl :where(.dash) { stroke-dasharray: 1 3; }
+.hl :where(.dot) { stroke: none; fill: var(--hairline-hi); } .hl :where(.dot.m) { fill: var(--hairline-edge); } .hl :where(.dot.off) { fill: var(--hairline-lo); }
+
+/* Black band across a detail page's content column (scenario "Get it", skill "The prompt"), stopping 1px short of the vertical lines so they stay visible (--pad from DetailFrame) */
+.content .sec.get-band.surface-black:not(:first-child) { margin-inline: calc(1px - var(--pad)); padding: var(--section-ruled-top) calc(var(--pad) - 1px) var(--section-ruled-bottom); }
+.sec.get-band::before, .sec.get-band + .sec::before { display: none; }
+
+/* Hub heroes with art (DESIGN §8.17): copy then tally on the left (every hub has a tally, so all four are one height);
+   the art fills the right from under the header to the hero's bottom edge and bleeds off the right */
+.top .hero.has-art { display: flex; flex-direction: column; align-items: start; gap: 40px; }
+.top .hero.has-art > .hero-art { --bleed: max(0px, (100vw - var(--content-max) - 2 * var(--margin)) / 2); position: absolute; top: calc(-1 * var(--site-bar)); bottom: 0; right: calc(-1 * var(--bleed)); left: max(calc(100% - var(--cw)), calc(var(--margin) + min(760px, 62%) - 840px + 1512px - var(--cw))); border-radius: 0; pointer-events: none; }
+/* 160px fades into the black at the top (under the header) and the bottom of the hero, as in Figma 962:39212 */
+.top .hero.has-art > .hero-art { --fade: linear-gradient(transparent, #000 160px, #000 calc(100% - 160px), transparent); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+.top .hero.has-art > :not(.hero-art) { position: relative; }
+@media (max-width: 999px) { .top .hero.has-art > .hero-art { display: none; } } /* no room beside the headline */
+@media (max-width: 699px) { .top .hero.has-art { gap: 24px; } }

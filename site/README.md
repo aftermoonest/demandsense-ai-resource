@@ -1,3 +1,10 @@
 # site
 
-The tool: the community-built B2B AI Standard for LinkedIn Ads as a browsable site. Pages: home, directory, scenarios, skills, rules, authors and contribute. Each scenario, skill, rule and author is one content file in `content/scenarios/`, `content/skills/`, `content/rules/` or `content/authors/`. It shares `/design-system/` and `/illustrations/` with the landing. Stack not chosen yet (Astro or Eleventy).
+The tool: the community-built B2B AI Standard for LinkedIn Ads as a browsable site. Astro, static output.
+
+- Run: `npm install` then `npm run dev` (port 4321) in this folder. Build: `npm run build` → `dist/`.
+- Content: one Markdown file per item in `content/{scenarios,skills,rules,authors}/`. Fields and links between them are defined in `src/content.config.ts`. A scenario or skill that names a missing author, skill or rule fails the build (`src/check.ts`).
+- Names that may change ("Scenarios"), areas and nav live in `src/site.ts`.
+- Shared design system: `public/design-system` and `public/illustrations` are symlinks to the repo-root folders, so pages use the same `/design-system/...` paths as the landing. Base styles: `src/styles/site.css`; each component keeps its own styles.
+- Shared components (`src/components/`): `SiteHeader`, `TabBar`, `SectionHead`, `ScenarioCard`, `SkillCard`, `RuleRow`, `AuthorCard`, `SubmitBand`, `SiteFooter`. Layout: `src/layouts/Base.astro`.
+- Pages: `/directory` (library home; `/` redirects there while Home is on hold).

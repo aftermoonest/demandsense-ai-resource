@@ -1,0 +1,86 @@
+---
+// Hero and CTA art (DESIGN §8.17): an isometric piece straight on the section (or on a pastel field when given one).
+// `dark` switches to the black-hero look: dark faces, grey hairlines, blue glow on the live part.
+// `zoom` scales it around the piece's focus so the important part fills the box and the rest bleeds off; `place`
+// instead pins it at an exact rect from the Figma layout: [right, top, width, height] in px, right measured from the
+// box's right edge (plus --bleed, how far the box runs past its section). The build renders the rest frame;
+// on the page it plays by itself (no pointer or key triggers), pauses off-screen and stays on the rest frame
+// under reduced motion.
+import { pieces } from '../art';
+interface Props { name: string; field?: string; dark?: boolean; mono?: boolean; zoom?: number; place?: [number, number, number, number]; clip?: number; accent?: 'scenario' | 'skill' | 'rule' | 'brand'; class?: string }
+const { name, field = 'transparent', dark = false, mono = false, zoom = 1, place, clip, accent, class: cls } = Astro.props;
+const lit = accent ? `; --lit: ${accent === 'brand' ? 'var(--primary-450)' : `var(--art-${{ scenario: 'a', skill: 'b', rule: 'c' }[accent]})`}` : '';
+const piece = pieces[name];
+const [fx, fy] = piece.focus ?? [0.5, 0.5];
+const at = place ? `; --pr: ${place[0]}px; --pt: ${place[1]}px; --pw: ${place[2]}px; --ph: ${place[3]}px` : '';
+---
+<figure class:list={['iso-panel', cls]} data-iso={name} style={`--field: ${field}; --zoom: ${zoom}; --fx: ${fx * 100}%; --fy: ${fy * 100}%${lit}${at}${clip ? `; --cw: ${clip}px` : ''}`}>
+  <svg class:list={['iso-art', { 'on-dark': dark, mono, placed: place }]} viewBox={piece.viewBox} role="img" aria-label={piece.aria} preserveAspectRatio="xMidYMid meet">
+    {dark && <defs><filter id="iso-glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="b" /><feComponentTransfer in="b" result="g"><feFuncA type="linear" slope=".7" /></feComponentTransfer><feMerge><feMergeNode in="g" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>}
+    <g data-frame set:html={piece.draw(piece.rest)} />
+  </svg>
+</figure>
+
+<script>
+  import { pieces } from '../art';
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const SPEED = 0.6; // pieces are timed in brisk beats; played slower so each spring move takes about a second
+  for (const host of document.querySelectorAll<HTMLElement>('[data-iso]')) {
+    const piece = pieces[host.dataset.iso!], frame = host.querySelector('[data-frame]')!;
+    let raf = 0, t0 = 0;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      const t = piece.rest + (now - t0) / 1000 * SPEED;
+      frame.innerHTML = piece.draw(t);
+      host.style.setProperty('--march', String(-(t * 12) % 14)); // dashes travel along their path
+    };
+    new IntersectionObserver(([e]) => {
+      cancelAnimationFrame(raf);
+      if (!e.isIntersecting || still.matches) return;
+      t0 = performance.now();
+      raf = requestAnimationFrame(tick);
+    }).observe(host);
+  }
+</script>
+
+<style>
+  .iso-panel { --art-a: var(--scenario-300); --art-b: var(--skill-300); --art-c: var(--rule-300); position: relative; margin: 0; background: var(--field); border-radius: var(--radius-4); overflow: hidden; }
+  .iso-art { --ink: var(--neutral-950); --h: var(--art-a); position: absolute; inset: 4%; display: block; width: 92%; height: 92%; overflow: visible; transform: scale(var(--zoom)); transform-origin: var(--fx) var(--fy); }
+  /* Pinned to the Figma layout on desktop; smaller screens fall back to fitting the box */
+  @media (min-width: 1000px) { .iso-art.placed { inset: auto; right: calc(var(--pr) + var(--bleed, 0px)); top: var(--pt); width: var(--pw); height: var(--ph); transform: none; } }
+  /* Hue groups a/b/c are the item type colours: scenario orange, skill cyan, rule blue */
+  .iso-art :global(*) { vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+  .iso-art :global(.ha) { --h: var(--art-a); }
+  .iso-art :global(.hb) { --h: var(--art-b); }
+  .iso-art :global(.hc) { --h: var(--art-c); }
+  .iso-art :global(.f) { stroke: var(--ink); stroke-width: 1.5; }
+  .iso-art :global(.paper) { fill: #fff; }
+  .iso-art :global(.tint) { fill: color-mix(in srgb, var(--h) 30%, #fff); }
+  .iso-art :global(.body) { fill: color-mix(in srgb, var(--h) 60%, #fff); }
+  .iso-art :global(.blk), .iso-art :global(.head) { fill: var(--ink); }
+  .iso-art :global(.det) { fill: none; stroke: var(--ink); stroke-width: 1; }
+  .iso-art :global(.hl) { fill: none; stroke: var(--h); stroke-width: 1.5; }
+  .iso-art :global(.dashed) { stroke-dasharray: 4 3; }
+  .iso-art :global(.dash) { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 8 6; stroke-linecap: butt; }
+  .iso-art :global(.march) { stroke-dashoffset: var(--march, 0); }
+  /* `mono` on a light surface: grey and white like the heroes, colour only on the live part */
+  .iso-art.mono, .mono :global(:is(.ha, .hb, .hc)) { --h: var(--neutral-300); }
+  .mono :global(.lit), .mono :global(.lit :is(.ha, .hb, .hc)) { --h: var(--lit, var(--primary-450)); }
+  /* On black heroes (iso-glow look): dark faces, grey hairlines; only the live part (.lit) takes colour and glows:
+     the hero's own item colour (`accent`), else the hue of the group it sits in */
+  .on-dark { --line: color-mix(in srgb, var(--neutral-500) 55%, var(--neutral-800)); }
+  .on-dark :global(.f) { stroke: var(--line); stroke-width: .6; }
+  .on-dark :global(.det) { stroke: var(--neutral-800); stroke-width: .45; }
+  .on-dark :global(.paper) { fill: var(--neutral-950); }
+  .on-dark :global(.tint) { fill: var(--neutral-950); }
+  .on-dark :global(.body) { fill: var(--neutral-1000); }
+  .on-dark :global(.blk) { fill: var(--neutral-1000); }
+  .on-dark :global(.dash) { stroke: var(--line); stroke-width: .9; }
+  .on-dark :global(.head) { fill: var(--line); }
+  .on-dark :global(.lit) { filter: url(#iso-glow); }
+  .on-dark :global(.lit .f) { stroke: var(--lit, var(--h)); }
+  .on-dark :global(.lit .det) { stroke: color-mix(in srgb, var(--lit, var(--h)) 60%, var(--neutral-900)); }
+  .on-dark :global(.lit .paper) { fill: color-mix(in srgb, var(--lit, var(--h)) 18%, var(--neutral-1000)); }
+  .on-dark :global(.lit .tint) { fill: color-mix(in srgb, var(--lit, var(--h)) 30%, var(--neutral-1000)); }
+  .on-dark :global(.lit .body) { fill: var(--lit, var(--h)); }
+</style>
