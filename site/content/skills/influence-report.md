@@ -1,4 +1,5 @@
 ---
+author: "maya-chen"
 title: "Influence report"
 description: "Report exposure, influence and attribution separately"
 area: "signal-to-sales"

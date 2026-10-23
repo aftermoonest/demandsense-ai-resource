@@ -1,4 +1,5 @@
 ---
+author: "lucas-moreau"
 title: "Frequency target check"
 description: "Set separate frequency targets for cold and warm audiences"
 area: "reach-frequency"

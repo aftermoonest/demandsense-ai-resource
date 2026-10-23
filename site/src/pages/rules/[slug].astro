@@ -39,11 +39,6 @@ const relSk = (await getCollection('skills')).sort((a, b) => own(skIds, b.id) - 
 const relSc = (await getCollection('scenarios')).sort((a, b) => own(scIds, b.id) - own(scIds, a.id) || ready(b) - ready(a) || a.data.order - b.data.order);
 const toc = [['h-rule', 'The rule', hasRule], ['h-signs', 'If you see this', p.signs.length], ['h-voices', 'Who runs it this way', p.voices.length], ['h-run', 'Run it', true]]
   .filter(([, , on]) => on).map(([href, label]) => ({ label: label as string, href: `#${href}` }));
-const facts: [string, string][] = [
-  ['Area', AREAS[d.area]],
-  ['Applied by', skills.length ? `${skills.length} ${(skills.length === 1 ? T.skill : T.skills).toLowerCase()}` : 'No skill yet'],
-  ...(scenarios.length ? [['Built on it', `${scenarios.length} ${(scenarios.length === 1 ? T.scenario : T.scenarios).toLowerCase()}`] as [string, string]] : []),
-];
 const ext = arrow('up', 'ext');
 const count = (n: number, one: string, many: string) => (n === 1 ? one : `${n} ${many}`);
 const cta = {
@@ -56,7 +51,7 @@ const cta = {
 ---
 <Base type="rule" title={`${d.title} · ${T.rules} · The B2B AI Standard for LinkedIn® Ads`} description={d.why}>
   <DetailHero cover={AREA_COVER[d.area]} crumbs={[{ label: 'Directory', href: '/directory' }, { label: T.rules, href: '/rules' }, { label: d.title }]}
-    chips={[{ label: AREAS[d.area] }, { label: `${T.rule} ${nn(d.number)}`, out: true }]} author={author} title={d.title} lead={d.lead ?? d.why} facts={facts}>
+    chips={[{ label: AREAS[d.area] }, { label: `${T.rule} ${nn(d.number)}`, out: true }]} author={author} title={d.title} lead={d.lead ?? d.why}>
     <Fragment slot="actions">
       <a class="btn filled" href="#h-run">See where it runs</a>
       <a class="btn outlined" href="/rules">All {T.rules.toLowerCase()}</a>
@@ -147,7 +142,7 @@ const cta = {
 <style>
   .k { color: var(--text-2); }
   .src { margin-top: auto; padding-top: 8px; font-size: 13px; line-height: 1.4; color: var(--text-2); }
-  .ul { border-bottom: 1px solid var(--text-meta); transition: border-color var(--t-fast) var(--ease-out); }
+  .ul { border-bottom: 1px solid transparent; transition: border-color var(--t-fast) var(--ease-out); }
 
   /* The rule: LinkedIn's advice in an outlined card, the Standard's addition on the tint with a dark top rule (Figma 919:23330) */
   /* The rule pair: grid cards between the content lines, split by a vertical line (like "Using it") */

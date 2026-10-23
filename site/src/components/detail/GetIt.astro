@@ -47,6 +47,6 @@ const { intro, context, options, note, source, sourceNote } = Astro.props;
   .code-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 8px 8px 20px; border-bottom: 1px solid var(--line); }
   .code-bar .lbl { color: var(--text-2); }
   pre { margin: 0; padding: 20px; overflow-x: auto; font: 500 14px/1.7 var(--font-mono); letter-spacing: 0; color: var(--text); }
-  .ul { color: var(--text); border-bottom: 1px solid var(--text-meta); transition: border-color var(--t-fast) var(--ease-out); }
+  .ul { color: var(--text); border-bottom: 1px solid transparent; transition: border-color var(--t-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .ul:hover { border-color: var(--text); } }
 </style>

@@ -1,6 +1,6 @@
 ---
 // "The prompt" (skill pages): a black band like the scenario's "Get it", with one white block, a tab per way of running it (sample, your exports, DemandSense), each with Copy.
-// Below it, the install command for people who would rather not paste a prompt.
+// Below it, always shown: the install command for people who would rather not paste a prompt.
 import Sec from '../Sec.astro';
 import CopyButton from '../CopyButton.astro';
 interface Code { label: string; text: string }
@@ -20,15 +20,16 @@ const { headline, context, tabs, install = [] } = Astro.props;
     </div>
     <p class="sr-only" aria-live="polite" data-tab-status></p>
     {install.length > 0 && (
-      <details class="inst">
-        <summary class="t-p2 body">Rather not paste it? <span class="ul">Install it instead</span></summary>
-        {install.map((o) => (
-          <div class="code light">
-            <div class="bar"><span class="lbl">{o.label}</span></div>
-            <pre><code>{o.text}</code></pre>
+      <div class="inst">
+        <p class="t-h6 ihead">Rather not paste it? <span class="tone-2">Install it instead</span></p>
+        <p class="t-p2 body">Add it to Claude Code once and call it by name on any export</p>
+        {install.map((o, i) => (
+          <div class="code">
+            <div class="bar"><span class="lbl">{o.label}</span><CopyButton data-copy-inst={`pi-${i}`} /></div>
+            <pre id={`pi-${i}`}><code>{o.text}</code></pre>
           </div>
         ))}
-      </details>
+      </div>
     )}
   </div>
 </Sec>
@@ -59,6 +60,14 @@ const { headline, context, tabs, install = [] } = Astro.props;
       if (status) status.textContent = 'Prompt copied';
       setTimeout(() => { if (status) status.textContent = ''; }, 2000);
     };
+    box.querySelectorAll<HTMLButtonElement>('[data-copy-inst]').forEach((b) => {
+      b.onclick = async () => {
+        try { await navigator.clipboard.writeText(document.getElementById(b.dataset.copyInst!)?.textContent ?? ''); } catch { return; }
+        copied(b);
+        if (status) status.textContent = 'Install command copied';
+        setTimeout(() => { if (status) status.textContent = ''; }, 2000);
+      };
+    });
   });
 </script>
 
@@ -76,13 +85,9 @@ const { headline, context, tabs, install = [] } = Astro.props;
   pre { margin: 0; padding: 20px; overflow-x: auto; white-space: pre-wrap; font: 500 14px/1.7 var(--font-mono); letter-spacing: 0; color: var(--text); }
   .panel:not([hidden]) { animation: pin var(--t-base) var(--ease-out); }
   @keyframes pin { from { opacity: 0; transform: translateY(4px); } }
-  .inst summary { cursor: pointer; list-style: none; }
-  .inst summary::-webkit-details-marker { display: none; }
-  .inst[open] summary { margin-bottom: 16px; }
-  .inst[open] .code { animation: pin var(--t-base) var(--ease-out); }
-  .light { box-shadow: inset 0 0 0 1px var(--line-card); }
-  .light .lbl { color: var(--text-2); }
-  .ul { color: var(--text); border-bottom: 1px solid var(--text-meta); transition: border-color var(--t-fast) var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .inst summary:hover .ul { border-color: var(--text); } }
-  @media (prefers-reduced-motion: reduce) { .panel:not([hidden]), .inst[open] .code { animation: none; } .tab::after { transition: none; } }
+  /* Install instead: a smaller two-tone headline and one body line over the install block(s) */
+  .inst { display: grid; gap: 16px; margin-top: 24px; }
+  .inst .body { color: var(--text-body); }
+  .inst .bar .lbl { color: var(--text-2); }
+  @media (prefers-reduced-motion: reduce) { .panel:not([hidden]) { animation: none; } .tab::after { transition: none; } }
 </style>

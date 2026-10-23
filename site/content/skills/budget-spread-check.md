@@ -1,4 +1,5 @@
 ---
+author: "aiko-tanaka"
 title: "Budget spread check"
 description: "Spend on warm audiences before cold ones"
 area: "building-account"

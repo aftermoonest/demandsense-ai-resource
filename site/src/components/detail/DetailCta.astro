@@ -15,7 +15,7 @@ const { title, context = 'Put it in the Standard', button = 'Bring your work', h
   .cta { display: flex; gap: 24px; align-items: flex-start; padding: 64px; border-radius: var(--radius-4); background: var(--primary-650); }
   .headline { flex: 1; min-width: 0; text-wrap: balance; }
   /* On the blue the second tone is white at 60%, not the neutral grey */
-  .headline .tone-2 { color: rgb(255 255 255 / .6); }
+  .headline .tone-2 { display: block; color: rgb(255 255 255 / .6); } /* claim and context on two lines */
   .btn { flex: none; }
   @media (max-width: 999px) { .cta { flex-direction: column; gap: 32px; padding: 40px; } }
   @media (max-width: 699px) { .cta { padding: 32px 24px; } }

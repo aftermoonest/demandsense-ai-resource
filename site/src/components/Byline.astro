@@ -18,6 +18,6 @@ const Name = link ? 'a' : 'span';
   .byline { display: inline-flex; align-items: center; gap: 8px; }
   .av { display: grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; overflow: hidden; background: var(--bg-muted); box-shadow: inset 0 0 0 1px var(--line-card); color: var(--text-2); font: 600 8px/1 var(--font-mono); }
   .av img { width: 100%; height: 100%; object-fit: cover; }
-  a.name { color: var(--text); border-bottom: 1px solid var(--line); transition: border-color var(--t-fast) var(--ease-out); }
+  a.name { color: var(--text); border-bottom: 1px solid transparent; transition: border-color var(--t-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { a.name:hover { border-color: var(--text); } }
 </style>

@@ -38,8 +38,8 @@ const job = [data.role, data.company].filter(Boolean).join(', ');
   .dots { position: absolute; inset: 0; --dot: var(--neutral-100); }
   :global(.surface-black) .dots { --dot: var(--neutral-850); }
   .ini { position: relative; color: var(--text-meta); transition: color var(--t-fast) var(--ease-out); }
-  .txt { display: grid; gap: 4px; align-content: start; padding: 24px 24px 0; }
-  .job { color: var(--text-2); }
+  .txt { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; align-content: start; padding: 24px 24px 0; }
+  .job { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* one line; the full role shows on the profile */
   .about { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 12px; }
   .count { margin: 24px 24px 0; } /* the card's own bottom padding holds cards without a count too */
   @media (hover: hover) and (pointer: fine) {
