@@ -1,4 +1,4 @@
-// Home "Why AI can't get LinkedIn Ads right": an exploded stack of three blocks — the data (mismatched exports taped
+// Home "Why AI can't get LinkedIn Ads right": an exploded stack of three blocks, top to bottom — the data (mismatched exports taped
 // together), the judgement (a dial nobody calibrated) and the context (an account's history on a ruled plate). The
 // section's scroll picks one; it slides out and lights. On the closing line the gaps close and a cover drops on: one
 // bound block, the playbook. draw(a, u): a = how lit each block is (0..1, eased by the page), u = 0..1 merge progress.
@@ -6,8 +6,9 @@ import { kernel, k, lerp } from './iso';
 
 const W = 120, D = 90, G = 64, POP = 18;              // footprint, gap between exploded layers, slide-out of the lit one
 const H = [36, 40, 30];                               // data, judgement, context heights
+const X0 = -POP / 2;                                  // rest x: the lit block slides out by POP, so the frame stays centred on the stack
 const TOP_Z = H[0] + H[1] + H[2] + 2 * G + 14;        // highest point, spread
-const K = kernel([[0, 0, 0], [W + POP, 0, 0], [0, D, 0], [W + POP, D, 0], [0, 0, TOP_Z], [W + POP, D, TOP_Z]], 20);
+const K = kernel([[X0, 0, 0], [W + POP / 2, 0, 0], [X0, D, 0], [W + POP / 2, D, 0], [X0, 0, TOP_Z], [W + POP / 2, D, TOP_Z]], 6);
 const { on, line, box, cyl, TOP, FRONT, SIDE } = K;
 export const viewBox = K.viewBox;
 
@@ -90,19 +91,20 @@ const lit = (a: number, inner: string) => (a < 1 ? inner : '') + (a > .005 ? `<g
 export function draw(a: number[], u: number) {
   // the gaps close first, then the cover drops
   const close = k(u, 0, .7), cover = k(u, .6, 1), gap = G * (1 - close);
-  const z = [0, H[0] + gap, H[0] + H[1] + 2 * gap];
-  const x = (i: number) => a[i] * POP * (1 - close);
+  // read top to bottom like the folds: context at the bottom, judgement, data on top
+  const z = [H[2] + H[1] + 2 * gap, H[2] + gap, 0];
+  const x = (i: number) => X0 + a[i] * POP * (1 - close);
   let g = '';
   // exploded-view guides: dashed lines from each layer's visible corners up to the next one
   if (close < 1) {
     const o = (1 - close).toFixed(3);
-    for (let i = 0; i < 2; i++) for (const [cx, cy] of [[W, 0], [W, D], [0, D]] as const)
-      g += `<g style="opacity:${o}">${line([[cx, cy, z[i] + H[i]], [cx, cy, z[i + 1]]], 'det dashed')}</g>`;
+    for (const [lo, hi] of [[2, 1], [1, 0]]) for (const [cx, cy] of [[X0 + W, 0], [X0 + W, D], [X0, D]] as const)
+      g += `<g style="opacity:${o}">${line([[cx, cy, z[lo] + H[lo]], [cx, cy, z[hi]]], 'det dashed')}</g>`;
   }
-  g += lit(a[0], data(x(0), 0, z[0]));
-  g += lit(a[1], judgement(x(1), 0, z[1]));
   g += lit(a[2], context(x(2), 0, z[2]));
-  g += lit(cover, binding(0, 0, H[0] + H[1] + H[2], cover));
+  g += lit(a[1], judgement(x(1), 0, z[1]));
+  g += lit(a[0], data(x(0), 0, z[0]));
+  g += lit(cover, binding(X0, 0, H[0] + H[1] + H[2], cover));
   return g;
 }
 
