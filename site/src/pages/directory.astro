@@ -35,7 +35,7 @@ const small = arrow('right');
       <IsoArt name="directory" dark place={[-146, -166, 915, 972]} clip={770} class="hero-art" />
       <div class="copy">
         <Breadcrumbs items={[{ label: 'Directory' }]} />
-        <h1 class="headline t-display">The directory. <span class="tone-2">Every scenario, skill and rule in the Standard, each signed by the practitioner who runs it that way</span></h1>
+        <h1 class="headline t-display">The directory. <span class="tone-2">Every rule, skill and scenario in the Standard, so your AI can make sense of LinkedIn Ads data</span></h1>
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@ const small = arrow('right');
   <main id="main">
     <div class="ruled">
     <section class="blk wrap" data-type="scenario" aria-labelledby="h-scenarios">
-      <SectionHead id="h-scenarios" marker={T.scenarios} count={scenarios.length} title="Whole routines, ready to run." context="Skills chained into a weekly or monthly job, with sample data to try first">
+      <SectionHead id="h-scenarios" marker={T.scenarios} count={scenarios.length} title="Run the usual prep work in one go." context="A scenario runs several skills in order, on your schedule">
         <button class="btn outlined icon xs desk" type="button" data-rail-prev aria-label="Previous scenarios" disabled><Fragment set:html={arrow('left')} /></button>
           <button class="btn filled icon xs desk" type="button" data-rail-next aria-label="Next scenarios"><Fragment set:html={small} /></button>
       </SectionHead>
@@ -57,15 +57,15 @@ const small = arrow('right');
     </section>
 
     <section class="blk wrap bleed" data-type="skill" aria-labelledby="h-skills">
-      <SectionHead id="h-skills" marker={T.skills} count={allSkills.length} title="Single checks." context="Each reads an export, applies one rule and hands back a list or a flag" />
+      <SectionHead id="h-skills" marker={T.skills} count={allSkills.length} title="Answer a specific question about your account." context="A skill checks your data against the rules and tells you what it found" />
       <ul class="grid4" data-reveal>
         {skills.map((s) => <li><SkillCard skill={s} /></li>)}
       </ul>
-      <div class="below"><a class="btn brand" href="/skills">Explore all {allSkills.length} {T.skills.toLowerCase()} <Fragment set:html={go} /></a></div>
+      <div class="below"><a class="btn brand" href="/skills">See all {allSkills.length} {T.skills.toLowerCase()} <Fragment set:html={go} /></a></div>
     </section>
 
     <section class="blk wrap bleed" data-type="rule" aria-labelledby="h-rules">
-      <SectionHead id="h-rules" marker={T.rules} count={nRules} title="Six rules to start with." context="What an experienced advertiser checks before trusting a number" />
+      <SectionHead id="h-rules" marker={T.rules} count={nRules} title="Set the rules your AI works by." context="Each one shows what LinkedIn does by default and what to do on top of it" />
       <ul class="rule-grid" data-reveal>
         {rules.map((r) => <li><RuleRow rule={r} /></li>)}
       </ul>
@@ -77,7 +77,7 @@ const small = arrow('right');
     <!-- Authors run on black into the closing band, with their own edge lines -->
     <div class="surface-black ruled">
     <section class="blk wrap last" aria-labelledby="h-authors">
-      <SectionHead id="h-authors" marker="Featured authors" title="The people behind the work." context="Ask them when you need the work done rather than the method">
+      <SectionHead id="h-authors" marker="Featured authors" title="The people behind the work." context="Each skill and scenario was tested on real accounts by actual hands-on experts managing top B2B accounts">
         <button class="btn outlined icon xs desk" type="button" data-rail-prev aria-label="Previous authors" disabled><Fragment set:html={arrow('left')} /></button>
         <button class="btn filled icon xs desk" type="button" data-rail-next aria-label="Next authors"><Fragment set:html={small} /></button>
       </SectionHead>
