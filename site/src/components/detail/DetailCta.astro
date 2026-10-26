@@ -23,7 +23,7 @@ const art = Astro.slots.has('art');
   .headline { text-wrap: balance; }
   .headline .tone-2 { display: block; } /* claim and context on two lines */
   /* Art bleeds to the card's top, right and bottom edges, as in the hero, with the hero's accents */
-  .art { position: relative; align-self: stretch; min-height: 360px; margin: -64px -64px -64px 0; }
+  .art { position: relative; align-self: stretch; margin: -64px -64px -64px 0; } /* card height comes from the copy: 64px on every side */
   /* Same fit as the hero's art box (DetailHero .hart, skill .kart), so the figure reads identical */
   .art > :global(svg), .art > :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .art > :global(.kart) { position: absolute; inset: 12%; display: block; }
