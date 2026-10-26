@@ -5,7 +5,7 @@ import { kernel, k, f, type Piece } from './iso';
 const LINES = ['Hi there, here is my skill', 'Hello, let me submit my scenario', 'Hey, I have one interesting rule to share'];
 const WRAP = 24, CPS = 12, HOLD = 1.6, FEED = .5, STEP = 3, LH = 15;
 // Base on feet (Z0), deck at BZ, back housing to HZ, carriage rail on top; the sheet stands behind the platen
-const BW = 260, BD = 190, Z0 = 6, BZ = 30, HZ = 66, PX = 45, PW = 170, PY = 30, PZ = 82, PH = 150, PLY = 40, PLZ = 90;
+const BW = 260, BD = 190, Z0 = 6, BZ = 30, HZ = 66, PX = 45, PW = 170, PY = 30, PZ = 82, PH = 100, PLY = 40, PLZ = 90;
 const SWING = WRAP * STEP / 2; // carriage travel each side of centre
 const KEYS = Array.from({ length: 4 }, (_, r) => Array.from({ length: 11 - (r === 3 ? 3 : 0) }, (_, c) => [34 + r * 7 + (r === 3 ? 19.5 : 0) + c * 19.5, 112 + r * 18] as const)).flat();
 
@@ -19,7 +19,7 @@ const PHRASES = LINES.map((s) => ({ rows: wrap(s), n: s.length }));
 const DUR = PHRASES.map((p) => p.n / CPS + HOLD + FEED);
 const PERIOD = DUR.reduce((a, b) => a + b, 0);
 
-const K = kernel([[-36 - SWING, PLY, PLZ], [BW + 36 + SWING, 0, 0], [0, BD, 0], [BW, BD, 0], [PX - SWING, PY, PZ + PH], [PX + PW + SWING, PY, PZ + PH]], 10);
+const K = kernel([[-36 - SWING, PLY, PLZ], [BW + 36 + SWING, 0, 0], [0, BD, 0], [BW, BD, 0], [PX - SWING, PY, PZ + PH], [PX + PW + SWING, PY, PZ + PH]], 4);
 const { on, poly, line, box, cyl, cylX, FRONT, TOP, SIDE } = K;
 
 function machine(dx: number, typed: string[], fade: number, key: number, press: number) {
@@ -50,10 +50,10 @@ function machine(dx: number, typed: string[], fade: number, key: number, press: 
   s += cyl(cx(-40), PLY + 22, PLZ + 27, 3.5, 5, 'paper', 'body');
   s += cylX(cx(-36), cx(-20), PLY, PLZ, 12, 'paper', 'body') + cylX(cx(-20), cx(-14), PLY, PLZ, 7, 'paper', 'body');
   // Paper rest: a tall plate behind the sheet with ruled guides
-  s += poly([[cx(10), 20, PLZ], [cx(BW - 10), 20, PLZ], [cx(BW - 10), 14, PLZ + 120], [cx(10), 14, PLZ + 120]], 'f tint');
-  s += [0.3, 0.55, 0.8].map((v) => line([[cx(18), 20 - 6 * v, PLZ + 120 * v], [cx(BW - 18), 20 - 6 * v, PLZ + 120 * v]], 'det')).join('');
+  s += poly([[cx(10), 20, PLZ], [cx(BW - 10), 20, PLZ], [cx(BW - 10), 16, PLZ + 80], [cx(10), 16, PLZ + 80]], 'f tint');
+  s += [0.3, 0.55, 0.8].map((v) => line([[cx(18), 20 - 4 * v, PLZ + 80 * v], [cx(BW - 18), 20 - 4 * v, PLZ + 80 * v]], 'det')).join('');
   let text = '';
-  typed.forEach((row, i) => { text += `<text class="type" x="12" y="${PH - 30 - (typed.length - 1 - i) * LH}">${row}</text>`; });
+  typed.forEach((row, i) => { text += `<text class="type" x="12" y="${PH - 38 - (typed.length - 1 - i) * LH}">${row}</text>`; });
   s += `<g class="lit">${poly([[cx(PX), PY, PZ], [cx(PX + PW), PY, PZ], [cx(PX + PW), PY, PZ + PH], [cx(PX), PY, PZ + PH]], 'f paper')}` +
     on(FRONT(cx(PX), PY, PZ + PH), `<g style="opacity:${f(fade)}">${text}</g>`) + '</g>';
   s += cylX(cx(-14), cx(BW + 14), PLY, PLZ, 17, 'paper', 'body');
