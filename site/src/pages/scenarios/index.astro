@@ -21,6 +21,7 @@ const steps = [
   { title: 'You act on it', text: 'A list or a report shows what to change in the campaigns' },
   { title: 'The results feed back', text: 'What you changed shows up in the data for the next run' },
 ];
+const loop = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4C9.25144 4 6.82508 5.38626 5.38443 7.5H8V9.5H2V3.5H4V5.99936C5.82381 3.57166 8.72764 2 12 2C17.5228 2 22 6.47715 22 12H20C20 7.58172 16.4183 4 12 4ZM4 12C4 16.4183 7.58172 20 12 20C14.7486 20 17.1749 18.6137 18.6156 16.5H16V14.5H22V20.5H20V18.0006C18.1762 20.4283 15.2724 22 12 22C6.47715 22 2 17.5228 2 12H4Z"/></svg>'; // Remix Icon loop-left-line
 ---
 <Base type="scenario" title={`${T.scenarios} · The B2B AI Standard for LinkedIn Ads`} description="Whole routines for LinkedIn Ads. Each one strings skills together to take on work you’d do by hand">
 
@@ -46,7 +47,6 @@ const steps = [
 
       <Sec id="h-how" label="How it works" title="Scenarios add to your LinkedIn routines." context="Take the manual work out, but keep the expertise and context in">
         <ol class="steps" data-reveal>
-          <li class="loop" aria-hidden="true"><span class="chip out">↻ Loop</span></li>
           {steps.map((s, i) => (
             <li class:list={['step', { key: i === 0 }]}>
               <span class="tick"><StepDot n={i + 1} active={i === 0} /></span>
@@ -54,6 +54,7 @@ const steps = [
               <p class="t-p2 body">{s.text}</p>
             </li>
           ))}
+          <li class="step loop-step"><span class="tick"><span class="chip out loop"><Fragment set:html={loop} />Loop to step 1</span></span></li>
         </ol>
       </Sec>
 
@@ -82,29 +83,26 @@ const steps = [
   .list { display: grid; gap: var(--gutter); }
   .soon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
 
-  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange; a dashed path under the row closes the loop */
-  .steps { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-bottom: 48px; }
-  /* Dashed return path: out of step 4 to the right, down, back left under the text, up and into step 1 with an arrow */
-  .loop { position: absolute; z-index: 1; top: 28px; bottom: 0; left: -32px; right: -32px; border: 1.5px dashed var(--neutral-300); border-top: 0; border-radius: 0 0 16px 16px; pointer-events: none; }
-  .loop::before { content: ''; position: absolute; top: 0; left: 0; width: 38px; border-top: 1.5px dashed var(--neutral-300); transform: translateY(-50%); }
-  .loop::after { content: ''; position: absolute; top: 0; left: 37px; border: 4.5px solid transparent; border-left: 6px solid var(--neutral-300); border-right: 0; transform: translateY(-50%); }
-  .loop .chip { position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%); background: var(--bg); }
+  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange, then a Loop chip back to step 1 */
+  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }
+  .loop { gap: 8px; padding: 6px 12px; background: var(--bg); }
+  .loop :global(svg) { width: 20px; height: 20px; }
   .step { display: grid; gap: 8px; align-content: start; padding-right: 32px; }
   .step:last-child { padding-right: 0; }
   .tick { position: relative; z-index: 0; display: flex; align-items: center; height: 56px; margin-bottom: 8px; }
   .tick::after { content: ''; position: absolute; z-index: -1; left: 0; right: -32px; top: 50%; height: 1px; background: var(--line); }
-  .step:last-child .tick::after { height: 0; background: none; border-top: 1.5px dashed var(--neutral-300); }
+  .step:last-child .tick::after { display: none; }
   .step .body { max-width: 36ch; }
 
   @media (max-width: 999px) {
     .soon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hero { flex-direction: column; align-items: start; }
-    .steps { grid-template-columns: 1fr; gap: 24px; padding-bottom: 0; }
-    .loop { display: none; }
+    .steps { grid-template-columns: 1fr; gap: 24px; }
     .step { grid-template-columns: 48px minmax(0, 1fr); column-gap: 16px; padding: 0; position: relative; }
     .step > * { grid-column: 2; }
     .step > .tick { grid-column: 1; grid-row: 1 / span 2; height: 48px; margin: 0; }
     .tick::after { display: none; }
+    .loop-step > .tick { grid-column: 2; grid-row: auto; }
     .step:not(:last-child)::before { content: ''; position: absolute; left: 23.5px; top: 48px; bottom: -24px; width: 1px; background: var(--line); }
   }
   @media (max-width: 699px) {
