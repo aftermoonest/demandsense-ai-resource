@@ -1,0 +1,137 @@
+---
+// Authors + form (home §7), the submit landing's #get scene reused: a sticky stage holds the centred headline while the
+// author cards scroll up past it, left and right. Once the last card is past, the headline turns into the ask and the
+// form (white on black) rides up over it, so the people and the form read as one story. Below 1000 the cards become
+// a rail and the stage stops sticking. Ref: zade.space "Why founders build it with us".
+import { getCollection } from 'astro:content';
+import { arrow } from '../../arrows';
+import AuthorCard from '../AuthorCard.astro';
+const authors = (await getCollection('authors', (a) => a.data.featured)).sort((a, b) => a.data.order - b.data.order).slice(0, 8);
+const X = [0, 1, .04, .96, 0, 1, .06, .94]; // card offsets across the grid, flanking the headline
+const DY = ['0svh', '6svh', '-4svh', '4svh', '2svh', '-2svh', '4svh', '0svh'];
+const TO = 'znak@demontrend.com'; // the submit landing's contact until a form backend exists
+---
+<section class="meet surface-black ruled" aria-labelledby="h-meet" data-meet>
+  <div class="stage">
+    <div class="wrap heads">
+      <h2 id="h-meet" class="headline t-display h-a">Nobody here is describing best practice from the outside.</h2>
+      <p class="headline t-display h-b" aria-hidden="true">You run an account a way that works. <span class="tone-2">Send it.</span></p>
+    </div>
+  </div>
+
+  <ul class="wrap deck">
+    {authors.map((a, i) => <li style={`--x: ${X[i % X.length]}; --dy: ${DY[i % DY.length]}`}><AuthorCard author={a} /></li>)}
+  </ul>
+  <div class="swap-at" data-swap aria-hidden="true"></div>
+
+  <div class="wrap send">
+    <form class="card" action={`mailto:${TO}`} method="post" enctype="text/plain" data-send>
+      <div class="intro">
+        <p class="marker">Contribute</p>
+        <h3 class="t-h4 m-only">You run an account a way that works. <span class="tone-2">Send it.</span></h3>
+        <p class="t-p1 body">A step, a check or a whole routine. We package it, test it with you, and publish it under your name, with your links on it.</p>
+      </div>
+      <div class="fields">
+        <label class="f"><span class="lbl">Name</span><input name="name" autocomplete="name" required></label>
+        <label class="f"><span class="lbl">Work email</span><input name="email" type="email" autocomplete="email" required placeholder="name@company.com"></label>
+        <label class="f wide"><span class="lbl">Company</span><input name="company" autocomplete="organization"></label>
+        <fieldset class="f wide">
+          <legend class="lbl">What you’re bringing</legend>
+          <div class="opts">
+            {['A step', 'A skill', 'A whole routine'].map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
+          </div>
+        </fieldset>
+        <label class="f wide"><span class="lbl">Tell us about it</span><textarea name="about" rows="3"></textarea></label>
+      </div>
+      <button class="btn filled lg" type="submit">Send it <Fragment set:html={arrow('right', 'go')} /></button>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Headline swap: once the marker after the last card rises past the stage centre, show the ask
+  for (const sec of document.querySelectorAll<HTMLElement>('[data-meet]')) {
+    const at = sec.querySelector('[data-swap]')!;
+    new IntersectionObserver(([e]) => sec.classList.toggle('asked', e.boundingClientRect.top < innerHeight / 2), { rootMargin: '0px 0px -50% 0px' }).observe(at);
+  }
+  // No form backend yet: compose the email in the visitor's mail app with the fields filled in
+  document.querySelectorAll<HTMLFormElement>('[data-send]').forEach((f) => f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(f);
+    const body = ['name', 'email', 'company', 'kind', 'about'].map((k) => `${k}: ${d.get(k) ?? ''}`).join('\n');
+    location.href = `${f.action.split('?')[0]}?subject=${encodeURIComponent(`Contribution: ${d.get('kind')}`)}&body=${encodeURIComponent(body)}`;
+  }));
+</script>
+
+<style>
+  .meet { --cw: 280px; --ch: 340px; position: relative; background: var(--bg); color: var(--text); padding-bottom: 160px; }
+  .stage { display: grid; place-items: center; padding-block: var(--section-ruled-top) 48px; }
+  .heads { display: grid; justify-items: center; width: 100%; text-align: center; }
+  .heads > * { grid-area: 1 / 1; max-width: 13em; margin-inline: auto; text-wrap: balance; transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
+  .h-b { opacity: 0; transform: translateY(14px); visibility: hidden; }
+  .m-only { display: none; }
+
+  .deck li { border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; }
+
+  @media (min-width: 1000px) {
+    .stage { position: sticky; top: var(--site-bar); height: calc(100svh - var(--site-bar)); padding: 0; }
+    /* the headline fits between the two card columns */
+    .heads > * { max-width: calc(100% - 2 * (var(--cw) + 64px)); font-size: clamp(36px, 4vw, 64px); }
+    .meet.asked .h-a { opacity: 0; transform: translateY(-14px); }
+    .meet.asked .h-b { opacity: 1; transform: none; visibility: visible; }
+    .h-b { transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out), visibility 0s 400ms; }
+    .meet.asked .h-b { transition-delay: 0s; }
+    /* Deck scrolls over the stage: pulled up one stage height, the first card starting below the fold */
+    .deck { position: relative; z-index: 1; display: block; margin-top: calc(var(--site-bar) - 100svh); padding-top: 100svh; pointer-events: none; --step: 26svh; }
+    .deck li { pointer-events: auto; width: var(--cw); height: var(--ch); margin-left: calc((100% - var(--cw)) * var(--x)); }
+    .deck li + li { margin-top: calc(var(--step) + var(--dy, 0px) - var(--ch)); }
+    .swap-at { height: 30svh; }
+    /* Cards come in from below and leave at the top (scroll-driven where supported, plain scroll elsewhere) */
+    @supports (animation-timeline: view()) {
+      .deck li { animation: life linear both; animation-timeline: view(); }
+      @keyframes life { 0% { opacity: 0; transform: translateY(40px) scale(.96); } 20%, 75% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-24px) scale(.96); } }
+    }
+  }
+
+  /* Form: white card on black, rides up over the ask */
+  .send { position: relative; z-index: 2; }
+  .card { --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line-field: var(--neutral-100); --action: var(--neutral-950); --action-text: var(--neutral-0);
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 64px; max-width: 1000px; margin-inline: auto; padding: 56px; border-radius: var(--radius-4); background: var(--bg); color: var(--text); }
+  .intro { display: grid; gap: 16px; align-content: start; }
+  .intro .body { max-width: 34ch; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; }
+  .f { display: grid; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; }
+  .wide { grid-column: 1 / -1; }
+  .f .lbl, legend.lbl { color: var(--text); padding: 0; }
+  /* Report share form: underlined fields, no box */
+  input:not([type=radio]), textarea { width: 100%; min-height: 42px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line-field); border-radius: 0; background: none; color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.03em; outline: 0; resize: vertical; transition: border-color var(--t-fast) ease; }
+  input::placeholder { color: var(--text-2); opacity: .8; }
+  input:focus-visible, textarea:focus-visible { border-color: var(--text); }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt span { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1px var(--line-field); font: 600 12px/1 var(--font-mono); text-transform: uppercase; cursor: pointer; transition: background-color var(--t-fast) ease, color var(--t-fast) ease, box-shadow var(--t-fast) ease; }
+  .opt input:checked + span { background: var(--neutral-950); color: var(--neutral-0); box-shadow: none; }
+  .opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card > .btn { grid-column: 2; justify-self: start; }
+  @media (hover: hover) and (pointer: fine) { .opt span:hover { box-shadow: inset 0 0 0 1px var(--text); } .card .btn.filled:hover { background: var(--hover-on-950); } }
+
+  @media (max-width: 999px) {
+    .meet { padding-bottom: var(--section-ruled-bottom); }
+    .h-b { display: none; }
+    .deck { display: grid; grid-auto-flow: column; grid-auto-columns: min(80%, 320px); gap: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); max-width: none; }
+    .deck li { scroll-snap-align: start; }
+    .send { margin-top: 48px; }
+    .card { grid-template-columns: minmax(0, 1fr); padding: 32px; }
+    .card > .btn { grid-column: 1; }
+    .m-only { display: block; }
+  }
+  @media (max-width: 699px) {
+    .card { padding: 24px; }
+    .fields { grid-template-columns: minmax(0, 1fr); }
+    .card > .btn { justify-self: stretch; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .heads > * { transition: opacity 200ms linear; transform: none !important; }
+    .deck li { animation: none !important; }
+  }
+</style>

@@ -1,4 +1,173 @@
 ---
-// Home (marketing) is on hold; until it's built the library opens on the Directory.
-return Astro.redirect('/directory');
+// Home: the Standard's landing. Copy from the live site (the-ai-standard-site.netlify.app); structure from the brief of 26 Oct 2026.
+// Black from the hero through the problem scene, white for The fix and the directory, black again for authors + form.
+import { getCollection, getEntry } from 'astro:content';
+import { arrow } from '../arrows';
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Problem from '../components/home/Problem.astro';
+import Meet from '../components/home/Meet.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { T } from '../site';
+
+const nRules = (await getCollection('rules')).length;
+// Statements are placeholders until the authors send theirs (live site shows the same)
+const quotes = [
+  { name: 'Iurii Znak', company: 'DemandSense' },
+  { name: 'Contributor', company: 'Name and company to come' },
+  { name: 'Contributor', company: 'Name and company to come' },
+];
+// One of each, the smaller card: what the directory holds
+const scenario = await getEntry('scenarios', 'warm-leads-from-ad-signals');
+const skill = await getEntry('skills', 'placeholder-page-check');
+const rule = await getEntry('rules', 'check-who-your-ads-actually-reach');
+const picks = [
+  scenario && { type: 'scenario', label: T.scenario, title: scenario.data.title, text: scenario.data.description, href: `/scenarios/${scenario.id}` },
+  skill && { type: 'skill', label: T.skill, title: skill.data.title, text: skill.data.description, href: `/skills/${skill.id}` },
+  rule && { type: 'rule', label: `${T.rule} ${String(rule.data.number).padStart(2, '0')}`, title: rule.data.title, text: rule.data.why, href: `/rules/${rule.id}` },
+].filter((p) => !!p);
+const go = arrow('right', 'go');
+const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
 ---
+<Base title="The B2B AI Standard for LinkedIn® Ads">
+
+  <div class="top surface-black ruled">
+    <SiteHeader />
+    <section class="wrap hero" aria-labelledby="h-hero">
+      <div class="copy">
+        <h1 id="h-hero" class="headline t-h1">AI “changed the game” for LinkedIn Ads. <span class="tone-2">But nobody agreed on the rules.</span></h1>
+        <p class="t-p1 body lead">A standard for making ads work with AI, without taking its word for it.</p>
+        <div class="ctas">
+          <a class="btn brand lg" href="/scenarios">See the scenarios <Fragment set:html={go} /></a>
+          <a class="btn outlined lg" href="/rules">Read the {nRules} rules</a>
+        </div>
+      </div>
+      <!-- Illustration slot: concept picked from the three proposed (checkpoint / rulebook / scales), drawn next -->
+      <div class="hero-art pattern-on-black pattern-fade" aria-hidden="true"></div>
+    </section>
+
+    <section class="wrap quotes-sec" aria-labelledby="h-quotes">
+      <p id="h-quotes" class="marker">Why we wrote it</p>
+      <ul class="quotes to-edges" data-reveal>
+        {quotes.map((q) => (
+          <li class="quote">
+            <blockquote>
+              <p class="t-h5">Statement to come</p>
+              <p class="t-p2 tone-2">Their opening statement, 25 to 35 words in their own words: why this Standard needed to exist.</p>
+            </blockquote>
+            <p class="by"><span class="ini" aria-hidden="true">{q.name === 'Contributor' ? '' : ini(q.name)}</span><span><span class="t-p2">{q.name}</span><span class="t-p2 tone-2">{q.company}</span></span></p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <main id="main">
+    <Problem />
+
+    <div class="ruled">
+      <!-- The fix: empty frame; the client supplies the headline answer, the theses and the visual -->
+      <section class="blk wrap fix" aria-labelledby="h-fix">
+        <div class="fix-copy">
+          <p class="marker">The fix</p>
+          <h2 id="h-fix" class="headline t-h3">Why do you make AI work with data rather than simply store it? <span class="tone-2">Answer to come from the client</span></h2>
+          <ol class="theses" data-reveal>
+            {[1, 2, 3].map((n) => <li><span class="lbl">{String(n).padStart(2, '0')}</span><span class="t-h6">Thesis {n}</span><span class="t-p2 tone-2">Text to come</span></li>)}
+          </ol>
+        </div>
+        <div class="fix-art slot-box" aria-hidden="true"><span class="lbl">Visual</span></div>
+      </section>
+
+      <section class="blk wrap bleed dir" aria-labelledby="h-dir">
+        <div class="dir-head">
+          <p class="marker">Directory</p>
+          <h2 id="h-dir" class="headline t-h3">The directory. <span class="tone-2">Every scenario, skill and rule in the Standard, each signed by the practitioner who runs it that way</span></h2>
+        </div>
+        <ul class="picks" data-reveal>
+          {picks.map((p) => (
+            <li><a class="pick" data-type={p.type} href={p.href}>
+              <span class="marker">{p.label}</span>
+              <span class="t-h6">{p.title}</span>
+              <span class="t-p2 body">{p.text}</span>
+              <span class="more lbl">Open <Fragment set:html={arrow('right')} /></span>
+            </a></li>
+          ))}
+        </ul>
+        <div class="below"><a class="btn brand lg" href="/directory">Explore full directory <Fragment set:html={go} /></a></div>
+      </section>
+    </div>
+
+    <Meet />
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .top { position: relative; background: var(--bg); color: var(--text); }
+
+  /* Hero: copy on 7 columns, the illustration on the rest */
+  .hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); align-items: center; min-height: min(720px, calc(100svh - var(--site-bar))); padding-block: 64px; }
+  .copy { grid-column: 1 / span 7; display: grid; gap: 24px; justify-items: start; }
+  .copy .headline { max-width: 14em; }
+  .lead { max-width: 30em; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  .hero-art { grid-column: 8 / -1; align-self: stretch; min-height: 420px; }
+  /* Text arrives once: fade + 14px rise, staggered */
+  :global(.motion-ready) .copy > * { animation: rise 600ms var(--ease-out) both; animation-delay: calc(var(--n) * 90ms + 100ms); }
+  .copy > :nth-child(1) { --n: 0; } .copy > :nth-child(2) { --n: 1; } .copy > :nth-child(3) { --n: 2; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+  /* Quotes: three big static cards in a row; a snap rail on phones */
+  .quotes-sec { display: grid; gap: var(--header-gap); padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
+  .quotes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); margin-inline: 0; padding-inline: 0; }
+  .quote { display: grid; grid-template-rows: 1fr auto; gap: 48px; min-height: 360px; padding: 32px; border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); }
+  blockquote { display: grid; gap: 12px; align-content: start; margin: 0; }
+  .by { display: flex; align-items: center; gap: 12px; }
+  .by > span:last-child { display: grid; }
+  .ini { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--bg-muted); font: 600 12px/1 var(--font-mono); flex: none; }
+
+  .blk { padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
+  /* Placeholder box for client-supplied visuals */
+  .slot-box { display: grid; place-items: center; border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line); color: var(--text-meta); }
+  .slot-box .lbl { color: var(--text-meta); }
+
+  .fix { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); align-items: stretch; }
+  .fix-copy { grid-column: 1 / span 6; display: grid; gap: var(--gap-overline); align-content: start; }
+  .theses { display: grid; margin-top: var(--header-gap); border-top: 1px solid var(--line); }
+  .theses li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 4px 16px; padding-block: 24px; border-bottom: 1px solid var(--line); }
+  .theses li > :not(.lbl) { grid-column: 2; }
+  .theses .lbl { grid-row: span 2; padding-top: 4px; }
+  .fix-art { grid-column: 8 / -1; min-height: 480px; }
+
+  .dir-head { display: grid; gap: var(--gap-overline); justify-items: center; text-align: center; margin-bottom: var(--header-gap); }
+  .dir-head .headline { max-width: 22em; }
+  .picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); max-width: 1000px; margin-inline: auto; }
+  .pick { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; height: 100%; padding: 24px; border-radius: var(--radius-4); box-shadow: inset 0 0 0 1px var(--line); transition: background-color var(--t-fast) ease, box-shadow var(--t-fast) ease; }
+  .pick .body { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .more { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; color: var(--text); }
+  .more :global(svg) { width: 16px; height: 16px; transition: translate var(--t-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .pick:hover { background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--text); } .pick:hover .more :global(svg) { translate: 4px 0; } }
+  .below { display: flex; justify-content: center; margin-top: 48px; }
+
+  @media (max-width: 999px) {
+    .hero { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+    .copy, .hero-art { grid-column: 1; }
+    .hero-art { min-height: 280px; }
+    .quotes { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: min(80%, 420px); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); }
+    .quote { scroll-snap-align: start; min-height: 300px; }
+    .fix { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .fix-copy, .fix-art { grid-column: 1; }
+    .fix-art { min-height: 280px; }
+    .picks { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 699px) {
+    .hero { padding-block: 40px; }
+    .ctas > .btn { flex: 1 1 100%; }
+    .quote { padding: 24px; }
+    .below > .btn { flex: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes rise { from { opacity: 0; } }
+  }
+</style>

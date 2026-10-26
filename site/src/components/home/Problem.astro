@@ -1,0 +1,148 @@
+---
+// The problem (home §3): a scroll scene on black. A tall track holds a sticky stage; scroll progress picks a step:
+// 0 the question · 1 the assistant's answer · 2 three lines underlined · 3–5 the chat slides left and one note per line
+// comes in on the right, its line boxed · 6 the answer is corrected (boxes turn green, only the boxed words change).
+// Copy from the live site; the corrected wording is a draft to confirm with the client.
+const marks = [
+  { was: 'performing well', now: 'only half as strong as it looks' },
+  { was: 'Stealth AI Startup', now: '“Stealth AI Startup”, a placeholder employer' },
+  { was: 'prioritise them for outreach this week', now: 'drop it and rank the real accounts against your CRM first' },
+];
+const notes = [
+  { title: 'You’ve reported a win that isn’t one.', text: 'Half those clicks came from one placeholder employer. Take them out and the ad set you just called a success looks nothing like one.' },
+  { title: 'Your best account doesn’t exist.', text: '“Stealth AI Startup” is what people list when they won’t name their employer. No buyers, no budget, nobody to sell to.' },
+  { title: 'Sales loses a week to it.', text: 'An SDR chases a company that can’t answer, while the accounts that were actually warming up go cold.' },
+];
+const m = (i: number) => `<mark data-n="${i + 1}"><span class="was">${marks[i].was}</span><span class="now">${marks[i].now}</span></mark>`;
+---
+<section class="problem surface-black ruled" aria-labelledby="h-problem" data-problem>
+  <div class="stage wrap" data-stage>
+    <div class="head">
+      <p class="marker">The problem</p>
+      <h2 id="h-problem" class="headline t-h3">AI can’t catch what nobody told it to look for. <span class="tone-2 after">Unless someone tells it to.</span></h2>
+    </div>
+    <div class="scene">
+      <div class="chat">
+        <p class="msg you t-p1">How’s the new ad set doing? Who should sales call first?</p>
+        <div class="msg ai">
+          <p class="lbl who"><span class="was">Assistant</span><span class="now">Assistant, with the Standard</span></p>
+          <p class="t-h6 answer" set:html={`This ad set is ${m(0)}. It drove 1,200 clicks last month at a cost per click well under benchmark. Your most engaged account is ${m(1)}, with 600 of them, so I’d ${m(2)}.`} />
+        </div>
+      </div>
+      <div class="notes">
+        <p class="lbl">What it didn’t see</p>
+        <ol>
+          {notes.map((n, i) => (
+            <li data-n={i + 1}>
+              <span class="num">{i + 1}</span>
+              <span class="t-h6">{n.title}</span>
+              <span class="t-p2 body">{n.text}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Progress through the track -> step classes s1..s6 on the stage (cumulative), plus data-step for the current one
+  const STEPS = 7;
+  for (const sec of document.querySelectorAll<HTMLElement>('[data-problem]')) {
+    const stage = sec.querySelector<HTMLElement>('[data-stage]')!;
+    let queued = false, last = -1;
+    const update = () => {
+      queued = false;
+      const r = sec.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
+      const step = Math.min(STEPS - 1, Math.floor(p * STEPS));
+      if (step === last) return;
+      last = step;
+      stage.dataset.step = String(step);
+      for (let i = 1; i < STEPS; i++) stage.classList.toggle(`s${i}`, i <= step);
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    update();
+  }
+</script>
+
+<style>
+  /* Track: one stage-height of scroll per step; the stage sticks under the site header and lets go at the section's end */
+  .problem { background: var(--bg); color: var(--text); }
+  :global(.motion-ready) .problem { height: 520svh; }
+  .stage { display: grid; grid-template-rows: auto 1fr; gap: 48px; padding-block: 64px; }
+  :global(.motion-ready) .stage { position: sticky; top: var(--site-bar); height: calc(100svh - var(--site-bar)); align-content: center; grid-template-rows: auto auto; }
+  .head { display: grid; gap: var(--gap-overline); }
+  .headline { max-width: 20em; }
+
+  .scene { --shift: 0px; position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); align-items: start; }
+  /* Chat sits centred (cols 4–9) until the notes arrive, then slides to cols 1–6 */
+  .chat { grid-column: 1 / span 6; display: grid; gap: 16px; }
+  .notes { grid-column: 8 / span 5; display: grid; gap: 16px; }
+  .msg { padding: 20px 24px; border-radius: var(--radius-4); }
+  .you { justify-self: end; max-width: 80%; background: var(--neutral-850); }
+  .ai { display: grid; gap: 12px; background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); }
+  .who { color: var(--text-meta); }
+  .answer { color: var(--text-body); }
+  .answer :global(mark) { -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--text); background: none; border-radius: var(--radius-2); padding: 0 2px; margin: 0 -2px;
+    background-image: linear-gradient(var(--primary-300), var(--primary-300)); background-repeat: no-repeat; background-position: 0 100%; background-size: 100% 1px;
+    transition: background-size 400ms var(--ease-out), box-shadow 250ms var(--ease-out), background-color 250ms var(--ease-out); }
+  .problem :global(.now) { display: none; }
+
+  .notes ol { display: grid; gap: 12px; }
+  .notes li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; row-gap: 6px; padding: 20px 24px; border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); transition: opacity 300ms var(--ease-out), transform 300ms var(--ease-out), box-shadow 250ms var(--ease-out); }
+  .notes li > :not(.num) { grid-column: 2; }
+  .num { grid-row: span 2; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-1); background: var(--neutral-800); font: 600 12px/1 var(--font-mono); }
+
+  /* ---------- Steps (only with JS; without it the end state shows) ---------- */
+  :global(.motion-ready) .stage :is(.you, .ai, .notes, .notes li, .after) { transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out), box-shadow 250ms var(--ease-out); }
+  :global(.motion-ready) .chat { transform: translateX(calc(50% + var(--gutter) / 2)); transition: transform 600ms var(--ease-out); }
+  :global(.motion-ready) .stage .ai { opacity: 0; transform: translateY(14px); }
+  :global(.motion-ready) .stage :global(mark) { background-size: 0 1px; }
+  :global(.motion-ready) .stage .notes { opacity: 0; }
+  :global(.motion-ready) .stage .notes li { opacity: 0; transform: translateX(24px); }
+  :global(.motion-ready) .stage .after { opacity: 0; }
+
+  :global(.motion-ready) .stage.s1 .ai { opacity: 1; transform: none; }
+  :global(.motion-ready) .stage.s2 :global(mark) { background-size: 100% 1px; }
+  :global(.motion-ready) .stage.s3 .chat { transform: none; }
+  :global(.motion-ready) .stage.s3 .notes { opacity: 1; }
+  :global(.motion-ready) .stage.s3 .notes li[data-n="1"],
+  :global(.motion-ready) .stage.s4 .notes li[data-n="2"],
+  :global(.motion-ready) .stage.s5 .notes li[data-n="3"] { opacity: 1; transform: none; }
+  /* The current note and its line are boxed in blue; earlier notes stay, quieter */
+  .stage[data-step="3"] :global(mark[data-n="1"]), .stage[data-step="4"] :global(mark[data-n="2"]), .stage[data-step="5"] :global(mark[data-n="3"]) { background-color: rgb(123 160 255 / .14); box-shadow: 0 0 0 1px var(--primary-300); }
+  .stage[data-step="3"] li[data-n="1"], .stage[data-step="4"] li[data-n="2"], .stage[data-step="5"] li[data-n="3"] { box-shadow: inset 0 0 0 1px var(--primary-300); }
+  :global(.motion-ready) .stage[data-step="4"] .notes li[data-n="1"], :global(.motion-ready) .stage[data-step="5"] .notes li:is([data-n="1"], [data-n="2"]) { opacity: .5; }
+
+  /* Corrected: every box turns green and only the boxed words change; the rest of the scene stays */
+  .stage.s6 :global(mark), :global(:root:not(.motion-ready)) :global(mark) { background-color: rgb(73 185 75 / .14); box-shadow: 0 0 0 1px var(--success-300); }
+  .stage.s6 :global(.was), :global(:root:not(.motion-ready)) :global(.was) { display: none; }
+  .stage.s6 :global(.now), :global(:root:not(.motion-ready)) :global(.now) { display: inline; animation: swap 400ms var(--ease-out); }
+  :global(.motion-ready) .stage.s6 .after { opacity: 1; }
+  @keyframes swap { from { opacity: 0; filter: blur(4px); } }
+
+  @media (max-width: 999px) {
+    /* No room beside the chat: it stays put and the current note shows under it, one at a time */
+    :global(.motion-ready) .problem { height: 480svh; }
+    .stage { gap: 32px; padding-block: 40px; }
+    .scene { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .chat, .notes { grid-column: 1; }
+    :global(.motion-ready) .chat, :global(.motion-ready) .stage.s3 .chat { transform: none; }
+    :global(.motion-ready) .notes li { grid-area: 1 / 1; }
+    :global(.motion-ready) .stage.s4 .notes li[data-n="1"], :global(.motion-ready) .stage.s5 .notes li:is([data-n="1"], [data-n="2"]) { opacity: 0; }
+    :global(.motion-ready) .stage.s6 .notes { opacity: 0; }
+    .msg { padding: 16px; }
+    .answer { font-size: 18px; }
+  }
+  @media (max-width: 699px) {
+    .you { max-width: 100%; }
+    .notes li { padding: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.motion-ready) .stage :is(.chat, .ai, .notes, .notes li, .after), .stage :global(mark) { transition: opacity 200ms linear; transform: none !important; }
+    .stage.s6 :global(.now) { animation: none; }
+  }
+</style>
