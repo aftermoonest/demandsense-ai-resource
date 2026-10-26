@@ -14,6 +14,8 @@ youNeed: "Nothing for the sample. Four CSV exports for your own"
 youGet: "A ranked sheet: who to reach out to, and why"
 connectors:
   - Claude
+  - ChatGPT
+  - Gemini
   - LinkedIn Ads export
   - CRM export
   - DemandSense (optional)

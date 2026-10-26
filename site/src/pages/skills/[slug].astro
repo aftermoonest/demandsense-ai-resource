@@ -35,7 +35,8 @@ const scIds = scenarios.map((s) => s.id), ruIds = rules.map((r) => r.id);
 const relSc = (await getCollection('scenarios')).sort((a, b) => own(scIds, b.id) - own(scIds, a.id) || Number(b.data.status === 'ready') - Number(a.data.status === 'ready') || a.data.order - b.data.order);
 const relRu = (await getCollection('rules')).sort((a, b) => own(ruIds, b.id) - own(ruIds, a.id) || a.data.number - b.data.number);
 const cover = AREA_COVER[d.area];
-const toc = [['h-does', 'What it does', p.does], ['h-prompt', 'The prompt', p.prompt], ['h-back', 'The output', p.output], ['h-how', 'How it works', p.steps.length], ['h-when', 'Use it when', p.useWhen.length], ['h-related', 'Related', relSc.length + relRu.length]]
+// What it does carries the step flow (no separate How it works), then the output, then the prompt (Pastel #15)
+const toc = [['h-does', 'What it does', p.does], ['h-back', 'What you get', p.output], ['h-prompt', 'The prompt', p.prompt], ['h-when', 'When to use it', p.useWhen.length], ['h-related', 'Related', relSc.length + relRu.length]]
   .filter(([, , on]) => on).map(([id, label]) => ({ label: label as string, href: `#${id}` }));
 const facts = [['Changes', d.changes], ['First run', d.firstRun]].filter(([, v]) => v) as [string, string][];
 const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -56,13 +57,18 @@ const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
     {p.does && (
       <Sec id="h-does" label="What it does" title={p.does.headline} context={p.does.context} small>
         <div class="prose" data-reveal>{p.does.body.map((b) => <p class="t-p1 body">{b}</p>)}</div>
+        {p.steps.length > 0 && (
+          <div class="does-flow">
+            <StepFlow bare steps={p.steps}>
+              {p.stepsNote && <p class="t-h6 stop-note">{p.stepsNote.headline} {p.stepsNote.context && <span class="tone-2">{p.stepsNote.context}</span>}</p>}
+            </StepFlow>
+          </div>
+        )}
       </Sec>
     )}
 
-    {p.prompt && <PromptTabs headline={p.prompt.headline} context={p.prompt.context} tabs={p.prompt.tabs} install={p.prompt.install} />}
-
     {p.output && (
-      <OutputGallery label="The output" title={p.output.headline} context={p.output.context} items={p.output.items}>
+      <OutputGallery label="What you get" title={p.output.headline} context={p.output.context} items={p.output.items}>
         {p.output.stats.length > 0 && (
           <ul class="stats" data-reveal>
             {p.output.stats.map((s) => <li><p class="t-n2 sv">{s.value}</p><p class="t-p2 body">{s.label}</p></li>)}
@@ -72,13 +78,9 @@ const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
       </OutputGallery>
     )}
 
-    {p.steps.length > 0 && (
-      <StepFlow label="How it works" context="Each one has to finish before the next one starts" steps={p.steps}>
-        {p.stepsNote && <p class="t-h6 stop-note">{p.stepsNote.headline} {p.stepsNote.context && <span class="tone-2">{p.stepsNote.context}</span>}</p>}
-      </StepFlow>
-    )}
+    {p.prompt && <PromptTabs headline={p.prompt.headline} context={p.prompt.context} tabs={p.prompt.tabs} install={p.prompt.install} />}
 
-    {p.useWhen.length > 0 && <UsingTiles id="h-when" label="Use it when" headline={`${p.useWhen.length} moments it pays off.`} context="If one of these is this week, run it" items={p.useWhen} />}
+    {p.useWhen.length > 0 && <UsingTiles id="h-when" label="When to use it" headline={`${p.useWhen.length} moments it pays off.`} context="If one of these is this week, run it" items={p.useWhen} />}
 
     {(relSc.length > 0 || relRu.length > 0) && (
       <Sec id="h-related" label="Related" title={scenarios.length ? `Part of a ${T.scenario.toLowerCase()}.` : `The ${T.rules.toLowerCase()} it applies.`} context={p.partOf ?? (scenarios.length ? `Run it on its own, or as one step of the routine` : undefined)} small>
@@ -103,6 +105,7 @@ const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
   @media (max-width: 999px) { .kart { position: static; width: min(100%, 360px); aspect-ratio: 1; margin-inline: auto; } }
 
   .prose { display: grid; gap: 20px; max-width: 680px; margin-top: calc(var(--gap-body) - var(--header-gap)); } /* the body belongs to the headline (DESIGN §6.6 headline -> body) */
+  .does-flow { margin-top: 64px; }
   .onote { max-width: 680px; }
   .onote :global(strong) { color: var(--text); font-weight: inherit; }
 

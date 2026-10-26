@@ -12,6 +12,8 @@ changes: "Reads your data, changes nothing"
 firstRun: "About 10 minutes"
 connectors:
   - Claude
+  - ChatGPT
+  - Gemini
   - LinkedIn Ads export
   - CRM export
   - DemandSense (optional)

@@ -6,7 +6,7 @@ const raw = import.meta.glob('../../../design-system/logos/*.svg', { query: '?ra
 const logo = (n: string) => raw[`../../../design-system/logos/${n}.svg`] ?? '';
 // Connector names are free text in content; match the known ones, generic exports and sources fall back to line icons
 const pick = (name: string) =>
-  /crm/i.test(name) ? 'crm' : /claude/i.test(name) ? 'claude' : /linkedin/i.test(name) ? 'linkedin' : /demandsense/i.test(name) ? 'demandsense' : /signal|source/i.test(name) ? 'target' : 'list';
+  /crm/i.test(name) ? 'crm' : /claude/i.test(name) ? 'claude' : /chatgpt|openai/i.test(name) ? 'chatgpt' : /gemini/i.test(name) ? 'gemini' : /linkedin/i.test(name) ? 'linkedin' : /demandsense/i.test(name) ? 'demandsense' : /signal|source/i.test(name) ? 'target' : 'list';
 interface Props { items: string[] }
 const { items: all } = Astro.props;
 // Stacked CRM logos go last so single logos lead the row

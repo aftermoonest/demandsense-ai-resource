@@ -11,6 +11,7 @@ import ScenarioCard from '../components/ScenarioCard.astro';
 import SkillCard from '../components/SkillCard.astro';
 import RuleRow from '../components/RuleRow.astro';
 import AuthorCard from '../components/AuthorCard.astro';
+import AuthorMarquee from '../components/AuthorMarquee.astro';
 import SubmitBand from '../components/SubmitBand.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { T } from '../site';
@@ -36,6 +37,7 @@ const small = arrow('right');
       <div class="copy">
         <Breadcrumbs items={[{ label: 'Directory' }]} />
         <h1 class="headline t-display">The directory. <span class="tone-2">Every rule, skill and scenario in the Standard, so your AI can make sense of LinkedIn Ads data</span></h1>
+        <AuthorMarquee />
       </div>
     </div>
   </div>

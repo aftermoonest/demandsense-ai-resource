@@ -1,19 +1,20 @@
 ---
 // "How it works" (scenario and skill pages): the site's horizontal timeline, one column per step; phase labels sit above the line.
-// Needs a container (container-type: inline-size) around it to stack when narrow.
+// Needs a container (container-type: inline-size) around it to stack when narrow. `bare`: just the timeline, inside another section (skill pages).
 import { getEntry, type CollectionEntry } from 'astro:content';
 import Sec from '../Sec.astro';
 import StepDot from '../StepDot.astro';
 import { arrow } from '../../arrows';
 import { T } from '../../site';
 interface Step { phase?: string; title: string; text: string; note?: string; skill?: { collection: 'skills'; id: string }; key?: boolean }
-interface Props { label?: string; context?: string; steps: Step[] }
-const { label = 'How it runs', context = 'Each one applies a rule of the Standard, and stops the run when the data can’t carry it' } = Astro.props;
+interface Props { label?: string; context?: string; steps: Step[]; bare?: boolean }
+const { bare = false, label = 'How it runs', context = 'Each one applies a rule of the Standard, and stops the run when the data can’t carry it' } = Astro.props;
 const steps = await Promise.all(Astro.props.steps.map(async (s) => ({ ...s, skillEntry: s.skill ? (await getEntry(s.skill)) as CollectionEntry<'skills'> | undefined : undefined })));
 const phased = steps.some((s) => s.phase);
 const go = arrow('right');
+const Wrap = bare ? Fragment : Sec;
 ---
-<Sec id="h-how" label={label} title={`${steps.length} steps, in order.`} context={context} small>
+<Wrap id="h-how" label={label} title={`${steps.length} steps, in order.`} context={context} small>
   <ol class="flow" style={`--n: ${steps.length}`} data-reveal>
     {steps.map((s, i) => (
       <li class:list={['stop', { key: s.key }]}>
@@ -29,7 +30,7 @@ const go = arrow('right');
     ))}
   </ol>
   <slot />
-</Sec>
+</Wrap>
 
 <style>
   .flow { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
