@@ -1,30 +1,32 @@
 ---
 // Authors + form (home §7), the submit landing's #get scene reused: a sticky stage holds the centred headline while the
-// author cards scroll up past it, left and right. Once the last card is past, the headline fades and the ask and the
-// form (white on black) come up together, centred on the screen, so people and form read as one story. Below 1000 the cards become
-// a rail and the stage stops sticking. Ref: zade.space "Why founders build it with us".
+// author cards scroll up past it, left and right. Once the last card is past, the same headline turns into the ask,
+// lets go of the screen and rides up with the form right under it (white on black), so people and form read as one story.
+// Below 1000 the cards become a rail and the stage stops sticking. Ref: zade.space "Why founders build it with us".
 import { getCollection } from 'astro:content';
 import { arrow } from '../../arrows';
 import AuthorCard from '../AuthorCard.astro';
 const authors = (await getCollection('authors', (a) => a.data.featured)).sort((a, b) => a.data.order - b.data.order).slice(0, 8);
 const X = [0, 1, .04, .96, 0, 1, .06, .94]; // card offsets across the grid, flanking the headline
 const DY = ['0svh', '6svh', '-4svh', '4svh', '2svh', '-2svh', '4svh', '0svh'];
+const check = '<svg viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M6 11C8.7614 11 11 8.7614 11 6C11 3.23857 8.7614 1 6 1C3.23857 1 1 3.23857 1 6C1 8.7614 3.23857 11 6 11ZM8.72855 4.72856L5.5 7.9571L3.39645 5.85355L4.10356 5.14645L5.5 6.5429L8.02145 4.02144L8.72855 4.72856Z"/></svg>'; // Figma icon/check-cricle, as on the report form
 const TO = 'znak@demontrend.com'; // the submit landing's contact until a form backend exists
 ---
 <section class="meet surface-black ruled" aria-labelledby="h-meet" data-meet>
-  <div class="stage">
-    <div class="wrap heads">
-      <h2 id="h-meet" class="headline t-display h-a">Nobody here is describing best practice from the outside.</h2>
+  <div class="track">
+    <div class="stage">
+      <div class="wrap heads" data-heads>
+        <h2 id="h-meet" class="headline t-display h-a">Nobody here is describing best practice <span class="tone-2">from the outside</span></h2>
+        <p class="headline t-display h-b">You run an account a way that works. <span class="tone-2">Send it</span></p>
+      </div>
     </div>
+    <ul class="wrap deck">
+      {authors.map((a, i) => <li style={`--x: ${X[i % X.length]}; --dy: ${DY[i % DY.length]}`}><AuthorCard author={a} /></li>)}
+    </ul>
+    <div class="swap-at" data-swap aria-hidden="true"></div>
   </div>
 
-  <ul class="wrap deck">
-    {authors.map((a, i) => <li style={`--x: ${X[i % X.length]}; --dy: ${DY[i % DY.length]}`}><AuthorCard author={a} /></li>)}
-  </ul>
-  <div class="swap-at" data-swap aria-hidden="true"></div>
-
   <div class="wrap send">
-    <h2 class="headline t-display ask">You run an account a way that works. <span class="tone-2">Send it.</span></h2>
     <!-- Stepped form, as the report's request form (Figma 996:24441): numbered steps on a rail, two-tone step headlines -->
     <form class="card" action={`mailto:${TO}`} method="post" enctype="text/plain" data-send>
       <fieldset class="step">
@@ -44,12 +46,17 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
         <div class="opts" role="radiogroup" aria-label="What you’re bringing">
           {['A step', 'A skill', 'A whole routine'].map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
         </div>
-        <label class="f"><span class="lbl">Tell us about it</span><textarea name="about" rows="2" placeholder="What it checks and how often you run it"></textarea></label>
+      </fieldset>
+      <fieldset class="step">
+        <span class="n" aria-hidden="true">3</span>
+        <legend class="t-h5">Tell us about it <span class="tone-2">What it checks and how often you run it</span></legend>
+        <p class="t-p2 sub">A few lines are enough to start</p>
+        <label class="f"><span class="lbl">In your words</span><textarea name="about" rows="2" placeholder="It flags… every Monday before…"></textarea></label>
       </fieldset>
       <div class="step last">
-        <span class="n" aria-hidden="true">3</span>
+        <span class="n" aria-hidden="true">4</span>
         <button class="btn brand go-btn" type="submit">
-          <span class="go-txt"><span>Send it</span><span class="ticks lbl-2"><span>Free</span><span>Your name on it</span><span>Your links on it</span></span></span>
+          <span class="go-txt"><span>Send it</span><span class="ticks lbl-2">{['Free', 'Your name on it', 'Your links on it'].map((t) => <span><Fragment set:html={check} />{t}</span>)}</span></span>
           <Fragment set:html={arrow('right', 'go')} />
         </button>
       </div>
@@ -61,7 +68,13 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   // Headline swap: once the marker after the last card rises past the stage centre, show the ask
   for (const sec of document.querySelectorAll<HTMLElement>('[data-meet]')) {
     const at = sec.querySelector('[data-swap]')!;
-    new IntersectionObserver(([e]) => sec.classList.toggle('asked', e.boundingClientRect.top < innerHeight / 2), { rootMargin: '0px 0px -50% 0px' }).observe(at);
+    // the form sits half a headline below the stage's centre line, so it needs the headline's height
+    const heads = sec.querySelector<HTMLElement>('[data-heads]')!;
+    new ResizeObserver(() => sec.style.setProperty('--hh', `${heads.offsetHeight}px`)).observe(heads);
+    // a scroll check, not an IntersectionObserver: a fast jump can skip the marker without any crossing to report
+    const sync = () => sec.classList.toggle('asked', at.getBoundingClientRect().top < innerHeight / 2);
+    addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    sync();
   }
   // No form backend yet: compose the email in the visitor's mail app with the fields filled in
   document.querySelectorAll<HTMLFormElement>('[data-send]').forEach((f) => f.addEventListener('submit', (e) => {
@@ -76,17 +89,22 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   .meet { --cw: 280px; --ch: 340px; position: relative; background: var(--bg); color: var(--text); }
   .stage { display: grid; place-items: center; padding-block: var(--section-ruled-top) 48px; }
   .heads { display: grid; justify-items: center; width: 100%; text-align: center; }
-  .heads > * { grid-area: 1 / 1; max-width: 13em; margin-inline: auto; text-wrap: balance; transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
+  .heads > * { grid-area: 1 / 1; align-self: end; max-width: 13em; margin-inline: auto; text-wrap: balance; transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
+  .h-b { opacity: 0; transform: translateY(14px); }
+  .meet.asked .h-a { opacity: 0; transform: translateY(-14px); }
+  .meet.asked .h-b { opacity: 1; transform: none; }
 
   .deck li { border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; }
 
   @media (min-width: 1000px) {
-    .stage { position: sticky; top: var(--site-bar); height: calc(100svh - var(--site-bar)); padding: 0; }
+    /* Zero-height stage pinned at the screen's centre line; it lets go when the track ends, so the headline leaves with the form */
+    .track { position: relative; }
+    .stage { position: sticky; z-index: 0; top: calc(var(--site-bar) + (100svh - var(--site-bar)) / 2); display: block; height: 0; padding: 0; }
+    .heads { transform: translateY(-50%); }
     /* the headline fits between the two card columns */
     .heads > * { max-width: calc(100% - 2 * (var(--cw) + 64px)); font-size: clamp(36px, 4vw, 64px); }
-    .meet.asked .h-a { opacity: 0; transform: translateY(-14px); }
       /* Deck scrolls over the stage: pulled up one stage height, the first card starting below the fold */
-    .deck { position: relative; z-index: 1; display: block; margin-top: calc(var(--site-bar) - 100svh); padding-top: 100svh; pointer-events: none; --step: 26svh; }
+    .deck { position: relative; z-index: 1; display: block; padding-top: 60svh; pointer-events: none; --step: 26svh; }
     .deck li { pointer-events: auto; width: var(--cw); height: var(--ch); margin-left: calc((100% - var(--cw)) * var(--x)); }
     .deck li + li { margin-top: calc(var(--step) + var(--dy, 0px) - var(--ch)); }
     .swap-at { height: 30svh; }
@@ -97,11 +115,8 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
     }
   }
 
-  /* Form: white card on black, rides up over the ask */
-  /* The ask and the form arrive together and sit centred on the screen as one block */
-  .send { position: relative; z-index: 2; display: grid; align-content: center; gap: 32px; min-height: calc(100svh - var(--site-bar)); padding-block: 32px; }
-  .ask { max-width: 13em; margin-inline: auto; text-align: center; text-wrap: balance; font-size: clamp(36px, 4vw, 64px); }
-  @media (min-width: 1000px) { .ask { max-width: none; font-size: clamp(36px, 3.2vw, 48px); } } /* one line, so ask + form fit one screen */
+  /* Form: white card on black, right under the ask */
+  .send { position: relative; z-index: 2; padding-block: calc(var(--hh, 140px) / 2 + 48px) 20svh; /* both headlines sit on the cell bottom, so this is a fixed 48px under the ask */ }
   .card { --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line-field: var(--neutral-100); --line: var(--neutral-100);
     display: grid; max-width: 650px; margin-inline: auto; padding: 40px 40px 48px; border-radius: var(--radius-4); background: var(--bg); color: var(--text); }
   /* Steps: number on the left rail, a line runs from each number down to the next */
@@ -130,15 +145,18 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   .go-btn { justify-content: space-between; width: 100%; height: auto; min-height: 64px; padding: 12px 28px; gap: 16px; font-size: 16px; text-align: left; }
   .go-btn :global(svg) { width: 28px; height: 28px; }
   .go-txt { display: grid; gap: 4px; }
-  .ticks { display: flex; flex-wrap: wrap; gap: 4px 12px; color: rgb(255 255 255 / .75); }
-  .ticks > span::before { content: '✓'; margin-right: 4px; }
+  .ticks { display: flex; flex-wrap: wrap; gap: 4px 12px; opacity: .6; mix-blend-mode: luminosity; }
+  .ticks > span { display: inline-flex; align-items: center; gap: 4px; }
+  .ticks :global(svg) { width: 12px; height: 12px; }
   @media (hover: hover) and (pointer: fine) { .opt span:hover { box-shadow: inset 0 0 0 1px var(--text); } }
 
   @media (max-width: 999px) {
     .meet { padding-bottom: var(--section-ruled-bottom); }
       .deck { display: grid; grid-auto-flow: column; grid-auto-columns: min(80%, 320px); gap: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); max-width: none; }
     .deck li { scroll-snap-align: start; }
-    .send { margin-top: 48px; }
+    .send { margin-top: 48px; padding: 0; }
+    .h-b { display: none; }
+    .meet.asked .h-a { opacity: 1; transform: none; }
     .card { padding: 32px; }
   }
   @media (max-width: 699px) {
