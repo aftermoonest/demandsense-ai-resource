@@ -47,7 +47,6 @@ const GET = [
   { i: 'reach', t: 'Steady traffic', d: 'Search, GitHub and plugin installs send readers back to your own resources.', x: '1', dy: '6svh' },
   { i: 'audience', t: 'The podcast', d: 'Contributors are invited onto the AdWise podcast.', x: '.06', dy: '-4svh' },
   { i: 'case', t: 'Work to you', d: 'DemandSense does not run campaigns. Readers who want help with an audit or execution are pointed to you.', x: '.78', dy: '4svh' },
-  { i: 'badge', t: 'Built with DemandSense', d: 'Use DemandSense in your skill or scenario, and it gets its own promotion budget and a featured spot.', ds: true, x: '.22', dy: '2svh' },
 ];
 ---
 <Base title="Contribute · The B2B AI Standard for LinkedIn Ads" description="Add a skill, a scenario or a rule to the B2B AI Standard for LinkedIn Ads, or send feedback on one. Published under your name.">
@@ -192,7 +191,7 @@ const GET = [
         </div>
       </div>
       <ul class="wrap deck">
-        {GET.map((g, i) => <li class:list={{ ds: g.ds }} style={`--x: ${g.x}${g.dy ? `; --dy: ${g.dy}` : ''}`}><span class="ico" set:html={icon(g.i)} /><h3 class="t-h6">{g.t}</h3><p class="t-p2">{g.d}</p><span class="lbl">{String(i + 1).padStart(2, '0')}</span></li>)}
+        {GET.map((g, i) => <li style={`--x: ${g.x}${g.dy ? `; --dy: ${g.dy}` : ''}`}><span class="ico" set:html={icon(g.i)} /><h3 class="t-h6">{g.t}</h3><p class="t-p2">{g.d}</p><span class="lbl">{String(i + 1).padStart(2, '0')}</span></li>)}
       </ul>
     </section>
   </main>
@@ -360,8 +359,10 @@ const GET = [
   @media (hover: hover) and (pointer: fine) { .hubhelp .btn:hover { background: var(--neutral-100); } }
 
   /* Two ways in */
-  .ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
-  .way { display: grid; gap: 32px; align-content: start; justify-items: start; padding: 40px; border-radius: var(--radius-4); background: var(--bg-muted); }
+  /* Rows shared across both cards (subgrid), so the copy and the buttons line up */
+  .ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto auto 1fr; column-gap: var(--gutter); }
+  .way { display: grid; grid-row: span 4; grid-template-rows: subgrid; gap: 32px; justify-items: start; padding: 40px; border-radius: var(--radius-4); background: var(--bg-muted); }
+  .way > .btn { align-self: end; }
   .way.surface-black { background: var(--neutral-950); }
   .way h3 { margin-top: 8px; }
   .post { --post-line: var(--line); display: grid; gap: 24px; align-self: stretch; justify-self: stretch; padding: 24px; border-radius: var(--radius-4); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
@@ -396,6 +397,7 @@ const GET = [
   .motion-ready .spotsec.on .lampfig { opacity: 1; translate: 0 0; }
   .spotsec .head { position: relative; z-index: 1; display: grid; justify-items: center; gap: 24px; text-align: center; }
   .spotsec .headline { max-width: none; font-size: clamp(36px, 9vw, 64px); line-height: 1; text-wrap: nowrap; }
+  .spotsec .headline .tone-2 { display: block; } /* two lines */
   .btn.xl { height: 64px; margin-top: 24px; padding: 0 32px; gap: 20px; font-size: 18px; }
   .btn.xl :global(svg) { width: 22px; height: 22px; }
   .deck { position: relative; z-index: 3; display: grid; gap: 16px; padding-bottom: var(--section-ruled-bottom); }
@@ -406,9 +408,6 @@ const GET = [
   .deck h3 { margin-top: 16px; color: var(--neutral-0); }
   .deck p { margin-top: -8px; color: var(--neutral-300); text-wrap: pretty; }
   .deck .lbl { margin-top: auto; color: var(--neutral-500); }
-  .deck .ds { background: var(--primary-450); box-shadow: none; }
-  .deck .ds p, .deck .ds .lbl { color: rgb(255 255 255 / .8); }
-  .deck .ds .ico :global(.hl) { --hairline-plate: var(--primary-450); --hairline-hi: var(--neutral-0); --hairline-edge: var(--neutral-0); --hairline-mid: rgb(255 255 255 / .7); --hairline-lo: rgb(255 255 255 / .35); }
   @media (min-width: 700px) and (max-width: 999px) { .deck { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 1000px) {
     .stage { position: sticky; top: 0; height: 100svh; padding: 0; }
@@ -421,12 +420,12 @@ const GET = [
     .deck li + li { margin-top: calc(var(--step) + var(--dy, 0px) - var(--cw)); }
   }
 
-  /* Closing card: blue (primary 500) on black, copy left, the form right (SubmitBand's card, form in place of the art) */
+  /* Closing card: white on black, copy left; the form fills the right half edge to edge, split off by a 1px line */
   .close { background: var(--bg); padding-block: 104px 56px; }
-  .card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; align-items: start; padding: 64px; border-radius: var(--radius-4); background: var(--primary-500); --text: var(--neutral-0); --text-2: rgb(255 255 255 / .7); color: var(--text); }
-  .card .copy { position: sticky; top: calc(var(--site-bar) + 32px); }
-  .card .lead { color: rgb(255 255 255 / .85); }
-  .card :global(.send-form) { justify-self: end; }
+  .card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); overflow: hidden; border-radius: var(--radius-4); background: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); color: var(--text); }
+  .card .copy { align-self: start; display: grid; gap: var(--gap-body); position: sticky; top: calc(var(--site-bar) + 32px); padding: 64px; }
+  .card .lead { max-width: 480px; color: var(--text-body); }
+  .card :global(.send-form) { max-width: none; border-radius: 0; padding: 64px; box-shadow: inset 1px 0 var(--neutral-100); }
 
   /* Popup: the same form in a modal; fades and rises in, the backdrop dims */
   .pop { width: min(650px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: var(--radius-4); background: var(--neutral-0); color: var(--neutral-950); overflow: auto; overscroll-behavior: contain; opacity: 0; transform: translateY(16px) scale(.98); transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
@@ -449,9 +448,11 @@ const GET = [
     .tick::after { display: none; }
     .tl > .stop:not(:last-child)::before { content: ''; position: absolute; left: 13.5px; top: 14px; bottom: -14px; width: 1px; background: var(--line); }
     .close { padding-block: 80px 48px; }
-    .card { grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 48px 40px; }
-    .card .copy { position: static; }
-    .card :global(.send-form) { justify-self: stretch; max-width: none; }
+    .card { grid-template-columns: minmax(0, 1fr); }
+    .card .copy { position: static; padding: 48px 40px 0; }
+    .card :global(.send-form) { padding: 40px; box-shadow: inset 0 1px var(--neutral-100); margin-top: 40px; }
+    .ways { grid-template-rows: none; row-gap: var(--gutter); }
+    .way { grid-row: auto; grid-template-rows: none; }
     /* The global hub rule hides the art below 1000; here the typewriter stays, under the copy, full bleed */
     .top .hero.has-art > :global(.hero-art) { display: block; position: relative; inset: auto; order: 1; width: calc(100% + 2 * var(--margin)); margin: -24px calc(-1 * var(--margin)) -96px; aspect-ratio: 1.2; }
     .top .hero.has-art { padding-bottom: 64px; }
@@ -477,8 +478,8 @@ const GET = [
     .chain .yp { margin-inline: -12px; padding-inline: 12px; } /* the plate stays inside the 16px edge line */
     .way { padding: 24px; }
     .close { padding-block: 32px; }
-    .card { padding: 32px 16px 16px; }
-    .card .copy { padding-inline: 8px; }
+    .card .copy { padding: 32px 24px 0; }
+    .card :global(.send-form) { padding: 32px 20px; margin-top: 32px; }
     .pop-head { padding: 24px 20px 8px; }
     .hubhelp { padding: 32px 24px; }
     .hubhelp p { font-size: 22px; }
