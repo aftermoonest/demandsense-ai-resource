@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import AuthorMarquee from '../../components/AuthorMarquee.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import IsoArt from '../../components/IsoArt.astro';
 import TabBar from '../../components/TabBar.astro';
@@ -28,6 +29,7 @@ const countIn = (a: Area) => all.filter((s) => s.data.area === a).length;
         <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.skills }]} />
         <h1 class="headline t-display">Single checks, ready to run. <span class="tone-2">Each reads an export, applies one rule and hands back a list. None change your account</span></h1>
       </div>
+      <AuthorMarquee />
     </div>
   </div>
   <TabBar />

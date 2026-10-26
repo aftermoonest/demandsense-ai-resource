@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import AuthorMarquee from '../../components/AuthorMarquee.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import IsoArt from '../../components/IsoArt.astro';
 import TabBar from '../../components/TabBar.astro';
@@ -33,6 +34,7 @@ const loop = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentCol
         <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.scenarios }]} />
         <h1 class="headline t-display">Whole routines, ready to run. <span class="tone-2">Each one strings skills together to take on work you’d do by hand</span></h1>
       </div>
+      <AuthorMarquee />
     </div>
   </div>
   <TabBar />
