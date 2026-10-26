@@ -34,17 +34,31 @@ export function rail(get: () => HTMLElement, prev: HTMLButtonElement, next: HTML
 }
 
 // Scroll lock: a vertical wheel over the rail scrolls it sideways; at either end the page takes over again.
-// Snap is off while the wheel turns and comes back once it stops, so the rail settles on a card.
+// The wheel moves a target and the rail eases toward it every frame (no stepping on raw deltas); once the wheel stops,
+// the target settles on the nearest card. Snap is off while this runs, so the browser never jumps to a snap point mid-way.
 export function wheelX(r: HTMLElement) {
-  let idle = 0;
+  let target = 0, raf = 0, idle = 0;
+  const max = () => r.scrollWidth - r.clientWidth;
+  const stops = () => { const first = (r.firstElementChild as HTMLElement).offsetLeft; return [...r.children].map((c) => Math.min(max(), (c as HTMLElement).offsetLeft - first)); };
+  const tick = () => {
+    const d = target - r.scrollLeft;
+    if (Math.abs(d) < .5) { r.scrollLeft = target; raf = 0; if (!idle) r.style.scrollSnapType = ''; return; }
+    r.scrollLeft += d * .18;
+    raf = requestAnimationFrame(tick);
+  };
   r.addEventListener('wheel', (e) => {
     if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // trackpad sideways swipes stay native
-    const max = r.scrollWidth - r.clientWidth;
-    if ((e.deltaY < 0 && r.scrollLeft <= 0) || (e.deltaY > 0 && r.scrollLeft >= max - 1)) return;
+    const from = raf || idle ? target : r.scrollLeft;
+    if ((e.deltaY < 0 && from <= 0) || (e.deltaY > 0 && from >= max() - 1)) return;
     e.preventDefault();
     r.style.scrollSnapType = 'none';
-    r.scrollLeft += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    target = Math.max(0, Math.min(max(), from + (e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY)));
     clearTimeout(idle);
-    idle = window.setTimeout(() => { r.style.scrollSnapType = ''; }, 160);
+    idle = window.setTimeout(() => {
+      idle = 0;
+      target = stops().reduce((a, b) => (Math.abs(b - target) < Math.abs(a - target) ? b : a), 0);
+      if (!raf) raf = requestAnimationFrame(tick);
+    }, 140);
+    if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: false });
 }

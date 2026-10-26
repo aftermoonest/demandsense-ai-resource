@@ -26,7 +26,7 @@ const scenarios = (await getCollection('scenarios', mine)).sort(ready);
 const skills = (await getCollection('skills', mine)).sort(ready);
 const rules = (await getCollection('rules', mine)).sort((a, b) => a.data.number - b.data.number);
 const initials = data.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
-const job = [data.role, data.company].filter(Boolean).join(', ');
+const job = [data.role, data.company].filter(Boolean).join(' at ');
 const first = data.name.split(' ')[0];
 const n = (k: number, one: string, many: string) => (k === 1 ? `One ${one}.` : `${k} ${many}.`);
 
@@ -55,8 +55,8 @@ const go = arrow('right');
                 : <><span class="pattern dots" aria-hidden="true" /><span class="ini t-n2" aria-hidden="true">{initials}</span></>}
             </span>
             <div class="who">
+              {job && <p class="chip job">{job}</p>}
               <h1 class="t-h4">{data.name}</h1>
-              {job && <p class="t-p2 job">{job}</p>}
             </div>
             {data.about && <p class="t-p2 body">{data.about}</p>}
             {data.links.length > 0 && (
@@ -116,8 +116,8 @@ const go = arrow('right');
   .photo img { width: 100%; height: 100%; object-fit: cover; }
   .dots { position: absolute; inset: 0; --dot: var(--neutral-850); }
   .ini { position: relative; color: var(--text-meta); }
-  .who { display: grid; gap: 4px; }
-  .job { color: var(--text-2); }
+  .who { display: grid; gap: 12px; justify-items: start; }
+  .job { white-space: normal; } /* same "role at company" chip as the cards */
   .soc { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 24px; border-top: 1px solid var(--line); }
   .soc svg { width: 18px; height: 18px; }
 
