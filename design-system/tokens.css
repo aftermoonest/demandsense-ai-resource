@@ -267,6 +267,7 @@ p, li, dd, figcaption, blockquote { text-wrap: pretty; }
 .scroll-snap-x { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .scroll-snap-x::-webkit-scrollbar { display: none; }
 .scroll-snap-x > * { scroll-snap-align: start; }
+@media (hover: hover) and (pointer: fine) { .scroll-snap-x { scroll-snap-type: none; } } /* mouse/trackpad: mandatory snap swallowed light swipes (Chrome snaps back); touch keeps it */
 .scroll-contain { overflow-y: auto; overscroll-behavior: contain; } /* overlays, dialogs: do not scroll the page behind */
 
 .skip-link { position: fixed; z-index: var(--z-skip); left: 16px; top: -80px; padding: 12px 20px; border-radius: var(--radius-4); background: var(--neutral-0); color: var(--neutral-950); }
