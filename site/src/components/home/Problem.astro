@@ -1,8 +1,8 @@
 ---
 // The problem (home §3): a scroll scene on black. A tall track holds a sticky stage; scroll progress picks a step:
-// 0 the question · 1 the assistant's answer · 2 three lines underlined · 3–5 the chat slides left and one note per line
-// comes in on the right, its line boxed · 6 the answer is corrected (boxes turn green, only the boxed words change).
-// Copy from the live site; the corrected wording is a draft to confirm with the client.
+// 0 the question · 1 the assistant's answer · 2 three phrases turn into orange chips · 3–5 the chat slides left and one
+// note per phrase comes in on the right (its chip fills orange) · 6 the notes leave, the chat recentres and is corrected:
+// the chips turn green and only their words change. Copy from the live site; the corrected wording is a draft to confirm.
 const marks = [
   { was: 'performing well', now: 'only half as strong as it looks' },
   { was: 'Stealth AI Startup', now: '“Stealth AI Startup”, a placeholder employer' },
@@ -14,28 +14,64 @@ const notes = [
   { title: 'Sales loses a week to it.', text: 'An SDR chases a company that can’t answer, while the accounts that were actually warming up go cold.' },
 ];
 const m = (i: number) => `<mark data-n="${i + 1}"><span class="was">${marks[i].was}</span><span class="now">${marks[i].now}</span></mark>`;
+const sparkles = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M6.5 1.5 7.8 5.2 11.5 6.5 7.8 7.8 6.5 11.5 5.2 7.8 1.5 6.5 5.2 5.2Z"/><path fill="currentColor" d="M12.2 9.6l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6Z"/></svg>';
+const days = ['M', 'T', 'W', 'T', 'F'];
 ---
 <section class="problem surface-black ruled" aria-labelledby="h-problem" data-problem>
   <div class="stage wrap" data-stage>
     <div class="head">
       <p class="marker">The problem</p>
-      <h2 id="h-problem" class="headline t-h3">AI can’t catch what nobody told it to look for. <span class="tone-2 after">Unless someone tells it to.</span></h2>
+      <h2 id="h-problem" class="headline t-h2">AI can’t catch what nobody told it to look for. <span class="tone-2 after">Unless someone tells it to.</span></h2>
     </div>
     <div class="scene">
-      <div class="chat">
-        <p class="msg you t-p1">How’s the new ad set doing? Who should sales call first?</p>
-        <div class="msg ai">
-          <p class="lbl who"><span class="was">Assistant</span><span class="now">Assistant, with the Standard</span></p>
-          <p class="t-h6 answer" set:html={`This ad set is ${m(0)}. It drove 1,200 clicks last month at a cost per click well under benchmark. Your most engaged account is ${m(1)}, with 600 of them, so I’d ${m(2)}.`} />
+      <div class="chat" role="log" aria-label="A conversation with an AI assistant">
+        <div class="row you">
+          <div class="bubble t-p1">How’s the new ad set doing? Who should sales call first?</div>
+          <img class="ava" src="/authors/sofia-ruiz.jpg" alt="" width="36" height="36" loading="lazy" />
+        </div>
+        <div class="row ai">
+          <span class="ava bot" set:html={sparkles} />
+          <div class="bubble">
+            <p class="who lbl"><span class="spark" set:html={sparkles} /><span class="was">Assistant</span><span class="now">Assistant, with the Standard</span><span class="time">now</span></p>
+            <p class="answer" set:html={`This ad set is ${m(0)}. It drove 1,200 clicks last month at a cost per click well under benchmark. Your most engaged account is ${m(1)}, with 600 of them, so I’d ${m(2)}.`} />
+          </div>
         </div>
       </div>
-      <div class="notes">
-        <p class="lbl">What it didn’t see</p>
-        <ol>
+
+      <div class="notes" aria-label="What it didn’t see">
+        <div class="pager">
+          <p class="lbl">What it didn’t see</p>
+          <ol class="dots" aria-hidden="true">{[1, 2, 3].map((n) => <li data-n={n}>{n}</li>)}</ol>
+        </div>
+        <ol class="cards">
           {notes.map((n, i) => (
             <li data-n={i + 1}>
+              <div class="viz" aria-hidden="true">
+                {i === 0 && (
+                  <div class="split">
+                    <p class="lbl">1,200 clicks</p>
+                    <div class="bar"><span class="bad"><b>600</b></span><span class="ok"><b>600</b></span></div>
+                    <p class="legend lbl-2"><span class="k bad" />One placeholder employer <span class="k ok" />Everyone else</p>
+                  </div>
+                )}
+                {i === 1 && (
+                  <dl class="company">
+                    <dt class="t-h6">Stealth AI Startup</dt>
+                    <dd><span class="lbl-2">Website</span><span>None</span></dd>
+                    <dd><span class="lbl-2">Buyers</span><span>0</span></dd>
+                    <dd><span class="lbl-2">Budget</span><span>None</span></dd>
+                  </dl>
+                )}
+                {i === 2 && (
+                  <div class="week">
+                    <span class="lbl-2" />{days.map((d) => <span class="lbl-2 day">{d}</span>)}
+                    <span class="lbl-2">Calls to the fake</span>{days.map(() => <span class="call" />)}
+                    <span class="lbl-2">Real accounts</span>{days.map((_, k) => <span class="heat" style={`--k: ${k}`} />)}
+                  </div>
+                )}
+              </div>
               <span class="num">{i + 1}</span>
-              <span class="t-h6">{n.title}</span>
+              <span class="t-h5">{n.title}</span>
               <span class="t-p2 body">{n.text}</span>
             </li>
           ))}
@@ -70,79 +106,128 @@ const m = (i: number) => `<mark data-n="${i + 1}"><span class="was">${marks[i].w
 
 <style>
   /* Track: one stage-height of scroll per step; the stage sticks under the site header and lets go at the section's end */
-  .problem { background: var(--bg); color: var(--text); }
-  :global(.motion-ready) .problem { height: 520svh; }
-  .stage { display: grid; grid-template-rows: auto 1fr; gap: 48px; padding-block: 64px; }
-  :global(.motion-ready) .stage { position: sticky; top: var(--site-bar); height: calc(100svh - var(--site-bar)); align-content: center; grid-template-rows: auto auto; }
-  .head { display: grid; gap: var(--gap-overline); }
-  .headline { max-width: 20em; }
+  .problem { --orange: var(--secondary-300); --green: var(--success-300); background: var(--bg); color: var(--text); }
+  :global(.motion-ready) .problem { height: 560svh; }
+  .stage { display: grid; gap: 56px; padding-block: 64px; }
+  :global(.motion-ready) .stage { position: sticky; top: var(--site-bar); height: calc(100svh - var(--site-bar)); align-content: center; }
+  .head { display: grid; gap: var(--gap-overline); justify-items: center; text-align: center; }
+  .headline { max-width: 18em; }
+  .after { display: block; } /* own line, so the hidden state holds its place without shifting the claim */
 
-  .scene { --shift: 0px; position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); align-items: start; }
-  /* Chat sits centred (cols 4–9) until the notes arrive, then slides to cols 1–6 */
-  .chat { grid-column: 1 / span 6; display: grid; gap: 16px; }
+  .scene { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); align-items: center; }
+  .chat { grid-column: 1 / span 6; display: grid; gap: 20px; }
   .notes { grid-column: 8 / span 5; display: grid; gap: 16px; }
-  .msg { padding: 20px 24px; border-radius: var(--radius-4); }
-  .you { justify-self: end; max-width: 80%; background: var(--neutral-850); }
-  .ai { display: grid; gap: 12px; background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); }
-  .who { color: var(--text-meta); }
-  .answer { color: var(--text-body); }
-  .answer :global(mark) { -webkit-box-decoration-break: clone; box-decoration-break: clone; color: var(--text); background: none; border-radius: var(--radius-2); padding: 0 2px; margin: 0 -2px;
-    background-image: linear-gradient(var(--primary-300), var(--primary-300)); background-repeat: no-repeat; background-position: 0 100%; background-size: 100% 1px;
-    transition: background-size 400ms var(--ease-out), box-shadow 250ms var(--ease-out), background-color 250ms var(--ease-out); }
+
+  /* ---------- Messenger ---------- */
+  .row { display: flex; align-items: end; gap: 12px; }
+  .you { justify-content: end; }
+  .ava { width: 36px; height: 36px; flex: none; border-radius: 50%; object-fit: cover; }
+  .bot { display: grid; place-items: center; background: var(--neutral-0); color: var(--neutral-950); transition: background-color 300ms var(--ease-out); }
+  .bot :global(svg) { width: 18px; height: 18px; }
+  .bubble { padding: 14px 18px; border-radius: 20px; }
+  .you .bubble { max-width: 80%; border-bottom-right-radius: 4px; background: var(--primary-450); color: var(--neutral-0); }
+  .ai .bubble { display: grid; gap: 10px; border-bottom-left-radius: 4px; background: var(--neutral-900); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+  .who { display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .spark { display: grid; color: var(--orange); } .spark :global(svg) { width: 14px; height: 14px; }
+  .time { margin-left: auto; color: var(--text-meta); }
+  .answer { font: 500 18px/1.6 var(--font-sans); letter-spacing: -.03em; color: var(--text-body); }
+  /* Phrases the answer leans on: orange chips; the one under discussion fills orange; corrected ones turn green */
+  .answer :global(mark) { -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 2px 6px; border-radius: var(--radius-2); background: transparent; color: inherit;
+    transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out), box-shadow 250ms var(--ease-out); }
   .problem :global(.now) { display: none; }
 
-  .notes ol { display: grid; gap: 12px; }
-  .notes li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 12px; row-gap: 6px; padding: 20px 24px; border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); transition: opacity 300ms var(--ease-out), transform 300ms var(--ease-out), box-shadow 250ms var(--ease-out); }
-  .notes li > :not(.num) { grid-column: 2; }
-  .num { grid-row: span 2; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-1); background: var(--neutral-800); font: 600 12px/1 var(--font-mono); }
+  /* ---------- Notes: one at a time, a pager above ---------- */
+  .pager { display: flex; align-items: center; justify-content: space-between; }
+  .dots { display: flex; gap: 6px; }
+  .dots li { display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-2); box-shadow: inset 0 0 0 1px var(--neutral-800); color: var(--text-meta); font: 600 12px/1 var(--font-mono); transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out), box-shadow 250ms var(--ease-out); }
+  .cards { display: grid; }
+  .cards li { grid-area: 1 / 1; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px 12px; align-content: start; padding: 24px; border-radius: var(--radius-4); background: var(--neutral-900); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+  .cards li > :not(.num, .viz) { grid-column: 2; }
+  .num { grid-row: 2 / span 2; display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radius-2); background: var(--orange); color: var(--neutral-950); font: 600 12px/1 var(--font-mono); }
+  .viz { grid-column: 1 / -1; margin: -8px -8px 16px; padding: 20px; border-radius: var(--radius-2); background: var(--neutral-950); box-shadow: inset 0 0 0 1px var(--neutral-850); }
 
-  /* ---------- Steps (only with JS; without it the end state shows) ---------- */
-  :global(.motion-ready) .stage :is(.you, .ai, .notes, .notes li, .after) { transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out), box-shadow 250ms var(--ease-out); }
-  :global(.motion-ready) .chat { transform: translateX(calc(50% + var(--gutter) / 2)); transition: transform 600ms var(--ease-out); }
+  .split { display: grid; gap: 10px; }
+  .bar { display: flex; height: 40px; border-radius: var(--radius-2); overflow: hidden; }
+  .bar > span { flex: 1; display: flex; align-items: center; padding: 0 12px; font: 600 12px/1 var(--font-mono); }
+  .bar .bad { background: repeating-linear-gradient(-45deg, var(--orange) 0 6px, color-mix(in srgb, var(--orange) 70%, #000) 6px 12px); color: var(--neutral-950); }
+  .bar .ok { background: var(--neutral-800); color: var(--text); }
+  .legend { display: flex; align-items: center; gap: 6px; color: var(--text-meta); }
+  .k { width: 8px; height: 8px; border-radius: 1px; } .k.bad { background: var(--orange); } .k.ok { background: var(--neutral-800); margin-left: 10px; }
+
+  .company { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .company dt { grid-column: 1 / -1; text-decoration: line-through; text-decoration-color: var(--orange); text-decoration-thickness: 2px; }
+  .company dd { display: grid; gap: 6px; padding: 10px 12px; border-radius: var(--radius-2); background: var(--neutral-900); }
+  .company dd > :last-child { color: var(--orange); font: 600 14px/1 var(--font-mono); }
+  .company .lbl-2 { color: var(--text-meta); }
+
+  .week { display: grid; grid-template-columns: auto repeat(5, minmax(0, 1fr)); gap: 8px; align-items: center; }
+  .week .lbl-2 { color: var(--text-meta); }
+  .day { text-align: center; }
+  .call { height: 20px; border-radius: var(--radius-2); box-shadow: inset 0 0 0 1px var(--orange); background: repeating-linear-gradient(-45deg, transparent 0 4px, color-mix(in srgb, var(--orange) 40%, transparent) 4px 6px); }
+  .heat { height: 20px; border-radius: var(--radius-2); background: color-mix(in srgb, var(--primary-300) calc(90% - var(--k) * 20%), var(--neutral-800)); }
+
+  /* ---------- Steps (only with JS; without it the notes and the corrected answer show) ---------- */
+  :global(.motion-ready) .stage :is(.you, .ai, .notes, .cards li, .after) { transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
+  /* Chat sits centred until the notes arrive, slides left for them, and comes back to the centre for the fix */
+  :global(.motion-ready) .chat { transform: translateX(calc(50% + var(--gutter) / 2)); transition: transform 700ms var(--ease-out); }
+  :global(.motion-ready) .stage .you { opacity: 0; transform: translateY(14px); }
   :global(.motion-ready) .stage .ai { opacity: 0; transform: translateY(14px); }
-  :global(.motion-ready) .stage :global(mark) { background-size: 0 1px; }
-  :global(.motion-ready) .stage .notes { opacity: 0; }
-  :global(.motion-ready) .stage .notes li { opacity: 0; transform: translateX(24px); }
+  :global(.motion-ready) .stage .notes { opacity: 0; transform: translateX(32px); }
+  :global(.motion-ready) .stage .cards li { opacity: 0; transform: translateY(12px); }
   :global(.motion-ready) .stage .after { opacity: 0; }
 
+  :global(.motion-ready) .stage[data-step] .you { opacity: 1; transform: none; }
   :global(.motion-ready) .stage.s1 .ai { opacity: 1; transform: none; }
-  :global(.motion-ready) .stage.s2 :global(mark) { background-size: 100% 1px; }
-  :global(.motion-ready) .stage.s3 .chat { transform: none; }
-  :global(.motion-ready) .stage.s3 .notes { opacity: 1; }
-  :global(.motion-ready) .stage.s3 .notes li[data-n="1"],
-  :global(.motion-ready) .stage.s4 .notes li[data-n="2"],
-  :global(.motion-ready) .stage.s5 .notes li[data-n="3"] { opacity: 1; transform: none; }
-  /* The current note and its line are boxed in blue; earlier notes stay, quieter */
-  .stage[data-step="3"] :global(mark[data-n="1"]), .stage[data-step="4"] :global(mark[data-n="2"]), .stage[data-step="5"] :global(mark[data-n="3"]) { background-color: rgb(123 160 255 / .14); box-shadow: 0 0 0 1px var(--primary-300); }
-  .stage[data-step="3"] li[data-n="1"], .stage[data-step="4"] li[data-n="2"], .stage[data-step="5"] li[data-n="3"] { box-shadow: inset 0 0 0 1px var(--primary-300); }
-  :global(.motion-ready) .stage[data-step="4"] .notes li[data-n="1"], :global(.motion-ready) .stage[data-step="5"] .notes li:is([data-n="1"], [data-n="2"]) { opacity: .5; }
+  .stage.s2 .answer :global(mark) { box-shadow: inset 0 0 0 1px var(--orange); background: color-mix(in srgb, var(--orange) 14%, transparent); color: var(--text); }
+  :global(.motion-ready) .stage:is([data-step="3"], [data-step="4"], [data-step="5"]) .chat { transform: none; }
+  :global(.motion-ready) .stage:is([data-step="3"], [data-step="4"], [data-step="5"]) .notes { opacity: 1; transform: none; }
+  :global(.motion-ready) .stage[data-step="3"] .cards li[data-n="1"],
+  :global(.motion-ready) .stage[data-step="4"] .cards li[data-n="2"],
+  :global(.motion-ready) .stage[data-step="5"] .cards li[data-n="3"] { opacity: 1; transform: none; }
+  .stage[data-step="3"] .answer :global(mark[data-n="1"]), .stage[data-step="4"] .answer :global(mark[data-n="2"]), .stage[data-step="5"] .answer :global(mark[data-n="3"]) { background: var(--orange); color: var(--neutral-950); box-shadow: none; }
+  .stage[data-step="3"] .dots li[data-n="1"], .stage[data-step="4"] .dots li[data-n="2"], .stage[data-step="5"] .dots li[data-n="3"] { background: var(--orange); color: var(--neutral-950); box-shadow: none; }
+  .stage[data-step="4"] .dots li[data-n="1"], .stage[data-step="5"] .dots li:is([data-n="1"], [data-n="2"]) { box-shadow: inset 0 0 0 1px var(--orange); color: var(--orange); }
 
-  /* Corrected: every box turns green and only the boxed words change; the rest of the scene stays */
-  .stage.s6 :global(mark), :global(:root:not(.motion-ready)) :global(mark) { background-color: rgb(73 185 75 / .14); box-shadow: 0 0 0 1px var(--success-300); }
-  .stage.s6 :global(.was), :global(:root:not(.motion-ready)) :global(.was) { display: none; }
-  .stage.s6 :global(.now), :global(:root:not(.motion-ready)) :global(.now) { display: inline; animation: swap 400ms var(--ease-out); }
+  /* Corrected: green chips, only their words change */
+  .stage.s6 .answer :global(mark), :global(:root:not(.motion-ready)) .answer :global(mark) { background: color-mix(in srgb, var(--green) 16%, transparent); box-shadow: inset 0 0 0 1px var(--green); color: var(--text); }
+  .stage.s6 :global(.was), :global(:root:not(.motion-ready)) .problem :global(.was) { display: none; }
+  .stage.s6 :global(.now), :global(:root:not(.motion-ready)) .problem :global(.now) { display: inline; animation: swap 450ms var(--ease-out); }
+  .stage.s6 .bot { background: var(--green); }
   :global(.motion-ready) .stage.s6 .after { opacity: 1; }
   @keyframes swap { from { opacity: 0; filter: blur(4px); } }
 
   @media (max-width: 999px) {
-    /* No room beside the chat: it stays put and the current note shows under it, one at a time */
-    :global(.motion-ready) .problem { height: 480svh; }
-    .stage { gap: 32px; padding-block: 40px; }
-    .scene { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    /* No room beside the chat: it stays put and the current note shows under it */
+    :global(.motion-ready) .problem { height: 520svh; }
+    .stage { gap: 32px; padding-block: 32px; }
+    .head { justify-items: start; text-align: left; }
+    .scene { grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
     .chat, .notes { grid-column: 1; }
-    :global(.motion-ready) .chat, :global(.motion-ready) .stage.s3 .chat { transform: none; }
-    :global(.motion-ready) .notes li { grid-area: 1 / 1; }
-    :global(.motion-ready) .stage.s4 .notes li[data-n="1"], :global(.motion-ready) .stage.s5 .notes li:is([data-n="1"], [data-n="2"]) { opacity: 0; }
-    :global(.motion-ready) .stage.s6 .notes { opacity: 0; }
-    .msg { padding: 16px; }
-    .answer { font-size: 18px; }
+    :global(.motion-ready) .chat, :global(.motion-ready) .stage[data-step] .chat { transform: none; }
+    :global(.motion-ready) .stage .notes { transform: none; }
+    .viz { display: none; }
+    .num { grid-row: 1 / span 2; }
+    .cards li { padding: 16px; }
+    .answer { font-size: 16px; }
   }
   @media (max-width: 699px) {
-    .you { max-width: 100%; }
-    .notes li { padding: 16px; }
+    /* Phone: everything has to fit one screen under the header */
+    .stage { gap: 20px; padding-block: 16px; }
+    .head .marker { display: none; }
+    .headline { font-size: 24px; }
+    .after { display: none; }
+    .stage.s6 .after { display: block; }
+    .chat { gap: 12px; }
+    .you .bubble { max-width: 100%; }
+    .bubble { padding: 10px 14px; border-radius: 16px; }
+    .ava { width: 28px; height: 28px; }
+    .bot :global(svg) { width: 14px; height: 14px; }
+    .answer { font-size: 15px; line-height: 1.5; }
+    .cards li { padding: 14px; }
+    .cards .t-h5 { font-size: 18px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    :global(.motion-ready) .stage :is(.chat, .ai, .notes, .notes li, .after), .stage :global(mark) { transition: opacity 200ms linear; transform: none !important; }
+    :global(.motion-ready) .stage :is(.chat, .you, .ai, .notes, .cards li, .after) { transition: opacity 200ms linear; transform: none !important; }
     .stage.s6 :global(.now) { animation: none; }
   }
 </style>

@@ -25,25 +25,35 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   <div class="swap-at" data-swap aria-hidden="true"></div>
 
   <div class="wrap send">
+    <p class="headline t-h3 m-only" aria-hidden="true">You run an account a way that works. <span class="tone-2">Send it.</span></p>
+    <!-- Stepped form, as the report's request form (Figma 996:24441): numbered steps on a rail, two-tone step headlines -->
     <form class="card" action={`mailto:${TO}`} method="post" enctype="text/plain" data-send>
-      <div class="intro">
-        <p class="marker">Contribute</p>
-        <h3 class="t-h4 m-only">You run an account a way that works. <span class="tone-2">Send it.</span></h3>
-        <p class="t-p1 body">A step, a check or a whole routine. We package it, test it with you, and publish it under your name, with your links on it.</p>
+      <fieldset class="step">
+        <span class="n" aria-hidden="true">1</span>
+        <legend class="t-h5">Who’s sending it? <span class="tone-2">We publish it under your name</span></legend>
+        <p class="t-p2 sub">With your company and your links on every page it appears on</p>
+        <div class="grid2">
+          <label class="f"><span class="lbl">Your name</span><input name="name" autocomplete="name" required placeholder="Full name"></label>
+          <label class="f"><span class="lbl">Work email</span><input name="email" type="email" autocomplete="email" required placeholder="name@company.com"></label>
+        </div>
+        <label class="f"><span class="lbl">Company</span><input name="company" autocomplete="organization" placeholder="Where you run LinkedIn Ads"></label>
+      </fieldset>
+      <fieldset class="step">
+        <span class="n" aria-hidden="true">2</span>
+        <legend class="t-h5">What are you bringing? <span class="tone-2">A step, a check or a whole routine</span></legend>
+        <p class="t-p2 sub">We package it and test it with you before it goes live</p>
+        <div class="opts" role="radiogroup" aria-label="What you’re bringing">
+          {['A step', 'A skill', 'A whole routine'].map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
+        </div>
+        <label class="f"><span class="lbl">Tell us about it</span><textarea name="about" rows="2" placeholder="What it checks and how often you run it"></textarea></label>
+      </fieldset>
+      <div class="step last">
+        <span class="n" aria-hidden="true">3</span>
+        <button class="btn brand go-btn" type="submit">
+          <span class="go-txt"><span>Send it</span><span class="ticks lbl-2"><span>Free</span><span>Your name on it</span><span>Your links on it</span></span></span>
+          <Fragment set:html={arrow('right', 'go')} />
+        </button>
       </div>
-      <div class="fields">
-        <label class="f"><span class="lbl">Name</span><input name="name" autocomplete="name" required></label>
-        <label class="f"><span class="lbl">Work email</span><input name="email" type="email" autocomplete="email" required placeholder="name@company.com"></label>
-        <label class="f wide"><span class="lbl">Company</span><input name="company" autocomplete="organization"></label>
-        <fieldset class="f wide">
-          <legend class="lbl">What you’re bringing</legend>
-          <div class="opts">
-            {['A step', 'A skill', 'A whole routine'].map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
-          </div>
-        </fieldset>
-        <label class="f wide"><span class="lbl">Tell us about it</span><textarea name="about" rows="3"></textarea></label>
-      </div>
-      <button class="btn filled lg" type="submit">Send it <Fragment set:html={arrow('right', 'go')} /></button>
     </form>
   </div>
 </section>
@@ -95,25 +105,37 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
 
   /* Form: white card on black, rides up over the ask */
   .send { position: relative; z-index: 2; }
-  .card { --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line-field: var(--neutral-100); --action: var(--neutral-950); --action-text: var(--neutral-0);
-    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px 64px; max-width: 1000px; margin-inline: auto; padding: 56px; border-radius: var(--radius-4); background: var(--bg); color: var(--text); }
-  .intro { display: grid; gap: 16px; align-content: start; }
-  .intro .body { max-width: 34ch; }
-  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; }
-  .f { display: grid; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; }
-  .wide { grid-column: 1 / -1; }
-  .f .lbl, legend.lbl { color: var(--text); padding: 0; }
+  .card { --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line-field: var(--neutral-100); --line: var(--neutral-100);
+    display: grid; max-width: 650px; margin-inline: auto; padding: 40px 40px 48px; border-radius: var(--radius-4); background: var(--bg); color: var(--text); }
+  /* Steps: number on the left rail, a line runs from each number down to the next */
+  .step { position: relative; display: grid; gap: 20px; margin: 0; padding: 0 0 40px 76px; border: 0; min-width: 0; }
+  .step::before { content: ''; position: absolute; left: 23px; top: 48px; bottom: 0; width: 1px; background: var(--neutral-100); }
+  .step.last { padding-bottom: 0; }
+  .step.last::before { display: none; }
+  .n { position: absolute; left: 4px; top: 0; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--neutral-50); box-shadow: 0 0 0 4px var(--neutral-0), 0 0 0 5px var(--neutral-75); font: 600 12px/1 var(--font-mono); }
+  .step.last .n { top: 12px; }
+  legend { float: left; width: 100%; padding: 0; }
+  legend .tone-2 { display: block; }
+  .sub { margin-top: -12px; color: var(--text-body); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+  .f { display: grid; gap: 4px; min-width: 0; }
+  .f .lbl { color: var(--text); }
   /* Report share form: underlined fields, no box */
   input:not([type=radio]), textarea { width: 100%; min-height: 42px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line-field); border-radius: 0; background: none; color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.03em; outline: 0; resize: vertical; transition: border-color var(--t-fast) ease; }
-  input::placeholder { color: var(--text-2); opacity: .8; }
+  :is(input, textarea)::placeholder { color: var(--text-2); opacity: .8; }
   input:focus-visible, textarea:focus-visible { border-color: var(--text); }
-  .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
   .opt input { position: absolute; opacity: 0; pointer-events: none; }
-  .opt span { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1px var(--line-field); font: 600 12px/1 var(--font-mono); text-transform: uppercase; cursor: pointer; transition: background-color var(--t-fast) ease, color var(--t-fast) ease, box-shadow var(--t-fast) ease; }
+  .opt span { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1px var(--neutral-200); font: 600 12px/1 var(--font-mono); text-transform: uppercase; cursor: pointer; transition: background-color var(--t-fast) ease, color var(--t-fast) ease, box-shadow var(--t-fast) ease; }
   .opt input:checked + span { background: var(--neutral-950); color: var(--neutral-0); box-shadow: none; }
   .opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .card > .btn { grid-column: 2; justify-self: start; }
-  @media (hover: hover) and (pointer: fine) { .opt span:hover { box-shadow: inset 0 0 0 1px var(--text); } .card .btn.filled:hover { background: var(--hover-on-950); } }
+  /* Primary blue, full width, the promises under the label (as the report's "Get my free report") */
+  .go-btn { justify-content: space-between; width: 100%; height: auto; min-height: 64px; padding: 12px 28px; gap: 16px; font-size: 16px; text-align: left; }
+  .go-btn :global(svg) { width: 28px; height: 28px; }
+  .go-txt { display: grid; gap: 4px; }
+  .ticks { display: flex; flex-wrap: wrap; gap: 4px 12px; color: rgb(255 255 255 / .75); }
+  .ticks > span::before { content: '✓'; margin-right: 4px; }
+  @media (hover: hover) and (pointer: fine) { .opt span:hover { box-shadow: inset 0 0 0 1px var(--text); } }
 
   @media (max-width: 999px) {
     .meet { padding-bottom: var(--section-ruled-bottom); }
@@ -121,14 +143,16 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
     .deck { display: grid; grid-auto-flow: column; grid-auto-columns: min(80%, 320px); gap: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); max-width: none; }
     .deck li { scroll-snap-align: start; }
     .send { margin-top: 48px; }
-    .card { grid-template-columns: minmax(0, 1fr); padding: 32px; }
-    .card > .btn { grid-column: 1; }
-    .m-only { display: block; }
+    .card { padding: 32px; }
+    .m-only { display: block; margin-bottom: 32px; }
   }
   @media (max-width: 699px) {
-    .card { padding: 24px; }
-    .fields { grid-template-columns: minmax(0, 1fr); }
-    .card > .btn { justify-self: stretch; }
+    .card { padding: 24px 20px; }
+    .grid2 { grid-template-columns: minmax(0, 1fr); }
+    .step { padding-left: 52px; }
+    .n { left: 0; width: 32px; height: 32px; }
+    .step::before { left: 16px; top: 40px; }
+    .go-btn { padding-inline: 20px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .heads > * { transition: opacity 200ms linear; transform: none !important; }
