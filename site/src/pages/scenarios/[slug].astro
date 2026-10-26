@@ -30,7 +30,7 @@ const p = d.page;
 const author = await getEntry(d.author);
 const rules = (await getEntries(d.rules)).sort((a, b) => a.data.number - b.data.number);
 // Sidebar: this page's own sections, in page order
-const toc = [['h-catches', 'What it catches', p.catches], ['h-back', 'What comes back', p.comesBack], ['h-get', 'Get it', p.get], ['h-using', 'Using it', p.using.length], ['h-how', 'How it finds them', p.steps.length], ['h-rules', `The ${T.rules.toLowerCase()} it applies`, rules.length]]
+const toc = [['h-catches', 'What it catches', p.catches], ['h-back', 'What you get', p.comesBack], ['h-get', 'Get it', p.get], ['h-using', 'Using it', p.using.length], ['h-how', 'How it runs', p.steps.length], ['h-rules', `The ${T.rules.toLowerCase()} it applies`, rules.length]]
   .filter(([, , on]) => on).map(([id, label]) => ({ label: label as string, href: `#${id}` }));
 const facts = [['First run', d.firstRun], ['You need', d.youNeed], ['You get', d.youGet]].filter(([, v]) => v) as [string, string][];
 // Closing CTA: the shared submit band with this scenario's copy; content can override any field

@@ -58,7 +58,7 @@ page:
         src: "/outputs/placeholder/notion-3.png"
   get:
     intro: "One command."
-    context: "Four read-only skills, the scenario that sequences them, and sample data to run it on first"
+    context: "The skills and the scenario that runs them come in one install"
     options:
       - label: "Claude Code"
         text: |-

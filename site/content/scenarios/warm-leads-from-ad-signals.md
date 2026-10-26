@@ -11,7 +11,7 @@ stat:
   label: "of a month’s engagement came from one profile listed at seven employers"
 firstRun: "About ten minutes"
 youNeed: "Nothing for the sample. Four CSV exports for your own"
-youGet: "A ranked sheet: who to call, and why"
+youGet: "A ranked sheet: who to reach out to, and why"
 connectors:
   - Claude
   - LinkedIn Ads export
@@ -110,7 +110,7 @@ page:
         src: "/outputs/placeholder/notion-5.png"
   get:
     intro: "One command."
-    context: "The four steps, the scripts behind them and the sample client come with it, so you can watch the whole routine run before pointing it at a real account"
+    context: "The skills and the scenario that runs them come in one install"
     options:
       - label: "Claude Code"
         text: |-

@@ -8,7 +8,7 @@ import { arrow } from '../../arrows';
 import { T } from '../../site';
 interface Step { phase?: string; title: string; text: string; note?: string; skill?: { collection: 'skills'; id: string }; key?: boolean }
 interface Props { label?: string; context?: string; steps: Step[] }
-const { label = 'How it finds them', context = 'Each one applies a rule of the Standard, and stops the run when the data can’t carry it' } = Astro.props;
+const { label = 'How it runs', context = 'Each one applies a rule of the Standard, and stops the run when the data can’t carry it' } = Astro.props;
 const steps = await Promise.all(Astro.props.steps.map(async (s) => ({ ...s, skillEntry: s.skill ? (await getEntry(s.skill)) as CollectionEntry<'skills'> | undefined : undefined })));
 const phased = steps.some((s) => s.phase);
 const go = arrow('right');

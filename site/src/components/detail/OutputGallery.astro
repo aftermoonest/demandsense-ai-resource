@@ -1,10 +1,10 @@
 ---
-// "What comes back": slot "lead" sits above the gallery, the default slot below it. One big image with thumbnails below (DESIGN §8.14). Arrows sit in the section head; thumbs and arrows pick, the stage crossfades.
+// "What you get": slot "lead" sits above the gallery, the default slot below it. One big image with thumbnails below (DESIGN §8.14). Arrows sit in the section head; thumbs and arrows pick, the stage crossfades.
 import Sec from '../Sec.astro';
 import { arrow } from '../../arrows';
 interface Item { title: string; caption: string; src?: string }
 interface Props { id?: string; label?: string; title: string; context?: string; items: Item[] }
-const { id = 'h-back', label = 'What comes back', title, context, items } = Astro.props;
+const { id = 'h-back', label = 'What you get', title, context, items } = Astro.props;
 ---
 <Sec id={id} label={label} title={title} context={context} small>
   <Fragment slot="act">
