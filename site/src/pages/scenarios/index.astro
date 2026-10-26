@@ -16,9 +16,10 @@ const all = (await getCollection('scenarios')).sort((a, b) => a.data.order - b.d
 const ready = all.filter((s) => s.data.status === 'ready');
 const soon = all.filter((s) => s.data.status === 'soon');
 const steps = [
-  { title: 'Pick the job you already do', text: 'Each scenario names its cadence. Start with the one that matches a report you already owe someone' },
-  { title: 'Run it on the sample client', text: 'One install command, then a run on data that ships with it. You see every catch before you trust it' },
-  { title: 'Point it at your exports', text: 'It reads, flags and ranks. Nothing in your ad account or CRM changes unless a person changes it' },
+  { title: 'You run it', text: 'On fresh exports or your DemandSense account' },
+  { title: 'The scenario does the prep', text: 'Its skills check the data against the Standard and your context' },
+  { title: 'You act on it', text: 'A list or a report shows what to change in the campaigns' },
+  { title: 'The results feed back', text: 'What you changed shows up in the data for the next run' },
 ];
 ---
 <Base type="scenario" title={`${T.scenarios} · The B2B AI Standard for LinkedIn Ads`} description="Whole routines for LinkedIn Ads. Each one strings skills together to take on work you’d do by hand">
@@ -43,7 +44,7 @@ const steps = [
         </ul>
       </Sec>
 
-      <Sec id="h-how" label="How trying one works" title="Watch it run on sample data," context="then point it at your own exports">
+      <Sec id="h-how" label="How it works" title="Scenarios add to your LinkedIn routines." context="Take the manual work out, but keep the expertise and context in">
         <ol class="steps" data-reveal>
           {steps.map((s, i) => (
             <li class:list={['step', { key: i === 0 }]}>
@@ -53,6 +54,7 @@ const steps = [
             </li>
           ))}
         </ol>
+        <p class="t-p2 loop"><span aria-hidden="true">↻</span> Then back to step 1: run it again next week or month, with the last results taken into account</p>
       </Sec>
 
       {soon.length > 0 && (
@@ -80,8 +82,9 @@ const steps = [
   .list { display: grid; gap: var(--gutter); }
   .soon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
 
-  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange */
-  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange; the note under it closes the loop */
+  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .loop { margin-top: 32px; color: var(--text-2); }
   .step { display: grid; gap: 8px; align-content: start; padding-right: 32px; }
   .step:last-child { padding-right: 0; }
   .tick { position: relative; z-index: 0; display: flex; align-items: center; height: 56px; margin-bottom: 8px; }
