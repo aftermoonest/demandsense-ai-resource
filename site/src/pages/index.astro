@@ -1,20 +1,17 @@
 ---
 // Home: the Standard's landing. Copy from the live site (the-ai-standard-site.netlify.app); structure from the brief of 26 Oct 2026.
 // Black from the hero through the problem scene, white for The fix, rules and the directory, black again for authors + form.
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { arrow } from '../arrows';
 import Base from '../layouts/Base.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import IsoArt from '../components/IsoArt.astro';
 import SectionHead from '../components/SectionHead.astro';
 import RuleRow from '../components/RuleRow.astro';
-import ScenarioCover from '../components/ScenarioCover.astro';
-import Byline from '../components/Byline.astro';
 import Problem from '../components/home/Problem.astro';
 import Meet from '../components/home/Meet.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { T, AREAS, AREA_COVER, AREA_ICON } from '../site';
-import { icon } from '../icons';
+import { T } from '../site';
 
 const nRules = (await getCollection('rules')).length;
 const rules = (await getCollection('rules', (r) => r.data.featured)).sort((a, b) => a.data.number - b.data.number);
@@ -24,10 +21,11 @@ const quotes = [
   { name: 'Contributor', company: 'Name and company to come' },
   { name: 'Contributor', company: 'Name and company to come' },
 ];
-// Directory teaser: one scenario and one skill (rules have their own section above)
-const scenario = (await getEntry('scenarios', 'warm-leads-from-ad-signals'))!;
-const skill = (await getEntry('skills', 'placeholder-page-check'))!;
-const [scAuthor, skAuthor] = await Promise.all([getEntry(scenario.data.author), skill.data.author ? getEntry(skill.data.author) : undefined]);
+// Directory teaser: one card per library list (rules have their own section above)
+const hubs = [
+  { type: 'scenario', art: 'scenarios', label: T.scenarios, href: '/scenarios', count: (await getCollection('scenarios')).length, title: 'Whole routines, ready to run.', context: 'Weekly or monthly jobs your AI does the same way' },
+  { type: 'skill', art: 'skills', label: T.skills, href: '/skills', count: (await getCollection('skills')).length, title: 'Single checks, ready to run.', context: 'Each reads an export, applies one rule and hands back a list' },
+] as const;
 const go = arrow('right', 'go');
 const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
 ---
@@ -95,24 +93,16 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
           <h2 id="h-dir" class="headline t-h3">The directory. <span class="tone-2">Every scenario, skill and rule in the Standard, each signed by the practitioner who runs it that way</span></h2>
         </div>
         <ul class="picks" data-reveal>
-          <li><a class="pick" data-type="scenario" href={`/scenarios/${scenario.id}`} style={`--cover: var(--pastel-${scenario.data.cover}); --cover-200: var(--pastel-${scenario.data.cover}-200); --cover-450: var(--pastel-${scenario.data.cover}-450)`}>
-            <span class="cover" aria-hidden="true"><ScenarioCover /></span>
-            <span class="txt">
-              <span class="chips"><span class="chip">{T.scenario}</span><span class="chip out">{scenario.data.cadence}</span></span>
-              <span class="t-h5">{scenario.data.title}</span>
-              <span class="t-p2 body desc">{scenario.data.description}</span>
-              <Byline author={scAuthor} />
-            </span>
-          </a></li>
-          <li><a class="pick" data-type="skill" href={`/skills/${skill.id}`} style={`--cover: var(--pastel-${AREA_COVER[skill.data.area]}); --cover-450: var(--pastel-${AREA_COVER[skill.data.area]}-450)`}>
-            <span class="cover icon-cover" aria-hidden="true"><span class="ico" set:html={icon(skill.data.icon ?? AREA_ICON[skill.data.area])} /></span>
-            <span class="txt">
-              <span class="chips"><span class="chip">{T.skill}</span><span class="chip out">{AREAS[skill.data.area]}</span></span>
-              <span class="t-h5">{skill.data.title}</span>
-              <span class="t-p2 body desc">{skill.data.description}</span>
-              <Byline author={skAuthor} />
-            </span>
-          </a></li>
+          {hubs.map((h) => (
+            <li><a class="pick" data-type={h.type} href={h.href}>
+              <span class="cover" aria-hidden="true"><IsoArt name={h.art} accent={h.type} mono zoom={1.1} /></span>
+              <span class="txt">
+                <span class="marker">{h.label}<span class="cnt">{String(h.count).padStart(2, '0')}</span></span>
+                <span class="t-h4">{h.title} <span class="tone-2">{h.context}</span></span>
+                <span class="more lbl">Explore all {h.count} {h.label.toLowerCase()} <Fragment set:html={arrow('right')} /></span>
+              </span>
+            </a></li>
+          ))}
         </ul>
         <div class="below"><a class="btn brand lg" href="/directory">Explore full directory <Fragment set:html={go} /></a></div>
       </section>
@@ -169,24 +159,18 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
 
   .dir-head { display: grid; gap: var(--gap-overline); justify-items: center; text-align: center; margin-bottom: var(--header-gap); }
   .dir-head .headline { max-width: 22em; }
-  /* Two big cards side by side: pastel cover on top, then type + detail chips, title, description, author */
+  /* Two big cards side by side, one per library list: its hub art on top, marker + count, two-tone title, link label */
   .picks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
   .pick { position: relative; display: grid; grid-template-rows: auto 1fr; height: 100%; border-radius: var(--radius-4); overflow: hidden; transition: background-color var(--t-fast) var(--ease-out); }
   .pick::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-card); pointer-events: none; }
-  .cover { position: relative; display: grid; place-items: center; aspect-ratio: 16 / 9; background: var(--cover); overflow: hidden; }
-  .cover > :global(svg) { position: absolute; inset: 10%; width: 80%; height: 80%; }
-  .icon-cover .ico { width: 40%; max-width: 200px; aspect-ratio: 1; }
-  .icon-cover .ico :global(.hl) { --hairline-hi: var(--cover-450); width: 100%; height: 100%; }
-  .txt { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; padding: 32px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .desc { max-width: 520px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .txt :global(.byline) { margin-top: 12px; }
-  @media (hover: hover) and (pointer: fine) {
-    .pick:hover { background: var(--cover); }
-    .pick .chip { transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
-    .pick:hover .chip:not(.out) { background: var(--neutral-950); color: var(--neutral-0); }
-    .pick:hover .chip.out { box-shadow: inset 0 0 0 1px var(--neutral-950); }
-  }
+  .cover { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--bg-subtle); }
+  .cover > :global(.iso-panel) { position: absolute; inset: 0; background: none; border-radius: 0; }
+  .txt { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 32px; }
+  .cnt { margin-left: 6px; padding: 0 6px; border-radius: var(--radius-2); background: var(--bg-muted); color: var(--text-body); font-variant-numeric: tabular-nums; }
+  .txt .t-h4 { max-width: 24em; text-wrap: balance; }
+  .more { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; color: var(--text); }
+  .more :global(svg) { width: 16px; height: 16px; transition: translate var(--t-fast) var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .pick:hover { background: var(--bg-subtle); } .pick:hover .more :global(svg) { translate: 4px 0; } }
   .below { display: flex; justify-content: center; margin-top: 48px; }
 
   @media (max-width: 999px) {
