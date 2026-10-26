@@ -90,15 +90,17 @@ const closing = { label: 'The Standard', title: 'The missing context lives with 
 
   /* Folds: one per screen; the active one is full strength, the rest step back */
   .folds { grid-column: 1 / span 5; }
-  .fold { display: grid; gap: 20px; align-content: center; justify-items: start; min-height: 75svh; opacity: .32; transition: opacity 400ms var(--ease-out); }
-  .fold.on { opacity: 1; }
+  .fold { display: grid; gap: 20px; align-content: center; justify-items: start; min-height: 50svh; }
+  /* Not reached yet: grey; the active fold reads in full colour */
+  .fold :is(h3, .body-copy, .chip) { transition: color 400ms var(--ease-out); }
+  .fold:not(.on) :is(h3, .body-copy, .chip) { color: var(--neutral-200); }
   .body-copy { max-width: 34em; color: var(--text-body); text-wrap: pretty; }
   .fold h3 { text-wrap: balance; }
 
   /* Figure: sticks under the header, centred in the screen, for the whole length of the folds */
   .art { grid-column: 6 / -1; }
   .stick { position: sticky; top: var(--site-bar); display: flex; flex-direction: column; justify-content: center; height: calc(100svh - var(--site-bar)); padding-block: 16px; }
-  .fig { flex: 1; min-height: 0; margin: 0; } /* fills the stuck column; the drawing fits inside it, centred */
+  .fig { height: min(64svh, 640px); margin: 0; } /* centred in the stuck column */
   .fig svg { width: 100%; height: 100%; overflow: visible; }
 
   /* Drawing palette on white: pale faces, grey hairlines; the lit block takes primary blue and a soft glow */
@@ -136,5 +138,5 @@ const closing = { label: 'The Standard', title: 'The missing context lives with 
     .folds { grid-column: 1; }
     .fold { min-height: 60svh; }
     }
-  @media (prefers-reduced-motion: reduce) { .fold { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .fold :is(h3, .body-copy, .chip) { transition: none; } }
 </style>
