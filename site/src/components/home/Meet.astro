@@ -98,7 +98,7 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
 
   @media (min-width: 1000px) {
     /* Zero-height stage pinned at the screen's centre line; it lets go when the track ends, so the headline leaves with the form */
-    .track { position: relative; }
+    .track { position: relative; padding-top: calc((100svh - var(--site-bar)) / 2); } /* the stage starts at the first fold's centre line, so the headline opens centred in the section, not over its top edge */
     .stage { position: sticky; z-index: 0; top: calc(var(--site-bar) + (100svh - var(--site-bar)) / 2); display: block; height: 0; padding: 0; }
     .heads { transform: translateY(-50%); }
     /* the headline fits between the two card columns */
