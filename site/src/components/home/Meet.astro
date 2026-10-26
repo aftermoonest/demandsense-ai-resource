@@ -12,9 +12,25 @@ const DY = ['0svh', '6svh', '-4svh', '4svh', '2svh', '-2svh', '4svh', '0svh'];
 const check = '<svg viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M6 11C8.7614 11 11 8.7614 11 6C11 3.23857 8.7614 1 6 1C3.23857 1 1 3.23857 1 6C1 8.7614 3.23857 11 6 11ZM8.72855 4.72856L5.5 7.9571L3.39645 5.85355L4.10356 5.14645L5.5 6.5429L8.02145 4.02144L8.72855 4.72856Z"/></svg>'; // Figma icon/check-cricle, as on the report form
 const TO = 'znak@demontrend.com'; // the submit landing's contact until a form backend exists
 ---
-<section class="meet surface-black ruled" aria-labelledby="h-meet" data-meet>
+<section class="meet surface-black ruled spotsec" data-spot="front" aria-labelledby="h-meet" data-meet>
   <div class="track">
-    <div class="stage">
+    <!-- Followspot from the submit landing (illustrations/spotlight.js): a screen-high layer that sticks with the headline;
+         the script draws the lamp and lays the beam over it, resting on the [data-rest] headline -->
+    <div class="stage" aria-hidden="true">
+      <svg class="beam"><defs>
+        <linearGradient id="meet-beam" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--primary-300)" stop-opacity=".55"/><stop offset=".35" stop-color="var(--primary-450)" stop-opacity=".22"/><stop offset="1" stop-color="var(--primary-450)" stop-opacity=".06"/></linearGradient>
+        <radialGradient id="meet-pool"><stop offset="0" stop-color="var(--primary-300)" stop-opacity=".34"/><stop offset=".55" stop-color="var(--primary-450)" stop-opacity=".16"/><stop offset="1" stop-color="var(--primary-450)" stop-opacity="0"/></radialGradient>
+        <filter id="meet-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="32"/></filter>
+      </defs>
+        <g filter="url(#meet-blur)">
+          <path class="cone" fill="url(#meet-beam)"/><path class="core" fill="url(#meet-beam)"/><ellipse class="pool" fill="url(#meet-pool)"/>
+          <g class="ghosts"><circle/><circle/><circle/></g>
+          <ellipse class="fringe a"/><ellipse class="fringe b"/>
+        </g>
+      </svg>
+      <figure class="lampfig"><svg></svg></figure>
+    </div>
+    <div class="pin" data-rest>
       <div class="wrap heads" data-heads>
         <h2 id="h-meet" class="headline t-display h-a">Nobody here is describing best practice <span class="tone-2">from the outside</span></h2>
         <p class="headline t-display h-b">You run an account a way that works. <span class="tone-2">Send it</span></p>
@@ -61,6 +77,8 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   </div>
 </section>
 
+<script is:inline src="/illustrations/spotlight.js" defer></script>
+
 <script>
   // Headline swap: once the marker after the last card rises past the stage centre, show the ask
   for (const sec of document.querySelectorAll<HTMLElement>('[data-meet]')) {
@@ -83,8 +101,27 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
 </script>
 
 <style>
-  .meet { --cw: 280px; --ch: 340px; position: relative; background: var(--bg); color: var(--text); }
-  .stage { display: grid; place-items: center; padding-block: var(--section-ruled-top) 48px; }
+  .meet { --cw: 280px; --ch: 340px; position: relative; isolation: isolate; overflow: clip; background: var(--bg); color: var(--text); }
+  .pin { display: grid; place-items: center; padding-block: var(--section-ruled-top) 48px; }
+  .stage { display: none; }
+  /* Beam and lamp, as on the submit landing; the script fills them in */
+  .beam { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity 900ms var(--ease-out) 450ms; }
+  .meet:global(.on) .beam { opacity: .8; }
+  .beam .core { opacity: .4; }
+  .beam .ghosts circle { fill: none; stroke: var(--primary-300); stroke-opacity: .1; }
+  .beam .ghosts circle:nth-child(2) { fill: var(--primary-450); fill-opacity: .06; stroke: none; }
+  .beam .fringe { fill: none; stroke-width: 1; }
+  .beam .fringe.a { stroke: var(--primary-300); stroke-opacity: .12; }
+  .beam .fringe.b { stroke: var(--primary-450); stroke-opacity: .16; }
+  .lampfig :global(svg) { display: block; width: 100%; height: auto; overflow: visible; }
+  .lampfig :global(path) { fill: var(--neutral-1000); stroke: var(--neutral-800); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
+  .lampfig :global(.nf) { fill: none; }
+  .lampfig :global(.lo) { stroke: var(--neutral-850); }
+  .lampfig :global(.sil) { stroke: var(--neutral-500); }
+  .lampfig :global(.lens) { fill: var(--primary-450); fill-opacity: .35; stroke: var(--primary-300); }
+  .lampfig :global(.halo) { fill-opacity: .6; }
+  .lampfig { opacity: 0; translate: 0 -12px; transition: opacity 600ms var(--ease-out), translate 600ms var(--ease-out); }
+  .meet:global(.on) .lampfig { opacity: 1; translate: 0 0; }
   .heads { display: grid; justify-items: center; width: 100%; text-align: center; }
   .heads > * { grid-area: 1 / 1; align-self: end; max-width: 13em; margin-inline: auto; text-wrap: balance; transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
   .h-b { opacity: 0; transform: translateY(14px); }
@@ -95,8 +132,12 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
 
   @media (min-width: 1000px) {
     /* Zero-height stage pinned at the screen's centre line; it lets go when the track ends, so the headline leaves with the form */
-    .track { position: relative; padding-top: calc((100svh - var(--site-bar)) / 2); } /* the stage starts at the first fold's centre line, so the headline opens centred in the section, not over its top edge */
-    .stage { position: sticky; z-index: 0; top: calc(var(--site-bar) + (100svh - var(--site-bar)) / 2); display: block; height: 0; padding: 0; }
+    .track { position: relative; }
+    /* the pin starts at the first fold's centre line, so the headline opens centred in the section, not over its top edge */
+    .pin { position: sticky; z-index: 1; top: calc(var(--site-bar) + (100svh - var(--site-bar)) / 2); display: block; height: 0; margin-top: calc((100svh - var(--site-bar)) / 2); padding: 0; }
+    /* Spot layer: screen-high, sticks with the headline, takes no room in the flow */
+    .stage { display: block; position: sticky; top: var(--site-bar); height: calc(100svh - var(--site-bar)); margin-bottom: calc(var(--site-bar) - 100svh); overflow: hidden; pointer-events: none; }
+    .lampfig { position: absolute; top: -170px; left: calc(50% - 260px); width: 520px; margin: 0; -webkit-mask: linear-gradient(transparent 30%, #000 45%); mask: linear-gradient(transparent 30%, #000 45%); }
     .heads { transform: translateY(-50%); }
     /* the headline fits between the two card columns */
     .heads > * { max-width: calc(100% - 2 * (var(--cw) + 64px)); font-size: clamp(36px, 4vw, 64px); }
