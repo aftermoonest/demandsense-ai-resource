@@ -146,31 +146,37 @@ const sparkles = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="curren
   .dots { display: flex; gap: 6px; }
   .dots li { display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-2); box-shadow: inset 0 0 0 1px var(--neutral-800); color: var(--text-meta); font: 600 12px/1 var(--font-mono); transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out), box-shadow 250ms var(--ease-out); }
   .cards { display: grid; }
-  .cards li { grid-area: 1 / 1; display: grid; gap: 8px; align-content: start; padding: 24px; border-radius: var(--radius-4); background: var(--neutral-900); box-shadow: inset 0 0 0 1px var(--neutral-850); }
-  .viz { margin: -8px -8px 16px; padding: 20px; border-radius: var(--radius-2); background: var(--neutral-950); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+  /* Blueprint look: quieter than the chat. Black card, dashed hairlines, a faint drafting grid behind the figure, no solid fills */
+  .cards li { --bp: var(--neutral-850); grid-area: 1 / 1; display: grid; gap: 8px; align-content: start; padding: 24px; border: 1px dashed var(--neutral-800); border-radius: var(--radius-2); background: var(--neutral-1000); }
+  .cards .t-h5 { font-size: 20px; }
+  .cards .body { color: var(--text-meta); }
+  .viz { position: relative; margin: -8px -8px 16px; padding: 20px; border: 1px solid var(--bp); background: linear-gradient(var(--neutral-900) 1px, transparent 1px) 0 0 / 16px 16px, linear-gradient(90deg, var(--neutral-900) 1px, transparent 1px) 0 0 / 16px 16px; }
+  /* crop marks on the figure's corners */
+  .viz::before, .viz::after { content: ''; position: absolute; width: 8px; height: 8px; border: 0 solid var(--neutral-500); }
+  .viz::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+  .viz::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+  .viz .lbl, .viz .lbl-2 { color: var(--text-meta); }
 
   .split { display: grid; gap: 10px; }
-  .bar { display: flex; height: 40px; border-radius: var(--radius-2); overflow: hidden; }
+  .bar { display: flex; height: 36px; }
   .bar > span { flex: 1; display: flex; align-items: center; padding: 0 12px; font: 600 12px/1 var(--font-mono); }
-  .bar .bad { background: repeating-linear-gradient(-45deg, var(--orange) 0 6px, color-mix(in srgb, var(--orange) 70%, #000) 6px 12px); color: var(--neutral-950); }
-  .bar .ok { background: var(--neutral-800); color: var(--text); }
-  .legend { display: flex; align-items: center; gap: 6px; color: var(--text-meta); }
-  .k { width: 8px; height: 8px; border-radius: 1px; } .k.bad { background: var(--orange); } .k.ok { background: var(--neutral-800); margin-left: 10px; }
+  .bar .bad { border: 1px solid color-mix(in srgb, var(--orange) 60%, transparent); background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--orange) 28%, transparent) 0 1px, transparent 1px 7px); color: var(--orange); }
+  .bar .ok { border: 1px dashed var(--neutral-500); border-left: 0; color: var(--text-2); }
+  .legend { display: flex; align-items: center; gap: 6px; }
+  .k { width: 8px; height: 8px; } .k.bad { border: 1px solid var(--orange); } .k.ok { border: 1px dashed var(--neutral-500); margin-left: 10px; }
 
   .company { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .company dt { grid-column: 1 / -1; text-decoration: line-through; text-decoration-color: var(--orange); text-decoration-thickness: 2px; }
-  .company dd { display: grid; gap: 6px; padding: 10px 12px; border-radius: var(--radius-2); background: var(--neutral-900); }
+  .company dt { grid-column: 1 / -1; color: var(--text-2); text-decoration: line-through; text-decoration-color: var(--orange); text-decoration-thickness: 1px; }
+  .company dd { display: grid; gap: 6px; padding: 10px 12px; border: 1px dashed var(--neutral-800); background: var(--neutral-1000); }
   .company dd > :last-child { color: var(--orange); font: 600 14px/1 var(--font-mono); }
-  .company .lbl-2 { color: var(--text-meta); }
 
   .week { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .side { display: grid; gap: 6px; align-content: start; padding: 12px; border-radius: var(--radius-2); background: var(--neutral-900); }
-  .side .lbl-2 { color: var(--text-meta); }
-  .side .t-h6 { font-size: 16px; }
+  .side { display: grid; gap: 6px; align-content: start; padding: 12px; border: 1px dashed var(--neutral-800); background: var(--neutral-1000); }
+  .side .t-h6 { font-size: 16px; color: var(--text-2); }
   .big { margin-top: 8px; color: var(--orange); font: 600 20px/1 var(--font-mono); }
   .big span { display: block; margin-top: 4px; font-size: 12px; color: var(--text-meta); }
   .temp { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
-  .bar2 { flex: 1; height: 8px; border-radius: var(--radius-pill); background: linear-gradient(90deg, var(--primary-300), var(--neutral-800)); }
+  .bar2 { flex: 1; height: 6px; border: 1px solid var(--neutral-800); background: linear-gradient(90deg, color-mix(in srgb, var(--primary-300) 70%, transparent), transparent); }
 
   /* ---------- Steps (only with JS; without it the notes and the corrected answer show) ---------- */
   :global(.motion-ready) .stage :is(.you, .ai, .notes, .cards li, .after) { transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
