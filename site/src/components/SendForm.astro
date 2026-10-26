@@ -1,0 +1,93 @@
+---
+// The home "Send it" form (Meet.astro) as its own component, for the Contribute page's popup and closing card.
+// Stepped like the report's request form (Figma 996:24441): numbered steps on a rail, two-tone step headlines.
+// `opts`: what people can bring; a [data-open="<option>"] trigger preselects one.
+import { arrow } from '../arrows';
+interface Props { opts?: string[]; class?: string }
+const { opts = ['A rule', 'A skill', 'A scenario'], class: cls } = Astro.props;
+const check = '<svg viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M6 11C8.7614 11 11 8.7614 11 6C11 3.23857 8.7614 1 6 1C3.23857 1 1 3.23857 1 6C1 8.7614 3.23857 11 6 11ZM8.72855 4.72856L5.5 7.9571L3.39645 5.85355L4.10356 5.14645L5.5 6.5429L8.02145 4.02144L8.72855 4.72856Z"/></svg>';
+const TO = 'znak@demontrend.com'; // the submit landing's contact until a form backend exists
+---
+<form class:list={['send-form', cls]} action={`mailto:${TO}`} method="post" enctype="text/plain" data-send>
+  <fieldset class="step">
+    <span class="n" aria-hidden="true">1</span>
+    <legend class="t-h5">Who’s sending it? <span class="tone-2">We publish it under your name</span></legend>
+    <div class="grid2">
+      <label class="f"><span class="lbl">Your name</span><input name="name" autocomplete="name" required placeholder="Full name"></label>
+      <label class="f"><span class="lbl">Work email</span><input name="email" type="email" autocomplete="email" required placeholder="name@company.com"></label>
+    </div>
+    <label class="f"><span class="lbl">Company</span><input name="company" autocomplete="organization" placeholder="Where you run LinkedIn Ads"></label>
+  </fieldset>
+  <fieldset class="step">
+    <span class="n" aria-hidden="true">2</span>
+    <legend class="t-h5">What are you bringing? <span class="tone-2">A rule, a skill or a whole scenario</span></legend>
+    <div class="opts" role="radiogroup" aria-label="What you’re bringing">
+      {opts.map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
+    </div>
+  </fieldset>
+  <fieldset class="step">
+    <span class="n" aria-hidden="true">3</span>
+    <legend class="t-h5">Tell us about it <span class="tone-2">What it checks and how often you run it</span></legend>
+    <textarea name="about" rows="3" aria-label="Tell us about it" placeholder="Every Monday I pull the demographics report and flag the company sizes we never meant to pay for…"></textarea>
+  </fieldset>
+  <div class="step last">
+    <span class="n" aria-hidden="true">4</span>
+    <button class="btn brand go-btn" type="submit">
+      <span class="go-txt"><span>Send it</span><span class="ticks lbl-2">{['Free', 'Your name on it', 'Your links on it'].map((t) => <span><Fragment set:html={check} />{t}</span>)}</span></span>
+      <Fragment set:html={arrow('right', 'go')} />
+    </button>
+  </div>
+</form>
+
+<script>
+  // No form backend yet: compose the email in the visitor's mail app with the fields filled in
+  document.querySelectorAll<HTMLFormElement>('.send-form').forEach((f) => f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(f);
+    const body = ['name', 'email', 'company', 'kind', 'about'].map((k) => `${k}: ${d.get(k) ?? ''}`).join('\n');
+    location.href = `${f.action.split('?')[0]}?subject=${encodeURIComponent(`Contribution: ${d.get('kind')}`)}&body=${encodeURIComponent(body)}`;
+  }));
+</script>
+
+<style>
+  .send-form { --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line-field: var(--neutral-100); --line: var(--neutral-100);
+    display: grid; width: 100%; max-width: 650px; padding: 40px 40px 48px; border-radius: var(--radius-4); background: var(--bg); color: var(--text); }
+  /* Steps: number on the left rail, a line runs from each number down to the next */
+  .step { position: relative; display: grid; gap: 20px; margin: 0; padding: 0 0 32px 76px; border: 0; min-width: 0; }
+  .step::before { content: ''; position: absolute; left: 23px; top: 48px; bottom: 0; width: 1px; background: var(--neutral-100); }
+  .step.last { padding-bottom: 0; }
+  .step.last::before { display: none; }
+  .n { position: absolute; left: 4px; top: 0; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--neutral-50); box-shadow: 0 0 0 4px var(--neutral-0), 0 0 0 5px var(--neutral-75); font: 600 12px/1 var(--font-mono); }
+  .step.last .n { top: 12px; }
+  legend { float: left; width: 100%; padding: 0; }
+  legend .tone-2 { display: block; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+  .f { display: grid; gap: 4px; min-width: 0; }
+  .f .lbl { color: var(--text); }
+  /* Report share form: underlined fields, no box */
+  input:not([type=radio]), textarea { width: 100%; min-height: 42px; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line-field); border-radius: 0; background: none; color: var(--text); font: 500 16px/1.4 var(--font-sans); letter-spacing: -.03em; outline: 0; resize: vertical; transition: border-color var(--t-fast) ease; }
+  :is(input, textarea)::placeholder { color: var(--text-2); opacity: .8; }
+  input:focus-visible, textarea:focus-visible { border-color: var(--text); }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt span { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1px var(--neutral-200); font: 600 12px/1 var(--font-mono); text-transform: uppercase; cursor: pointer; transition: background-color var(--t-fast) ease, color var(--t-fast) ease, box-shadow var(--t-fast) ease; }
+  .opt input:checked + span { background: var(--neutral-950); color: var(--neutral-0); box-shadow: none; }
+  .opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* Primary blue, full width, the promises under the label (as the report's "Get my free report") */
+  .go-btn { justify-content: space-between; width: 100%; height: auto; min-height: 64px; padding: 12px 28px; gap: 16px; font-size: 16px; text-align: left; }
+  .go-btn :global(svg) { width: 28px; height: 28px; }
+  .go-txt { display: grid; gap: 4px; }
+  .ticks { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--neutral-0); }
+  .ticks > span { display: inline-flex; align-items: center; gap: 4px; }
+  .ticks :global(svg) { width: 12px; height: 12px; }
+  @media (hover: hover) and (pointer: fine) { .opt span:hover { box-shadow: inset 0 0 0 1px var(--text); } }
+  @media (max-width: 999px) { .send-form { padding: 32px; } }
+  @media (max-width: 699px) {
+    .send-form { padding: 24px 20px; }
+    .grid2 { grid-template-columns: minmax(0, 1fr); }
+    .step { padding-left: 52px; }
+    .n { left: 0; width: 32px; height: 32px; }
+    .step::before { left: 16px; top: 40px; }
+    .go-btn { padding-inline: 20px; }
+  }
+</style>

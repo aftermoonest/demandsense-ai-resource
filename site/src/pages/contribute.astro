@@ -8,12 +8,12 @@ import SiteHeader from '../components/SiteHeader.astro';
 import IsoArt from '../components/IsoArt.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Sec from '../components/Sec.astro';
-import SubmitBand from '../components/SubmitBand.astro';
+import SendForm from '../components/SendForm.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { T } from '../site';
 
-const TO = 'znak@demontrend.com'; // the submit landing's contact until a form backend exists
-const mail = (subject: string) => `mailto:${TO}?subject=${encodeURIComponent(subject)}`;
+// Every "Bring your work" opens the home form in a popup ([data-open] preselects what they bring); without JS it jumps to the same form in the closing card
+const OPTS = ['A rule', 'A skill', 'A scenario', 'Feedback'];
 const go = arrow('right', 'go');
 const small = arrow('right');
 
@@ -24,10 +24,10 @@ const PARTS = [
 ];
 
 const FEEDBACK = [
-  { t: 'Run it', d: 'Pick a skill or scenario from the library and run it on your own account.' },
-  { t: 'Tell us where it’s off', d: 'What it got wrong, what you saw in the account and what you would do instead.' },
-  { t: 'We test it', d: 'We check your change against the current version on live accounts.' },
-  { t: 'You’re credited', d: 'If the test shows you’re right, the fix goes in and your name goes on the page as a contributor.' },
+  { who: 'You', t: 'Run it', d: 'Pick a skill or scenario from the library and run it on your own account.' },
+  { who: 'You', t: 'Tell us where it’s off', d: 'What it got wrong, what you saw in the account and what you would do instead.' },
+  { who: 'DemandSense', t: 'We test it', d: 'We check your change against the current version on live accounts.' },
+  { who: 'You', t: 'You’re credited', d: 'If the test shows you’re right, the fix goes in and your name goes on the page as a contributor.' },
 ];
 
 const TOOLS = [
@@ -41,13 +41,13 @@ const TOOLS = [
 const MCP = [['Every client account, one connection', true], ['Read and write in LinkedIn Ads', true], ['Engagement by account'], ['Identified site visitors'], ['CRM matched to ads'], ['Category benchmarks']] as const;
 
 const GET = [
-  { i: 'name', t: 'Your page', d: 'Your name, words and link on a permanent page.' },
-  { i: 'week', t: 'A post per piece', d: 'DemandSense pages and Demand Wire (18K followers total) post every rule, skill or scenario, tagging the people behind it.' },
-  { i: 'coins', t: 'Paid reach', d: 'Our ad budget behind your own posts about the Standard.' },
-  { i: 'reach', t: 'Steady traffic', d: 'Search, GitHub and plugin installs send readers back to your own resources.' },
-  { i: 'audience', t: 'The podcast', d: 'Contributors are invited onto the AdWise podcast.' },
-  { i: 'case', t: 'Work to you', d: 'DemandSense does not run campaigns. Readers who want help with an audit or execution are pointed to you.' },
-  { i: 'badge', t: 'Built with DemandSense', d: 'Use DemandSense in your skill or scenario, and it gets its own promotion budget and a featured spot.', ds: true },
+  { i: 'name', t: 'Your page', d: 'Your name, words and link on a permanent page.', x: '0' },
+  { i: 'week', t: 'A post per piece', d: 'DemandSense pages and Demand Wire (18K followers total) post every rule, skill or scenario, tagging the people behind it.', x: '.9' },
+  { i: 'coins', t: 'Paid reach', d: 'Our ad budget behind your own posts about the Standard.', x: '.16' },
+  { i: 'reach', t: 'Steady traffic', d: 'Search, GitHub and plugin installs send readers back to your own resources.', x: '1', dy: '6svh' },
+  { i: 'audience', t: 'The podcast', d: 'Contributors are invited onto the AdWise podcast.', x: '.06', dy: '-4svh' },
+  { i: 'case', t: 'Work to you', d: 'DemandSense does not run campaigns. Readers who want help with an audit or execution are pointed to you.', x: '.78', dy: '4svh' },
+  { i: 'badge', t: 'Built with DemandSense', d: 'Use DemandSense in your skill or scenario, and it gets its own promotion budget and a featured spot.', ds: true, x: '.22', dy: '2svh' },
 ];
 ---
 <Base title="Contribute · The B2B AI Standard for LinkedIn Ads" description="Add a skill, a scenario or a rule to the B2B AI Standard for LinkedIn Ads, or send feedback on one. Published under your name.">
@@ -61,7 +61,7 @@ const GET = [
         <h1 class="headline t-display">Put your work in the Standard. <span class="tone-2">A skill, a scenario or a rule, published under your name</span></h1>
         <p class="t-p1 body lead">Free, public and built with named practitioners. Send it as you run it today: we package it, test it with you and publish it with your company and links on every page it appears on.</p>
         <div class="actions">
-          <a class="btn brand lg" href={mail('Contribution')}>Bring your work <Fragment set:html={go} /></a>
+          <a class="btn brand lg" href="#send" data-open>Bring your work <Fragment set:html={go} /></a>
           <a class="btn outlined lg" href="#add">What you can add</a>
         </div>
       </div>
@@ -82,7 +82,7 @@ const GET = [
               <div class="yp">
                 <span class="over you">Your part</span>
                 <p class="t-p2">{p.you}</p>
-                <a class="btn filled xs" href={mail(`Contribution: ${p.name.toLowerCase()}`)}>{p.send} <Fragment set:html={small} /></a>
+                <a class="btn filled xs" href="#send" data-open={`A ${p.name.toLowerCase()}`}>{p.send} <Fragment set:html={small} /></a>
               </div>
             </article>,
             p.link && <span class="link" aria-hidden="true"><span class="lbl">{p.link}</span><Fragment set:html={small} /></span>,
@@ -97,13 +97,11 @@ const GET = [
 
       <div class="wrap">
         <Sec id="feedback" label="Feedback counts too" title="Think a skill or scenario gets something wrong?" context="Tell us. If testing shows you’re right, you’re credited as a contributor">
-          <ol class="steps" data-reveal>
-            {FEEDBACK.map((s, i) => <li><span class="n lbl">{String(i + 1).padStart(2, '0')}</span><b class="t-h6">{s.t}</b><p class="t-p2 body">{s.d}</p></li>)}
+          <ol class="tl" data-in>
+            {FEEDBACK.map((s, i) => <li class:list={['stop', { key: i === FEEDBACK.length - 1 }]} style={`--i: ${i}`}><span class="tick" aria-hidden="true"><i>{i + 1}</i></span><span class="lbl">{s.who}</span><b class="t-h6">{s.t}</b><p class="t-p2 body">{s.d}</p></li>)}
           </ol>
           <div class="row-act">
-            <a class="btn brand" href={mail('Feedback on a skill or scenario')}>Send feedback <Fragment set:html={go} /></a>
-            <a class="btn outlined" href="/skills">Browse {T.skills.toLowerCase()}</a>
-            <a class="btn outlined" href="/scenarios">Browse {T.scenarios.toLowerCase()}</a>
+            <a class="btn brand" href="#send" data-open="Feedback">Send feedback <Fragment set:html={go} /></a>
           </div>
         </Sec>
       </div>
@@ -126,7 +124,7 @@ const GET = [
           <div class="hubcap"><span class="lbl">Tools you already use</span><span class="lbl">Recommended for LinkedIn data and actions</span></div>
           <div class="hubhelp">
             <p>Want to see if DemandSense makes your workflow stronger? <span>Our team looks at it with you.</span></p>
-            <a class="btn lg" href={mail('Contribution: build with DemandSense')}>Bring your work <Fragment set:html={go} /></a>
+            <a class="btn lg" href="#send" data-open="A scenario">Bring your work <Fragment set:html={go} /></a>
           </div>
         </Sec>
       </div>
@@ -144,7 +142,7 @@ const GET = [
                 <p class="over you">Published under your name</p>
               </div>
               <p class="t-p1">Built a skill that checks something in LinkedIn Ads? Send it, and we publish it under your name.</p>
-              <a class="btn brand" href={mail('Contribution: skill')}>Bring your work <Fragment set:html={go} /></a>
+              <a class="btn brand" href="#send" data-open="A skill">Bring your work <Fragment set:html={go} /></a>
             </div>
             <div class="way surface-black">
               <div><p class="lbl">02 · The deepest</p><h3 class="t-h3">Build a scenario with us</h3></div>
@@ -159,7 +157,7 @@ const GET = [
                 <p class="over you">Installs as a plugin, under your name</p>
               </div>
               <p class="t-p1">Have a routine you run? We turn it into a scenario together and publish it as a plugin.</p>
-              <a class="btn brand" href={mail('Contribution: scenario')}>Bring your work <Fragment set:html={go} /></a>
+              <a class="btn brand" href="#send" data-open="A scenario">Bring your work <Fragment set:html={go} /></a>
             </div>
           </div>
           <div class="notes">
@@ -170,20 +168,58 @@ const GET = [
       </div>
     </div>
 
-    <div class="surface-black ruled">
-      <div class="wrap">
-        <Sec id="get" label="What contributors get" title="Your name on the work," context="and our reach behind it" class="first">
-          <ul class="get" data-reveal>
-            {GET.map((g) => <li class:list={{ ds: g.ds }}><span class="ico" set:html={icon(g.i)} /><b class="t-h6">{g.t}</b><p class="t-p2 body">{g.d}</p></li>)}
-          </ul>
-        </Sec>
+    <!-- The landing's #get scene: a followspot (illustrations/spotlight.js) lights the headline on a sticky stage while the cards scroll up past it -->
+    <section class="spotsec surface-black ruled" id="get" data-spot="front" aria-labelledby="h-get">
+      <div class="stage">
+        <svg class="beam" aria-hidden="true"><defs>
+          <linearGradient id="beam-g" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--primary-300)" stop-opacity=".55"/><stop offset=".35" stop-color="var(--primary-450)" stop-opacity=".22"/><stop offset="1" stop-color="var(--primary-450)" stop-opacity=".06"/></linearGradient>
+          <radialGradient id="pool-g"><stop offset="0" stop-color="var(--primary-300)" stop-opacity=".34"/><stop offset=".55" stop-color="var(--primary-450)" stop-opacity=".16"/><stop offset="1" stop-color="var(--primary-450)" stop-opacity="0"/></radialGradient>
+          <filter id="beam-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="32"/></filter>
+        </defs>
+          <g filter="url(#beam-blur)">
+            <path class="cone" fill="url(#beam-g)"/>
+            <path class="core" fill="url(#beam-g)"/>
+            <ellipse class="pool" fill="url(#pool-g)"/>
+            <g class="ghosts"><circle/><circle/><circle/></g>
+            <ellipse class="fringe a"/><ellipse class="fringe b"/>
+          </g>
+        </svg>
+        <figure class="lampfig" role="img" aria-label="A followspot hangs above the headline and lights it; the pool follows the pointer."><svg></svg></figure>
+        <div class="wrap head" data-rest>
+          <p class="marker">What contributors get</p>
+          <h2 id="h-get" class="headline t-display">Your name, <span class="tone-2">in the spotlight</span></h2>
+          <a class="btn brand xl" href="#send" data-open>Bring your work <Fragment set:html={go} /></a>
+        </div>
       </div>
-    </div>
+      <ul class="wrap deck">
+        {GET.map((g, i) => <li class:list={{ ds: g.ds }} style={`--x: ${g.x}${g.dy ? `; --dy: ${g.dy}` : ''}`}><span class="ico" set:html={icon(g.i)} /><h3 class="t-h6">{g.t}</h3><p class="t-p2">{g.d}</p><span class="lbl">{String(i + 1).padStart(2, '0')}</span></li>)}
+      </ul>
+    </section>
   </main>
 
-  <SubmitBand title="Have a skill, a scenario or a rule?" context="Put it in the Standard" href={mail('Contribution')}>
-    <IsoArt slot="art" name="cta" blue />
-  </SubmitBand>
+  <!-- Closing card (blue on black): the form itself sits in the card -->
+  <section class="close surface-black ruled" id="send" aria-labelledby="send-h">
+    <div class="wrap">
+      <div class="card">
+        <div class="copy">
+          <h2 id="send-h" class="headline t-display">Have a skill, a scenario or a rule? <span class="tone-2">Put it in the Standard</span></h2>
+          <p class="t-p1 lead">Send it as you run it today. We package it, test it with you and publish it under your name, with your company and links on every page it appears on.</p>
+        </div>
+        <SendForm opts={OPTS} />
+      </div>
+    </div>
+  </section>
+
+  <dialog class="pop" aria-labelledby="pop-h" data-pop>
+    <div class="pop-in">
+      <div class="pop-head">
+        <p id="pop-h" class="t-h4">Bring your work. <span class="tone-2">We package it and test it with you</span></p>
+        <button class="btn outlined icon close-btn" type="button" aria-label="Close" data-close><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></button>
+      </div>
+      <SendForm opts={OPTS} class="in-pop" />
+    </div>
+  </dialog>
+  <script is:inline src="/illustrations/spotlight.js" defer></script>
   <SiteFooter />
 </Base>
 
@@ -212,9 +248,27 @@ const GET = [
     };
     new ResizeObserver(draw).observe(box);
   }
-  // The colour bar under the parts and the hub links draw in once, on view
+  // The colour bar under the parts, the hub links and the feedback timeline draw in once, on view
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -15% 0px' });
-  document.querySelectorAll('.lv-bar, [data-hub]').forEach((el) => io.observe(el));
+  document.querySelectorAll('.lv-bar, [data-hub], [data-in]').forEach((el) => io.observe(el));
+
+  // Popup form: opens from every [data-open] (and the header's Submit link on this page), preselecting what they bring.
+  // Closing plays the exit first: the dialog only closes once its fade-out has run
+  const pop = document.querySelector<HTMLDialogElement>('[data-pop]')!;
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const open = (kind?: string) => {
+    if (kind) pop.querySelector<HTMLInputElement>(`input[name=kind][value="${kind}"]`)!.checked = true;
+    pop.showModal();
+    requestAnimationFrame(() => pop.classList.add('shown'));
+  };
+  const shut = () => {
+    if (!pop.open) return;
+    pop.classList.remove('shown');
+    setTimeout(() => pop.close(), still.matches ? 0 : 200);
+  };
+  document.querySelectorAll<HTMLElement>('[data-open], .site-header a[href="/contribute"]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); open(a.dataset.open || undefined); }));
+  pop.addEventListener('cancel', (e) => { e.preventDefault(); shut(); });
+  pop.addEventListener('click', (e) => { if (e.target === pop || (e.target as Element).closest('[data-close]')) shut(); });
 </script>
 
 <style>
@@ -256,13 +310,23 @@ const GET = [
   .motion-ready .lv-bar { clip-path: inset(0 100% 0 0); transition: clip-path 1200ms var(--ease-in-out); }
   .motion-ready .lv-bar.in { clip-path: inset(-12px 0); }
 
-  /* Feedback: four numbered steps on one rail */
-  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
-  .steps > li { display: grid; gap: 8px; align-content: start; padding: 24px 24px 0; }
-  .steps > li + li { border-left: 1px solid var(--line); }
-  .steps > li:first-child { padding-left: 0; }
-  .steps > li:last-child b { color: var(--primary-450); }
-  .steps .n { margin-bottom: 16px; }
+  /* Feedback timeline (the landing's .tl on white): a tick per step on one rail, rings stepping out to the page; the last step, the credit, in blue */
+  .tl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); --core: var(--neutral-100); --r1: var(--neutral-75); --r2: var(--neutral-25); }
+  .tl > .stop { display: grid; gap: 8px; align-content: start; padding: 0 20px; }
+  .tl > .stop:first-child { padding-left: 0; } .tl > .stop:last-child { padding-right: 0; }
+  .tick { position: relative; z-index: 1; display: flex; align-items: center; height: 72px; margin-bottom: 8px; }
+  .tick::after { content: ''; position: absolute; z-index: -1; inset: 50% -20px auto; height: 1px; background: var(--line); transform-origin: left; }
+  .stop:first-child .tick::after { left: 0; }
+  .stop:last-child .tick::after { right: 0; background: linear-gradient(90deg, var(--line), transparent); }
+  .tick i { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--core); color: var(--neutral-950); font: 600 11px/1 var(--font-mono); font-style: normal; box-shadow: 0 0 0 6px var(--r1), 0 0 0 12px var(--r2), 0 0 0 16px var(--bg); }
+  .tl .lbl { color: var(--text-2); }
+  .tl .key { --core: var(--primary-450); --r1: color-mix(in srgb, var(--primary-450) 30%, var(--bg)); --r2: color-mix(in srgb, var(--primary-450) 14%, var(--bg)); }
+  .tl .key .tick i { color: var(--neutral-0); }
+  .tl .key .lbl, .tl .key b { color: var(--primary-450); }
+  .motion-ready .tick::after { transform: scaleX(0); transition: transform 600ms linear calc(var(--i) * 450ms); }
+  .motion-ready .tick i { scale: 0; transition: scale 360ms var(--ease-out) calc(var(--i) * 450ms); }
+  .motion-ready .tl.in .tick::after { transform: none; }
+  .motion-ready .tl.in .tick i { scale: 1; }
   .row-act { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 48px; }
 
   /* Stack hub (landing #build-with) */
@@ -307,17 +371,87 @@ const GET = [
   .mini li { display: flex; gap: 12px; align-items: baseline; }
   .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); margin-top: 40px; }
 
-  /* What contributors get: icon cells, four up */
-  .get { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
-  .get > li { display: grid; gap: 8px; align-content: start; padding: 32px 24px; border-bottom: 1px solid var(--line); }
-  .get > li:not(:nth-child(4n + 1)) { border-left: 1px solid var(--line); }
-  .get > li:nth-child(4n + 1) { padding-left: 0; }
-  .get .ico { width: 64px; height: 64px; margin-bottom: 16px; }
-  .get .ico :global(svg) { width: 100%; height: 100%; }
-  .get .ds { background: var(--primary-450); padding-left: 24px; border-radius: var(--radius-4); border: 0; --text-body: rgb(255 255 255 / .85); }
-  .get .ds .ico :global(.hl) { --hairline-plate: var(--primary-450); --hairline-hi: var(--neutral-0); --hairline-edge: var(--neutral-0); --hairline-mid: rgb(255 255 255 / .7); --hairline-lo: rgb(255 255 255 / .35); }
+  /* What contributors get (the landing's #get): below 1000 the stage scrolls and the cards stack; from 1000 the stage
+     (lamp + centred headline) sticks for a viewport while the seven cards scroll up past it, scattered left and right */
+  .spotsec { --cw: 260px; position: relative; overflow: clip; isolation: isolate; background: var(--bg); color: var(--text); }
+  .stage { position: relative; display: grid; place-items: center; overflow: hidden; isolation: isolate; padding: 400px 0 64px; }
+  .beam { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity 900ms var(--ease-out) 450ms; }
+  .spotsec.on .beam { opacity: .8; }
+  .beam .core { opacity: .4; }
+  .ghosts circle { fill: none; stroke: var(--primary-300); stroke-opacity: .1; }
+  .ghosts circle:nth-child(2) { fill: var(--primary-450); fill-opacity: .06; stroke: none; }
+  .fringe { fill: none; stroke-width: 1; }
+  .fringe.a { stroke: var(--primary-300); stroke-opacity: .12; }
+  .fringe.b { stroke: var(--primary-450); stroke-opacity: .16; }
+  /* front-view lamp, rod running off the top: its top is cut by a soft black edge, as if hidden by the rig */
+  .lampfig { position: absolute; z-index: 1; top: -280px; left: calc(50% - 300px); width: 600px; margin: 0; -webkit-mask: linear-gradient(transparent 30%, #000 45%); mask: linear-gradient(transparent 30%, #000 45%); }
+  .lampfig :global(svg) { display: block; width: 100%; height: auto; overflow: visible; }
+  .lampfig :global(path) { fill: var(--neutral-1000); stroke: var(--neutral-800); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
+  .lampfig :global(.nf) { fill: none; }
+  .lampfig :global(.lo) { stroke: var(--neutral-850); }
+  .lampfig :global(.sil) { stroke: var(--neutral-500); }
+  .lampfig :global(.lens) { fill: var(--primary-450); fill-opacity: .35; stroke: var(--primary-300); }
+  .lampfig :global(.halo) { fill-opacity: .6; }
+  .motion-ready .lampfig { opacity: 0; translate: 0 -12px; transition: opacity 600ms var(--ease-out), translate 600ms var(--ease-out); }
+  .motion-ready .spotsec.on .lampfig { opacity: 1; translate: 0 0; }
+  .spotsec .head { position: relative; z-index: 1; display: grid; justify-items: center; gap: 24px; text-align: center; }
+  .spotsec .headline { max-width: none; font-size: clamp(36px, 9vw, 64px); line-height: 1; text-wrap: nowrap; }
+  .btn.xl { height: 64px; margin-top: 24px; padding: 0 32px; gap: 20px; font-size: 18px; }
+  .btn.xl :global(svg) { width: 22px; height: 22px; }
+  .deck { position: relative; z-index: 3; display: grid; gap: 16px; padding-bottom: var(--section-ruled-bottom); }
+  .deck li { position: relative; display: flex; flex-direction: column; gap: 12px; min-height: var(--cw); padding: 24px; border-radius: var(--radius-2); background: var(--neutral-900); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+  .deck .ico { width: 64px; height: 64px; margin: -4px 0 0 -4px; }
+  .deck .ico :global(svg) { width: 100%; height: 100%; }
+  .deck .ico :global(.hl :is(path, polygon, ellipse, line)) { vector-effect: none; stroke-width: 1.8; }
+  .deck h3 { margin-top: 16px; color: var(--neutral-0); }
+  .deck p { margin-top: -8px; color: var(--neutral-300); text-wrap: pretty; }
+  .deck .lbl { margin-top: auto; color: var(--neutral-500); }
+  .deck .ds { background: var(--primary-450); box-shadow: none; }
+  .deck .ds p, .deck .ds .lbl { color: rgb(255 255 255 / .8); }
+  .deck .ds .ico :global(.hl) { --hairline-plate: var(--primary-450); --hairline-hi: var(--neutral-0); --hairline-edge: var(--neutral-0); --hairline-mid: rgb(255 255 255 / .7); --hairline-lo: rgb(255 255 255 / .35); }
+  @media (min-width: 700px) and (max-width: 999px) { .deck { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) {
+    .stage { position: sticky; top: 0; height: 100svh; padding: 0; }
+    .spotsec .head { padding-top: 22svh; }
+    /* as big as the band between the card columns allows */
+    .spotsec .headline { font-size: clamp(48px, calc((min(100vw, var(--content-max) + 2 * var(--margin)) - 2 * var(--margin) - 2 * (var(--cw) + 40px)) / 8.4), 96px); }
+    .lampfig { top: -200px; }
+    .deck { display: block; margin-top: -100svh; padding: calc(100svh - 72px) var(--margin) 24svh; pointer-events: none; --step: 22svh; }
+    .deck li { pointer-events: auto; width: var(--cw); height: var(--cw); margin-left: calc((100% - var(--cw)) * var(--x)); }
+    .deck li + li { margin-top: calc(var(--step) + var(--dy, 0px) - var(--cw)); }
+  }
+
+  /* Closing card: blue (primary 500) on black, copy left, the form right (SubmitBand's card, form in place of the art) */
+  .close { background: var(--bg); padding-block: 104px 56px; }
+  .card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; align-items: start; padding: 64px; border-radius: var(--radius-4); background: var(--primary-500); --text: var(--neutral-0); --text-2: rgb(255 255 255 / .7); color: var(--text); }
+  .card .copy { position: sticky; top: calc(var(--site-bar) + 32px); }
+  .card .lead { color: rgb(255 255 255 / .85); }
+  .card :global(.send-form) { justify-self: end; }
+
+  /* Popup: the same form in a modal; fades and rises in, the backdrop dims */
+  .pop { width: min(650px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: var(--radius-4); background: var(--neutral-0); color: var(--neutral-950); overflow: auto; overscroll-behavior: contain; opacity: 0; transform: translateY(16px) scale(.98); transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+  .pop::backdrop { background: rgb(0 0 0 / 0); transition: background-color 200ms var(--ease-out); }
+  .pop.shown { opacity: 1; transform: none; }
+  .pop.shown::backdrop { background: rgb(0 0 0 / .7); }
+  .pop-head { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: start; gap: 24px; padding: 32px 40px 8px; background: var(--neutral-0); --line: var(--neutral-100); --text: var(--neutral-950); --text-2: var(--neutral-500); }
+  .pop-head .tone-2 { display: block; color: var(--neutral-500); }
+  .close-btn { flex: none; color: var(--neutral-950); }
+  .close-btn svg { width: 16px; height: 16px; }
+  .pop :global(.send-form) { max-width: none; border-radius: 0; }
+  @media (prefers-reduced-motion: reduce) { .pop, .pop::backdrop { transition: none; transform: none; } }
+
 
   @media (max-width: 999px) {
+    .tl { grid-template-columns: 1fr; }
+    .tl > .stop, .tl > .stop:first-child, .tl > .stop:last-child { position: relative; grid-template-columns: 28px minmax(0, 1fr); column-gap: 24px; padding: 0 0 32px; }
+    .tl > .stop > * { grid-column: 2; }
+    .tl > .stop > .tick { grid-column: 1; grid-row: 1 / span 3; height: 28px; margin: 0; }
+    .tick::after { display: none; }
+    .tl > .stop:not(:last-child)::before { content: ''; position: absolute; left: 13.5px; top: 14px; bottom: -14px; width: 1px; background: var(--line); }
+    .close { padding-block: 80px 48px; }
+    .card { grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 48px 40px; }
+    .card .copy { position: static; }
+    .card :global(.send-form) { justify-self: stretch; max-width: none; }
     /* The global hub rule hides the art below 1000; here the typewriter stays, under the copy, full bleed */
     .top .hero.has-art > :global(.hero-art) { display: block; position: relative; inset: auto; order: 1; width: calc(100% + 2 * var(--margin)); margin: -24px calc(-1 * var(--margin)) -96px; aspect-ratio: 1.2; }
     .top .hero.has-art { padding-bottom: 64px; }
@@ -329,12 +463,6 @@ const GET = [
     .lv-bar .wrap { display: none; }
     .levels > :last-child { grid-column: 3; padding-left: 0; text-align: right; }
     .levels { grid-template-columns: 1fr 1fr 1fr; }
-    .steps, .get { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .steps > li:nth-child(3) { border-left: 0; padding-left: 0; }
-    .steps > li:nth-child(n + 3) { border-top: 1px solid var(--line); margin-top: 24px; }
-    .get > li, .get > li:nth-child(4n + 1) { border-left: 0; padding-inline: 0 24px; }
-    .get > li:nth-child(even) { border-left: 1px solid var(--line); padding-left: 24px; }
-    .get .ds { padding-left: 24px; }
     .hub { grid-template-columns: minmax(0, 1fr); }
     .hub > .tools, .hub > .dsc { grid-column: 1; padding-left: 32px; }
     .hub > .dsc { margin-left: 32px; padding-left: 24px; }
@@ -346,13 +474,12 @@ const GET = [
     .hero { padding-block: 24px 64px; }
     .actions .btn { flex: 1; }
     .levels { grid-template-columns: 1fr 1fr; } .levels > :last-child { grid-column: 2; }
-    .steps, .get { grid-template-columns: minmax(0, 1fr); }
-    .steps > li, .steps > li + li { border-left: 0; padding-inline: 0; }
-    .steps > li + li { border-top: 1px solid var(--line); margin-top: 24px; }
     .chain .yp { margin-inline: -12px; padding-inline: 12px; } /* the plate stays inside the 16px edge line */
-    .get > li, .get > li:nth-child(even) { border-left: 0; padding-inline: 0; }
-    .get .ds { padding-inline: 24px; }
     .way { padding: 24px; }
+    .close { padding-block: 32px; }
+    .card { padding: 32px 16px 16px; }
+    .card .copy { padding-inline: 8px; }
+    .pop-head { padding: 24px 20px 8px; }
     .hubhelp { padding: 32px 24px; }
     .hubhelp p { font-size: 22px; }
     .hubhelp .btn { width: 100%; }
