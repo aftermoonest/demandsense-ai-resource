@@ -46,6 +46,7 @@ const steps = [
 
       <Sec id="h-how" label="How it works" title="Scenarios add to your LinkedIn routines." context="Take the manual work out, but keep the expertise and context in">
         <ol class="steps" data-reveal>
+          <li class="loop" aria-hidden="true"><span class="chip out">↻ Loop</span></li>
           {steps.map((s, i) => (
             <li class:list={['step', { key: i === 0 }]}>
               <span class="tick"><StepDot n={i + 1} active={i === 0} /></span>
@@ -54,7 +55,6 @@ const steps = [
             </li>
           ))}
         </ol>
-        <p class="t-p2 loop"><span aria-hidden="true">↻</span> Then back to step 1: run it again next week or month, with the last results taken into account</p>
       </Sec>
 
       {soon.length > 0 && (
@@ -82,20 +82,24 @@ const steps = [
   .list { display: grid; gap: var(--gutter); }
   .soon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); }
 
-  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange; the note under it closes the loop */
-  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .loop { margin-top: 32px; color: var(--text-2); }
+  /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange; a dashed path over the row closes the loop */
+  .steps { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-top: 48px; }
+  /* Dashed return path from step 4 back over the row into step 1; the dots' own background hides its ends */
+  .loop { position: absolute; top: 16px; left: 24px; width: 75%; height: 40px; border: 1.5px dashed var(--neutral-300); border-bottom: 0; border-radius: 16px 16px 0 0; }
+  .loop::after { content: ''; position: absolute; left: -5.25px; bottom: 6px; border: 4.5px solid transparent; border-top: 6px solid var(--neutral-300); border-bottom: 0; }
+  .loop .chip { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); background: var(--bg); }
   .step { display: grid; gap: 8px; align-content: start; padding-right: 32px; }
   .step:last-child { padding-right: 0; }
   .tick { position: relative; z-index: 0; display: flex; align-items: center; height: 56px; margin-bottom: 8px; }
   .tick::after { content: ''; position: absolute; z-index: -1; left: 0; right: -32px; top: 50%; height: 1px; background: var(--line); }
-  .step:last-child .tick::after { right: 0; background: linear-gradient(90deg, var(--line), transparent); }
+  .step:last-child .tick::after { display: none; }
   .step .body { max-width: 36ch; }
 
   @media (max-width: 999px) {
     .soon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hero { flex-direction: column; align-items: start; }
-    .steps { grid-template-columns: 1fr; gap: 24px; }
+    .steps { grid-template-columns: 1fr; gap: 24px; padding-top: 0; }
+    .loop { display: none; }
     .step { grid-template-columns: 48px minmax(0, 1fr); column-gap: 16px; padding: 0; position: relative; }
     .step > * { grid-column: 2; }
     .step > .tick { grid-column: 1; grid-row: 1 / span 2; height: 48px; margin: 0; }
