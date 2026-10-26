@@ -85,7 +85,9 @@ const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
         <RelatedTabs scenarios={relSc} rules={relRu} />
       </Sec>
     )}
-    <DetailCta title={`Built a ${T.skill.toLowerCase()} we don’t have yet?`} cover={cover}>
+    <DetailCta cover={cover} {...(p.prompt
+      ? { title: 'Run it on this quarter’s data.', context: 'Paste the prompt into your AI with your exports. It reads them and changes nothing', button: 'Copy the prompt', href: '#h-prompt' }
+      : { title: `Built a ${T.skill.toLowerCase()} we don’t have yet?` })}>
       <Fragment slot="art">{d.illustration ? <img src={d.illustration} alt="" /> : <span class="kart" set:html={icon(d.icon ?? AREA_ICON[d.area])} />}</Fragment>
     </DetailCta>
   </DetailFrame>

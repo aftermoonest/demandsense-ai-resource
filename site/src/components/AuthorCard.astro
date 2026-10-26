@@ -42,15 +42,15 @@ const job = [data.role, data.company].filter(Boolean).join(' at ');
   .ini { font-size: 28px; }
   .txt { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; align-content: start; justify-items: start; padding: 24px var(--in) 0 var(--in-l); }
   /* Role and company first, in one chip; then the name; the bio is the quietest line */
-  .role { max-width: 100%; white-space: normal; margin-bottom: 8px; } /* long "role at company" wraps instead of cutting off */
+  .role { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; } /* one line; the full title shows on the profile */
   .about { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 12px; color: var(--text-2); }
   /* Their work as chips, each marked with its type colour */
   .work { display: flex; flex-wrap: wrap; gap: 6px; margin: 24px var(--in) 0 var(--in-l); } /* the card's own bottom padding holds cards without work too */
   .work .chip::before { content: ''; width: 6px; height: 6px; background: var(--accent); flex: none; }
-  .work .chip { color: var(--text); box-shadow: inset 0 0 0 1px var(--neutral-800); transition: box-shadow var(--t-fast) var(--ease-out); }
+  .work .chip { color: var(--text); box-shadow: inset 0 0 0 1px var(--neutral-800); transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) {
     .acard:hover { background: var(--bg-subtle); }
     .acard:hover .ini { color: var(--text); }
-    .acard:hover .work .chip { box-shadow: inset 0 0 0 1px var(--text); }
+    .acard:hover .work .chip { background: var(--neutral-0); color: var(--neutral-950); box-shadow: inset 0 0 0 1px var(--neutral-0); } /* fills white on hover */
   }
 </style>

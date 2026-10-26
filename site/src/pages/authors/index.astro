@@ -59,9 +59,13 @@ const two = (n: number) => String(n).padStart(2, '0');
   main { background: var(--bg); color: var(--text); border-top: 1px solid var(--line); } /* hero is black too: the edge lines need a rule to start from */
   .blk { padding-block: var(--section-ruled-top) 0; }
   /* Cells as in Directory's featured authors, wrapped into rows: no gaps, 1px lines only between cards (the page's edge lines
-     already close the sides), and the outer cards' content lines up with the headline */
-  .cells { --cols: 4; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); border-top: 1px solid var(--line); }
-  .cells > li { border-bottom: 1px solid var(--line); }
+     already close the sides), the row lines run on to the edge lines, and the outer cards' content lines up with the headline */
+  .cells { --cols: 4; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); border-top: 1px solid var(--line); }
+  .cells > li { position: relative; border-bottom: 1px solid var(--line); }
+  .cells > li::before, .cells > li::after { content: ''; position: absolute; bottom: -1px; width: var(--edge-inset); height: 1px; background: var(--line); display: none; }
+  .cells > li::before { right: 100%; }
+  .cells > li::after { left: 100%; }
+  .cells > li:nth-child(4n + 1)::before, .cells > li:nth-child(4n)::after { display: block; }
   .cells > li:not(:nth-child(4n)) { border-right: 1px solid var(--line); }
   .cells > li:nth-child(4n + 1) :global(.acard) { --in-l: 0px; }
 
@@ -72,11 +76,14 @@ const two = (n: number) => String(n).padStart(2, '0');
     .cells > li:nth-child(odd) { border-right: 1px solid var(--line); }
     .cells > li:nth-child(n) :global(.acard) { --in-l: var(--in); }
     .cells > li:nth-child(odd) :global(.acard) { --in-l: 0px; }
+    .cells > li:nth-child(n)::before, .cells > li:nth-child(n)::after { display: none; }
+    .cells > li:nth-child(odd)::before, .cells > li:nth-child(even)::after { display: block; }
   }
   @media (max-width: 699px) {
     .hero { padding-block: 24px; gap: 24px; }
     .cells { --cols: 1; }
     .cells > li:nth-child(n) { border-right: 0; }
     .cells > li:nth-child(n) :global(.acard) { --in-l: 0px; }
+    .cells > li:nth-child(n)::before, .cells > li:nth-child(n)::after { display: block; }
   }
 </style>
