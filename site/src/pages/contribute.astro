@@ -429,7 +429,19 @@ const GET = [
   .card :global(.send-form) { max-width: none; border-radius: 0; padding: 64px; }
   /* Typewriter fills the column under the copy, bleeding off the bottom and left; it fades out at its top and towards the form */
   .card :global(.card-art) { --fade: linear-gradient(transparent 5%, #000 40%), linear-gradient(270deg, transparent 5%, #000 45%); min-height: 460px; margin: 0 -64px 0; border-radius: 0; background: none; -webkit-mask: var(--fade); -webkit-mask-composite: source-in; mask: var(--fade); mask-composite: intersect; }
-  .card :global(.card-art .iso-art) { inset: -4% auto -14% -10%; width: 150%; height: 118%; }
+  .card :global(.card-art .iso-art) { inset: -4% auto -14% -30%; width: 150%; height: 118%; }
+  /* Pale palette, as the home cards and the Why figure: light faces, pale grey hairlines, primary blue only on the live sheet and key */
+  .card :global(.card-art .iso-art) { --line: color-mix(in srgb, var(--neutral-300) 60%, var(--neutral-200)); }
+  .card :global(.card-art .f) { stroke: var(--line); stroke-width: .8; }
+  .card :global(.card-art .det) { stroke: var(--neutral-200); stroke-width: .6; }
+  .card :global(.card-art :is(.paper, .body)) { fill: var(--neutral-0); }
+  .card :global(.card-art .tint) { fill: var(--neutral-25); }
+  .card :global(.card-art .blk) { fill: var(--neutral-100); }
+  .card :global(.card-art .lit) { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--primary-450) 25%, transparent)); }
+  .card :global(.card-art .lit .f) { stroke: var(--primary-450); }
+  .card :global(.card-art .lit .det) { stroke: color-mix(in srgb, var(--primary-450) 45%, #fff); }
+  .card :global(.card-art .lit .paper) { fill: color-mix(in srgb, var(--primary-450) 6%, #fff); }
+  .card :global(.card-art .lit .body) { fill: color-mix(in srgb, var(--primary-450) 55%, #fff); }
   .card :global(.card-art .type) { fill: var(--primary-450); }
 
   /* Popup: the same form in a modal; fades and rises in, the backdrop dims */
