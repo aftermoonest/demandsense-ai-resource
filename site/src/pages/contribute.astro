@@ -428,8 +428,8 @@ const GET = [
   .card .lead { max-width: 480px; color: var(--text-body); }
   .card :global(.send-form) { max-width: none; border-radius: 0; padding: 64px; }
   /* Typewriter fills the column under the copy, bleeding off the bottom and left; it fades out at its top and towards the form */
-  .card :global(.card-art) { --fade: linear-gradient(transparent 5%, #000 40%), linear-gradient(270deg, transparent 5%, #000 45%); min-height: 460px; margin: 0 -64px 0; border-radius: 0; background: none; -webkit-mask: var(--fade); -webkit-mask-composite: source-in; mask: var(--fade); mask-composite: intersect; }
-  .card :global(.card-art .iso-art) { inset: -4% auto -14% -30%; width: 150%; height: 118%; }
+  .card :global(.card-art) { min-height: 400px; margin: 16px -64px 0; border-radius: 0; background: none; }
+  .card :global(.card-art .iso-art) { inset: 0 auto auto 3%; width: 100%; height: auto; transform: none; } /* nearly the column's width, the keys run off the card's bottom edge */
   /* Pale palette, as the home cards and the Why figure: light faces, pale grey hairlines, primary blue only on the live sheet and key */
   .card :global(.card-art .iso-art) { --line: color-mix(in srgb, var(--neutral-300) 60%, var(--neutral-200)); }
   .card :global(.card-art .f) { stroke: var(--line); stroke-width: .8; }
