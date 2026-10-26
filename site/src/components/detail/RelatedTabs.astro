@@ -29,7 +29,7 @@ const tabs = [
     </div>
   </div>
   {tabs.map((t, i) => (
-    <ul class:list={[t.kind === 'ru' ? 'rlist' : 'rrail scroll-snap-x', t.kind]} role="tabpanel" id={`rp-${i}`} aria-labelledby={`rt-${i}`} hidden={i > 0} data-reveal>
+    <ul class:list={[t.kind === 'ru' ? 'rlist rule-grid' : 'rrail scroll-snap-x', t.kind]} role="tabpanel" id={`rp-${i}`} aria-labelledby={`rt-${i}`} hidden={i > 0} data-reveal>
       {t.kind === 'sc' && scenarios.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}
       {t.kind === 'sk' && skills.map((s) => <li><SkillCard skill={s} /></li>)}
       {t.kind === 'ru' && rules.map((r) => <li><RuleRow rule={r} /></li>)}
@@ -83,8 +83,6 @@ const tabs = [
   .rrail > li { min-width: 0; }
   .rrail.sc { grid-auto-columns: 88%; }
   .rrail.sk { grid-auto-columns: calc((100% - 2 * var(--gutter)) / 3.2); }
-  .rlist { border-block: 1px solid var(--line); }
-  .rlist > li + li { border-top: 1px solid var(--line); }
   @media (max-width: 999px) { .rrail.sk { grid-auto-columns: 45%; } }
   @media (max-width: 699px) { .rrail.sk { grid-auto-columns: 80%; } }
   @media (prefers-reduced-motion: reduce) { [role=tabpanel]:not([hidden]) { animation: none; } }

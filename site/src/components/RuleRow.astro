@@ -1,69 +1,56 @@
 ---
-// Rule row (Notion Marketplace list): large area icon, then category chip + rule number, the title with its one-line why, and labelled rows of skill and scenario chips.
+// Rule card (Figma 1000:29373): the area icon on the area's pastel cover at the left, then a black rule-number chip and
+// the category chip, the title and its one-line why (each one line, ellipsed), and counts of the scenarios and skills that use it.
+// Lists lay these out as a grid (two up on wide pages, one up in content columns).
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
-import { AREAS, AREA_ICON, T } from '../site';
+import { AREAS, AREA_COVER, AREA_ICON, T } from '../site';
 import { icon } from '../icons';
-// `lead`: the rule number as a black chip ahead of the category (Directory)
-interface Props { rule: CollectionEntry<'rules'>; lead?: boolean }
-const { rule: { id, data }, lead = false } = Astro.props;
-const skills = await getCollection('skills', (s) => s.data.rules.some((r) => r.id === id));
-const scenarios = await getCollection('scenarios', (s) => s.data.rules.some((r) => r.id === id));
-const MAX = 2; // chips per row before "+N"
-const groups = [
-  { label: T.scenarios, names: scenarios.map((s) => s.data.title) },
-  { label: T.skills, names: skills.map((s) => s.data.title) },
-].filter((g) => g.names.length);
+interface Props { rule: CollectionEntry<'rules'> }
+const { id, data } = Astro.props.rule;
+const uses = (e: { data: { rules: { id: string }[] } }) => e.data.rules.some((r) => r.id === id);
+const nSc = (await getCollection('scenarios', uses)).length;
+const nSk = (await getCollection('skills', uses)).length;
+const work = [
+  nSc && { type: 'scenario', text: `${nSc} ${(nSc === 1 ? T.scenario : T.scenarios).toLowerCase()}` },
+  nSk && { type: 'skill', text: `${nSk} ${(nSk === 1 ? T.skill : T.skills).toLowerCase()}` },
+].filter((w) => !!w);
+const cover = AREA_COVER[data.area];
 ---
-<a data-type="rule" class="rrow" href={`/rules/${id}`}>
+<a data-type="rule" class="rcard" href={`/rules/${id}`} style={`--cover: var(--pastel-${cover}); --cover-450: var(--pastel-${cover}-450)`}>
   <span class="ico" aria-hidden="true" set:html={icon(AREA_ICON[data.area])} />
   <span class="main">
-    <span class="kick">{lead
-      ? <><span class="chip dark">{T.rule} {String(data.number).padStart(2, '0')}</span><span class="chip area">{AREAS[data.area]}</span></>
-      : <><span class="chip area">{AREAS[data.area]}</span><span class="lbl num">{T.rule} {String(data.number).padStart(2, '0')}</span></>}</span>
+    <span class="kick"><span class="chip dark">{T.rule} {String(data.number).padStart(2, '0')}</span><span class="chip area">{AREAS[data.area]}</span></span>
     <span class="copy">
       <span class="t-h6 title">{data.title}</span>
-      <span class="t-p2 body">{data.why}</span>
+      <span class="t-p2 body why">{data.why}</span>
     </span>
-    {groups.length > 0 && (
-      <span class="tags">
-        {groups.map((g) => (
-          <>
-            <span class="lbl">{g.label}:</span>
-            <span class="chips">
-              {g.names.slice(0, MAX).map((n) => <span class="chip out">{n}</span>)}
-              {g.names.length > MAX && <span class="chip out more">+{g.names.length - MAX}</span>}
-            </span>
-          </>
-        ))}
-      </span>
-    )}
+    {work.length > 0 && <span class="work">{work.map((w) => <span class="chip out" data-type={w.type}>{w.text}</span>)}</span>}
   </span>
 </a>
 
 <style>
-  .rrow { display: grid; grid-template-columns: 158px minmax(0, 1fr); gap: 24px; align-items: center; padding: 24px 16px; margin-inline: -16px; border-radius: var(--radius-4); transition: background-color var(--t-fast) var(--ease-out); }
-  .ico { width: 158px; height: 158px; }
-  .ico :global(.hl) { width: 100%; height: 100%; }
-  .kick { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-  .kick .chip.dark + .area { margin-left: -10px; } /* two chips sit 6px apart, as on the cards */
-  .num { color: var(--text-2); }
-  .main { display: grid; gap: 16px; }
+  .rcard { display: grid; grid-template-columns: 158px minmax(0, 1fr); height: 100%; border-radius: var(--radius-4); overflow: hidden; background: var(--neutral-0); box-shadow: inset 0 0 0 1px var(--line-card); transition: background-color var(--t-fast) var(--ease-out); }
+  /* Cover column: the area's pastel, the 158px icon centred on it */
+  .ico { display: grid; place-items: center; background: var(--cover); }
+  .ico :global(.hl) { --hairline-hi: var(--cover-450); width: 158px; height: 158px; transition: transform 300ms var(--ease-out); }
+  .main { display: grid; gap: 16px; align-content: center; min-width: 0; padding: 24px; }
+  .kick { display: flex; flex-wrap: wrap; gap: 4px; }
   .copy { display: grid; gap: 4px; }
-  .body { color: var(--text-body); }
-  .tags { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; gap: 16px 8px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chips .chip { white-space: normal; }
-  .chips .more { color: var(--text-2); }
+  .title, .why { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .work { display: flex; flex-wrap: wrap; gap: 6px; }
+  .work .chip::before { content: ''; width: 6px; height: 6px; background: var(--accent); flex: none; }
   @media (hover: hover) and (pointer: fine) {
-    .rrow:hover { background: var(--bg-subtle); }
-    /* The category chip firms up to black, as on scenario and skill cards */
+    /* Hovers like skill cards: the card takes the cover's pastel, the category chip goes black */
+    .rcard:hover { background: var(--cover); }
     .area { transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
-    .rrow:hover .area { background: var(--neutral-950); color: var(--neutral-0); }
+    .rcard:hover .area { background: var(--neutral-950); color: var(--neutral-0); }
+    .rcard:hover .ico :global(.hl) { transform: translateY(-2px); }
   }
   @media (max-width: 699px) {
-    .rrow { grid-template-columns: 48px minmax(0, 1fr); gap: 16px; align-items: start; }
-    .ico { width: 48px; height: 48px; }
-    .tags { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .rcard { grid-template-columns: 96px minmax(0, 1fr); }
+    .ico :global(.hl) { width: 88px; height: 88px; }
+    .main { padding: 16px; }
+    .title { white-space: normal; }
   }
 </style>

@@ -61,7 +61,7 @@ const cta = {
     {p.steps.length > 0 && <StepFlow steps={p.steps} />}
     {rules.length > 0 && (
       <Sec id="h-rules" label={`The ${T.rules.toLowerCase()} it applies`} title={`${rules.length === 1 ? 'One rule' : `${rules.length} ${T.rules.toLowerCase()}`} of the Standard.`} context="Each step above leans on one of them. Open a rule to see what it checks and why" small>
-        <ul class="rrows" data-reveal>
+        <ul class="rule-grid" data-reveal>
           {rules.map((r) => <li><RuleRow rule={r} /></li>)}
         </ul>
       </Sec>
@@ -76,7 +76,5 @@ const cta = {
 </Base>
 
 <style>
-  /* The rules it applies: the directory's rule rows */
-  .rrows > li + li { border-top: 1px solid var(--line); }
   /* shortcut: empty slot until the illustration-system thread ships the closing-card figure */
 </style>

@@ -83,7 +83,7 @@ const go = arrow('right');
         )}
         {rules.length > 0 && (
           <Sec id="h-rules" label={T.rules} title={n(rules.length, 'rule', 'rules')} context="What an experienced advertiser checks before trusting a number" small>
-            <ul class="rrows" data-reveal>{rules.map((r) => <li><RuleRow rule={r} /></li>)}</ul>
+            <ul class="rule-grid" data-reveal>{rules.map((r) => <li><RuleRow rule={r} /></li>)}</ul>
           </Sec>
         )}
         {scenarios.length + skills.length + rules.length === 0 && (
@@ -123,8 +123,6 @@ const go = arrow('right');
 
   .scs { display: grid; gap: var(--gutter); }
   .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
-  .rrows { border-block: 1px solid var(--line); }
-  .rrows > li + li { border-top: 1px solid var(--line); }
 
   @media (max-width: 1350px) { .frame { --pad: 40px; grid-template-columns: 380px minmax(0, 1fr); } .aside { padding-inline: var(--edge) 32px; } }
   @media (max-width: 1199px) { .grid2 { grid-template-columns: 1fr; } }

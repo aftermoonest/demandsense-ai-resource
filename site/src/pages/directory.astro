@@ -20,7 +20,8 @@ const byOrder = (a: { data: { order: number } }, b: { data: { order: number } })
 const scenarios = (await getCollection('scenarios')).sort((a, b) => (a.data.status === b.data.status ? byOrder(a, b) : a.data.status === 'ready' ? -1 : 1));
 const allSkills = await getCollection('skills');
 const skills = allSkills.sort((a, b) => (a.data.status === b.data.status ? byOrder(a, b) : a.data.status === 'ready' ? -1 : 1)).slice(0, 8);
-const rules = (await getCollection('rules', (r) => r.data.featured)).sort((a, b) => a.data.number - b.data.number);
+// Six rules, featured first, then by number
+const rules = (await getCollection('rules')).sort((a, b) => (a.data.featured === b.data.featured ? a.data.number - b.data.number : a.data.featured ? -1 : 1)).slice(0, 6);
 const nRules = (await getCollection('rules')).length;
 const authors = (await getCollection('authors', (a) => a.data.featured)).sort(byOrder);
 const go = arrow('right', 'go');
@@ -64,9 +65,9 @@ const small = arrow('right');
     </section>
 
     <section class="blk wrap bleed" data-type="rule" aria-labelledby="h-rules">
-      <SectionHead id="h-rules" marker={T.rules} count={nRules} title="Three rules to start with." context="What an experienced advertiser checks before trusting a number" />
-      <ul class="rows" data-reveal>
-        {rules.map((r) => <li><RuleRow rule={r} lead /></li>)}
+      <SectionHead id="h-rules" marker={T.rules} count={nRules} title="Six rules to start with." context="What an experienced advertiser checks before trusting a number" />
+      <ul class="rule-grid" data-reveal>
+        {rules.map((r) => <li><RuleRow rule={r} /></li>)}
       </ul>
       <div class="below"><a class="btn brand" href="/rules">Explore all {nRules} {T.rules.toLowerCase()} <Fragment set:html={go} /></a></div>
     </section>
@@ -125,11 +126,6 @@ const small = arrow('right');
   .cells > li:last-child { box-shadow: inset 1px 0 var(--line), inset -1px 0 var(--line); }
 
   .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); }
-  /* Rule rows: lines run edge line to edge line, one above the first row and one below the last close the list */
-  .rows { margin-inline: calc(-1 * var(--edge-inset)); border-block: 1px solid var(--line); }
-  /* the whole row is the link: hover fills edge line to edge line */
-  .rows :global(.rrow) { margin-inline: 0; padding-inline: var(--edge-inset); border-radius: 0; }
-  .rows > li + li { border-top: 1px solid var(--line); }
   .below { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 40px; }
 
   @media (max-width: 999px) {
