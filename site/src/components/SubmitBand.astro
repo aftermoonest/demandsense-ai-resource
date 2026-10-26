@@ -1,7 +1,7 @@
 ---
 import { arrow } from '../arrows';
 import IsoArt from './IsoArt.astro';
-// Closing CTA: a white card on a black section with the catalogue art beside the copy (DESIGN §15, §8.17).
+// Closing CTA: a blue (primary 500) card on a black section, white button, the typewriter art beside the copy (DESIGN §15, §8.17).
 import { CONTRIBUTE_URL } from '../site';
 interface Props { title?: string; context?: string; lead?: string; button?: string; href?: string }
 const {
@@ -17,11 +17,11 @@ const own = Astro.slots.has('art');
 <section class="close surface-black ruled" aria-labelledby="submit-h">
   <div class="wrap">
     <div class="card has-art">
-      <div class="art">{own ? <slot name="art" /> : <IsoArt name="cta" mono accent="brand" place={[-80, -330, 1014, 1065]} />}</div>
+      <div class="art">{own ? <slot name="art" /> : <IsoArt name="typewriter" blue />}</div>
       <div class="copy">
         <h2 id="submit-h" class="headline t-display">{title} <span class="tone-2">{context}</span></h2>
         <p class="t-p1 body lead">{lead}</p>
-        <a class="btn brand lg" href={href}>{button}
+        <a class="btn filled lg" href={href}>{button}
           <Fragment set:html={arrow('right', 'go')} />
         </a>
       </div>
@@ -31,20 +31,19 @@ const own = Astro.slots.has('art');
 
 <style>
   .close { background: var(--bg); padding-block: 104px 56px; } /* footer text follows close under the card */
-  /* Light tokens inside the card on the black section */
-  .card { --pad: 64px; position: relative; isolation: isolate; overflow: hidden; border-radius: var(--radius-4); padding: 96px 64px; --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line: var(--neutral-100); background: var(--bg); color: var(--text); }
-  .copy { display: grid; gap: var(--gap-body); justify-items: start; max-width: 650px; }
+  /* White text on the blue card; the button keeps the black section's white fill */
+  .card { --pad: 64px; position: relative; isolation: isolate; overflow: hidden; border-radius: var(--radius-4); padding: 96px 64px; --bg: var(--primary-500); --text: var(--neutral-0); --text-2: rgb(255 255 255 / .7); --text-body: rgb(255 255 255 / .85); --line: rgb(255 255 255 / .2); background: var(--bg); color: var(--text); }
+  .copy { position: relative; z-index: 1; display: grid; gap: var(--gap-body); justify-items: start; max-width: 650px; }
   .headline { max-width: 12em; }
   .lead { max-width: 480px; margin-bottom: 24px; } /* 40 to the button */
-  .has-art { display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: center; padding: 64px; }
+  /* Copy left, art in its own column right. The art column runs to the card's top, right and bottom edges and the
+     figure fits inside it, so it sits the same at every width (no pixel placement) */
+  .has-art { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px; align-items: center; padding: 64px; }
   .has-art .copy { order: -1; }
   .has-art .headline { max-width: 20em; }
-  /* The art bleeds to the card's right, top and bottom edges; the card crops it */
-  /* Desktop: the art covers the whole card behind the copy and the card crops it (Figma 962:39212) */
-  .art { position: absolute; inset: 0; z-index: 0; pointer-events: none; translate: 15% 0; } /* nudged right, clear of the copy */
-  .copy { position: relative; z-index: 1; }
+  .art { position: relative; align-self: stretch; min-height: 420px; margin: -64px -64px -64px 0; pointer-events: none; }
   .card .art > :global(*) { position: absolute; inset: 0; border-radius: 0; } /* .card: outranks IsoArt's own .iso-panel rule, which the production build loads later */
   .art :global(img) { object-fit: contain; }
-  @media (max-width: 999px) { .close { padding-block: 80px 48px; } .card { --pad: 40px; padding: 64px 40px; } .art { position: relative; inset: auto; aspect-ratio: 4 / 3; margin: -64px -40px 0; translate: none; } .has-art { grid-template-columns: 1fr; gap: 40px; } .has-art .copy { order: 0; } }
+  @media (max-width: 999px) { .close { padding-block: 80px 48px; } .card { --pad: 40px; padding: 64px 40px; } .art { order: -1; min-height: 0; aspect-ratio: 4 / 3; margin: -64px -40px 0; } .has-art { grid-template-columns: minmax(0, 1fr); gap: 40px; } .has-art .copy { order: 0; } }
   @media (max-width: 699px) { .close { padding-block: 32px; } .card { padding: 32px 24px; } .art { margin: -32px -24px 0; } }
 </style>

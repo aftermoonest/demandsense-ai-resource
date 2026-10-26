@@ -120,7 +120,9 @@ const cta = {
       <RelatedTabs scenarios={relSc} skills={relSk} />
     </Sec>
 
-    <DetailCta title={cta.headline} context={cta.context} button={cta.button} />
+    <DetailCta title={cta.headline} context={cta.context} button={cta.button} cover={AREA_COVER[d.area]}>
+      <Fragment slot="art"><span set:html={icon(AREA_ICON[d.area])} /></Fragment>
+    </DetailCta>
 
     <nav class="pn" aria-label={`Other ${T.rules.toLowerCase()}`}>
       {[['pv', 'Previous', prev], ['nx', 'Next', next]].map(([cls, dir, r]) => r ? (

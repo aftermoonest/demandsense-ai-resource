@@ -32,3 +32,19 @@ export function rail(get: () => HTMLElement, prev: HTMLButtonElement, next: HTML
   sync();
   return sync;
 }
+
+// Scroll lock: a vertical wheel over the rail scrolls it sideways; at either end the page takes over again.
+// Snap is off while the wheel turns and comes back once it stops, so the rail settles on a card.
+export function wheelX(r: HTMLElement) {
+  let idle = 0;
+  r.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // trackpad sideways swipes stay native
+    const max = r.scrollWidth - r.clientWidth;
+    if ((e.deltaY < 0 && r.scrollLeft <= 0) || (e.deltaY > 0 && r.scrollLeft >= max - 1)) return;
+    e.preventDefault();
+    r.style.scrollSnapType = 'none';
+    r.scrollLeft += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    clearTimeout(idle);
+    idle = window.setTimeout(() => { r.style.scrollSnapType = ''; }, 160);
+  }, { passive: false });
+}

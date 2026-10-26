@@ -62,7 +62,7 @@ const go = arrow('right');
             {data.links.length > 0 && (
               <ul class="soc">
                 {data.links.map((l) => (
-                  <li><a class="btn outlined icon" href={l.url} target="_blank" rel="noopener" aria-label={`${data.name} on ${l.label}`} title={l.label} set:html={glyph(l.label)} /></li>
+                  <li><a class="btn filled icon" href={l.url} target="_blank" rel="noopener" aria-label={`${data.name} on ${l.label}`} title={l.label} set:html={glyph(l.label)} /></li>
                 ))}
               </ul>
             )}

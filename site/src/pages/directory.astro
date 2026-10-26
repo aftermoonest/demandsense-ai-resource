@@ -22,8 +22,6 @@ const allSkills = await getCollection('skills');
 const skills = allSkills.sort((a, b) => (a.data.status === b.data.status ? byOrder(a, b) : a.data.status === 'ready' ? -1 : 1)).slice(0, 8);
 const rules = (await getCollection('rules', (r) => r.data.featured)).sort((a, b) => a.data.number - b.data.number);
 const nRules = (await getCollection('rules')).length;
-const nAuthors = (await getCollection('authors')).length;
-const two = (n: number) => String(n).padStart(2, '0');
 const authors = (await getCollection('authors', (a) => a.data.featured)).sort(byOrder);
 const go = arrow('right', 'go');
 const small = arrow('right');
@@ -38,10 +36,6 @@ const small = arrow('right');
         <Breadcrumbs items={[{ label: 'Directory' }]} />
         <h1 class="headline t-display">The directory. <span class="tone-2">Every scenario, skill and rule in the Standard, each signed by the practitioner who runs it that way</span></h1>
       </div>
-      <dl class="tally" aria-label="In the Standard">
-        <div><dt class="lbl">Entries</dt><dd class="t-n3">{two(scenarios.length + allSkills.length + nRules)}</dd></div>
-        <div><dt class="lbl">Practitioners</dt><dd class="t-n3">{two(nAuthors)}</dd></div>
-      </dl>
     </div>
   </div>
   <TabBar />
@@ -72,7 +66,7 @@ const small = arrow('right');
     <section class="blk wrap bleed" data-type="rule" aria-labelledby="h-rules">
       <SectionHead id="h-rules" marker={T.rules} count={nRules} title="Three rules to start with." context="What an experienced advertiser checks before trusting a number" />
       <ul class="rows" data-reveal>
-        {rules.map((r) => <li><RuleRow rule={r} /></li>)}
+        {rules.map((r) => <li><RuleRow rule={r} lead /></li>)}
       </ul>
       <div class="below"><a class="btn brand" href="/rules">Explore all {nRules} {T.rules.toLowerCase()} <Fragment set:html={go} /></a></div>
     </section>
@@ -99,13 +93,14 @@ const small = arrow('right');
 </Base>
 
 <script>
-  import { rail } from '../rail';
-  // Rails (scenarios, authors): each section's arrows step one card; disabled at the ends
+  import { rail, wheelX } from '../rail';
+  // Rails (scenarios, authors): each section's arrows step one card; disabled at the ends. The wheel scrolls them sideways
   document.querySelectorAll<HTMLElement>('[data-rail]').forEach((r) => {
     const sec = r.closest('section')!;
     const prev = sec.querySelector<HTMLButtonElement>('[data-rail-prev]');
     const next = sec.querySelector<HTMLButtonElement>('[data-rail-next]');
     if (prev && next) r.addEventListener('scroll', rail(() => r, prev, next), { passive: true });
+    wheelX(r);
   });
 </script>
 
@@ -114,10 +109,7 @@ const small = arrow('right');
   .top > :global(:not(.site-header)) { position: relative; }
   /* Same hero rhythm as the hub pages, so the title doesn't jump when switching tabs */
   .hero { padding-block: 40px; }
-  .copy { display: grid; gap: 48px; }
-  .tally { display: flex; gap: 40px; flex: none; }
-  .tally div { display: grid; gap: 8px; }
-  .tally dt { color: var(--text-2); }
+  .copy { display: grid; gap: 24px; }
   .copy .headline { max-width: 760px; min-height: 4lh; } /* room for four lines on every hub, so the tabs sit the same distance below */
 
   .blk { padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }

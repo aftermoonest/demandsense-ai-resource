@@ -7,16 +7,16 @@
 // on the page it plays by itself (no pointer or key triggers), pauses off-screen and stays on the rest frame
 // under reduced motion.
 import { pieces } from '../art';
-interface Props { name: string; field?: string; dark?: boolean; mono?: boolean; zoom?: number; place?: [number, number, number, number]; clip?: number; accent?: 'scenario' | 'skill' | 'rule' | 'brand'; class?: string }
-const { name, field = 'transparent', dark = false, mono = false, zoom = 1, place, clip, accent, class: cls } = Astro.props;
+interface Props { name: string; field?: string; dark?: boolean; blue?: boolean; mono?: boolean; zoom?: number; place?: [number, number, number, number]; clip?: number; accent?: 'scenario' | 'skill' | 'rule' | 'brand'; class?: string }
+const { name, field = 'transparent', dark = false, blue = false, mono = false, zoom = 1, place, clip, accent, class: cls } = Astro.props;
 const lit = accent ? `; --lit: ${accent === 'brand' ? 'var(--primary-450)' : `var(--art-${{ scenario: 'a', skill: 'b', rule: 'c' }[accent]})`}` : '';
 const piece = pieces[name];
 const [fx, fy] = piece.focus ?? [0.5, 0.5];
 const at = place ? `; --pr: ${place[0]}px; --pt: ${place[1]}px; --pw: ${place[2]}px; --ph: ${place[3]}px` : '';
 ---
 <figure class:list={['iso-panel', cls]} data-iso={name} style={`--field: ${field}; --zoom: ${zoom}; --fx: ${fx * 100}%; --fy: ${fy * 100}%${lit}${at}${clip ? `; --cw: ${clip}px` : ''}`}>
-  <svg class:list={['iso-art', { 'on-dark': dark, mono, placed: place }]} viewBox={piece.viewBox} role="img" aria-label={piece.aria} preserveAspectRatio="xMidYMid meet">
-    {dark && <defs><filter id="iso-glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="b" /><feComponentTransfer in="b" result="g"><feFuncA type="linear" slope=".7" /></feComponentTransfer><feMerge><feMergeNode in="g" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>}
+  <svg class:list={['iso-art', { 'on-dark': dark, 'on-blue': blue, mono, placed: place }]} viewBox={piece.viewBox} role="img" aria-label={piece.aria} preserveAspectRatio="xMidYMid meet">
+    {(dark || blue) && <defs><filter id="iso-glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="b" /><feComponentTransfer in="b" result="g"><feFuncA type="linear" slope=".7" /></feComponentTransfer><feMerge><feMergeNode in="g" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>}
     <g data-frame set:html={piece.draw(piece.rest)} />
   </svg>
 </figure>
@@ -83,4 +83,16 @@ const at = place ? `; --pr: ${place[0]}px; --pt: ${place[1]}px; --pw: ${place[2]
   .on-dark :global(.lit .paper) { fill: color-mix(in srgb, var(--lit, var(--h)) 18%, var(--neutral-1000)); }
   .on-dark :global(.lit .tint) { fill: color-mix(in srgb, var(--lit, var(--h)) 30%, var(--neutral-1000)); }
   .on-dark :global(.lit .body) { fill: var(--lit, var(--h)); }
+  /* `blue`: on the blue CTA card. Faces take the card colour, light white hairlines; the live part goes white and glows */
+  .on-blue { --card: var(--primary-500); }
+  .on-blue :global(.f) { stroke: rgb(255 255 255 / .5); stroke-width: .6; }
+  .on-blue :global(.det) { stroke: rgb(255 255 255 / .28); stroke-width: .45; }
+  .on-blue :global(:is(.paper, .tint)) { fill: var(--card); }
+  .on-blue :global(.body) { fill: color-mix(in srgb, var(--card) 88%, #000); }
+  .on-blue :global(.blk) { fill: color-mix(in srgb, var(--card) 60%, #000); }
+  .on-blue :global(.lit) { filter: url(#iso-glow); }
+  .on-blue :global(.lit .f) { stroke: var(--neutral-0); stroke-width: .9; }
+  .on-blue :global(.lit .paper) { fill: color-mix(in srgb, var(--neutral-0) 16%, var(--card)); }
+  .on-blue :global(.lit .body) { fill: color-mix(in srgb, var(--neutral-0) 40%, var(--card)); }
+  .iso-art :global(.type) { fill: var(--neutral-0); font: 600 10px/1 var(--font-mono); letter-spacing: 0; }
 </style>

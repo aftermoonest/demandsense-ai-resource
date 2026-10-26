@@ -18,7 +18,7 @@ export type Area = keyof typeof AREAS;
 
 // Two levels of navigation: the site header (every page) and the library tab bar (Directory and the three hubs only)
 export const SITE_NAV = [
-  { href: '/directory', label: 'Directory', match: ['/directory', '/scenarios', '/skills', '/rules'] },
+  { href: '/directory', label: 'Directory', match: ['/directory', '/scenarios', '/skills', '/rules'], badge: 'New' }, // badge hardcoded for now
   { href: '/authors', label: T.authors, match: ['/authors'] },
 ];
 export const LIB_NAV = [

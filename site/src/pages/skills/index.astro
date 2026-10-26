@@ -28,10 +28,6 @@ const countIn = (a: Area) => all.filter((s) => s.data.area === a).length;
         <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.skills }]} />
         <h1 class="headline t-display">Single checks, ready to run. <span class="tone-2">Each reads an export, applies one rule and hands back a list. None change your account</span></h1>
       </div>
-      <dl class="tally" aria-label="In the library">
-        <div><dt class="lbl">Ready to run</dt><dd class="t-n3">{two(nReady)}</dd></div>
-        <div><dt class="lbl">Next version</dt><dd class="t-n3">{two(all.length - nReady)}</dd></div>
-      </dl>
     </div>
   </div>
   <TabBar />
@@ -93,13 +89,10 @@ const countIn = (a: Area) => all.filter((s) => s.data.area === a).length;
   .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
   .top > :global(:not(.site-header)) { position: relative; }
   .hero { display: flex; justify-content: space-between; align-items: end; gap: 40px; padding-block: 40px; }
-  .copy { display: grid; gap: 48px; }
+  .copy { display: grid; gap: 24px; }
   /* Catalogue headline on two lines: claim, then context */
   :global(#h-catalogue + .headline .tone-2) { display: block; }
   .copy .headline { max-width: 760px; min-height: 4lh; } /* room for four lines on every hub, so the tabs sit the same distance below */
-  .tally { display: flex; gap: 40px; flex: none; }
-  .tally div { display: grid; gap: 8px; }
-  .tally dt { color: var(--text-2); }
 
   /* Filters: area chips wrap on the left, the toggle sits on the right of the same row */
   .filters { display: flex; justify-content: space-between; align-items: start; gap: 24px 40px; }

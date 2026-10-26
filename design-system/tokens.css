@@ -26,6 +26,7 @@
   --primary-200: #a4bcff;
   --primary-300: #7ba0ff;
   --primary-450: #3875f6;
+  --primary-500: #1e66e7;   /* footer CTA card (Figma palette 991:39801, column 16) */
   --primary-550: #2556c4;   /* conversion button hover: 1.6:1 vs 450 (brief §0.5 asks ≥1.4) */
   --primary-650: #004ebf;   /* detail-page CTA card (Figma 982:39318) */
   --primary-850: #001a4c;

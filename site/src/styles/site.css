@@ -96,12 +96,12 @@ svg.ext { rotate: 45deg; }
 .content .sec.get-band.surface-black:not(:first-child) { margin-inline: calc(1px - var(--pad)); padding: var(--section-ruled-top) calc(var(--pad) - 1px) var(--section-ruled-bottom); }
 .sec.get-band::before, .sec.get-band + .sec::before { display: none; }
 
-/* Hub heroes with art (DESIGN §8.17): copy then tally on the left (every hub has a tally, so all four are one height);
-   the art fills the right from under the header to the hero's bottom edge and bleeds off the right */
-.top .hero.has-art { display: flex; flex-direction: column; align-items: start; gap: 40px; }
+/* Hub heroes with art (DESIGN §8.17): copy on the left; the tally is gone but the hero keeps its old height (deeper bottom padding),
+   so all four stay one height. The art fills the right from under the header to the hero's bottom edge and bleeds off the right */
+.top .hero.has-art { display: flex; flex-direction: column; align-items: start; gap: 40px; padding-bottom: 153px; }
 .top .hero.has-art > .hero-art { --bleed: max(0px, (100vw - var(--content-max) - 2 * var(--margin)) / 2); position: absolute; top: calc(-1 * var(--site-bar)); bottom: 0; right: calc(-1 * var(--bleed)); left: max(calc(100% - var(--cw)), calc(var(--margin) + min(760px, 62%) - 840px + 1512px - var(--cw))); border-radius: 0; pointer-events: none; }
 /* 160px fades into the black at the top (under the header) and the bottom of the hero, as in Figma 962:39212 */
 .top .hero.has-art > .hero-art { --fade: linear-gradient(transparent, #000 160px, #000 calc(100% - 160px), transparent); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
 .top .hero.has-art > :not(.hero-art) { position: relative; }
 @media (max-width: 999px) { .top .hero.has-art > .hero-art { display: none; } } /* no room beside the headline */
-@media (max-width: 699px) { .top .hero.has-art { gap: 24px; } }
+@media (max-width: 699px) { .top .hero.has-art { gap: 24px; padding-bottom: 120px; } }

@@ -85,7 +85,9 @@ const bold = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').repla
         <RelatedTabs scenarios={relSc} rules={relRu} />
       </Sec>
     )}
-    <DetailCta title={`Built a ${T.skill.toLowerCase()} we don’t have yet?`} />
+    <DetailCta title={`Built a ${T.skill.toLowerCase()} we don’t have yet?`} cover={cover}>
+      <Fragment slot="art">{d.illustration ? <img src={d.illustration} alt="" /> : <span set:html={icon(d.icon ?? AREA_ICON[d.area])} />}</Fragment>
+    </DetailCta>
   </DetailFrame>
 
   <SubmitBand />

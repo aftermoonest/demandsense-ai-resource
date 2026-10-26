@@ -15,7 +15,6 @@ import { T } from '../../site';
 const all = (await getCollection('scenarios')).sort((a, b) => a.data.order - b.data.order);
 const ready = all.filter((s) => s.data.status === 'ready');
 const soon = all.filter((s) => s.data.status === 'soon');
-const two = (n: number) => String(n).padStart(2, '0');
 const steps = [
   { title: 'Pick the job you already do', text: 'Each scenario names its cadence. Start with the one that matches a report you already owe someone' },
   { title: 'Run it on the sample client', text: 'One install command, then a run on data that ships with it. You see every catch before you trust it' },
@@ -32,10 +31,6 @@ const steps = [
         <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.scenarios }]} />
         <h1 class="headline t-display">Whole routines, ready to run. <span class="tone-2">Each is a weekly or monthly job your AI does the same way, with sample data to try first</span></h1>
       </div>
-      <dl class="tally" aria-label="In the library">
-        <div><dt class="lbl">Ready to run</dt><dd class="t-n3">{two(ready.length)}</dd></div>
-        <div><dt class="lbl">In the works</dt><dd class="t-n3">{two(soon.length)}</dd></div>
-      </dl>
     </div>
   </div>
   <TabBar />
@@ -78,11 +73,8 @@ const steps = [
   .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
   .top > :global(:not(.site-header)) { position: relative; }
   .hero { display: flex; justify-content: space-between; align-items: end; gap: 40px; padding-block: 40px; }
-  .copy { display: grid; gap: 48px; }
+  .copy { display: grid; gap: 24px; }
   .copy .headline { max-width: 760px; min-height: 4lh; } /* room for four lines on every hub, so the tabs sit the same distance below */
-  .tally { display: flex; gap: 40px; flex: none; }
-  .tally div { display: grid; gap: 8px; }
-  .tally dt { color: var(--text-2); }
 
   main :global(.first) { border-top: 0; }
   .list { display: grid; gap: var(--gutter); }

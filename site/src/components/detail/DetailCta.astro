@@ -1,22 +1,32 @@
 ---
-// Detail-page CTA (Figma 982:39318): a blue card at the end of the content column, two-tone headline left, white button right.
+// Detail-page CTA: a card in the item's own colour (its cover family at 450) at the end of the content column.
+// Two-tone headline with the white button under it on the left; the page's hero illustration on the right (slot "art").
 // Only scenario, skill and rule pages carry one; the footer SubmitBand stays the same on every page.
 import { arrow } from '../../arrows';
 import { CONTRIBUTE_URL } from '../../site';
-interface Props { title: string; context?: string; button?: string; href?: string }
-const { title, context = 'Put it in the Standard', button = 'Bring your work', href = CONTRIBUTE_URL } = Astro.props;
+interface Props { title: string; context?: string; button?: string; href?: string; cover?: number }
+const { title, context = 'Put it in the Standard', button = 'Bring your work', href = CONTRIBUTE_URL, cover } = Astro.props;
+const art = Astro.slots.has('art');
 ---
-<aside class="cta surface-black" data-reveal>
-  <p class="t-h4 headline">{title} {context && <span class="tone-2">{context}</span>}</p>
-  <a class="btn filled" href={href}>{button} <Fragment set:html={arrow('right', 'go')} /></a>
+<aside class:list={['cta surface-black', { 'has-art': art }]} data-reveal style={cover ? `--cover: var(--pastel-${cover}); --cover-200: var(--pastel-${cover}-200); --cta: var(--pastel-${cover}-450)` : undefined}>
+  <div class="copy">
+    <p class="t-h4 headline">{title} {context && <span class="tone-2">{context}</span>}</p>
+    <a class="btn filled" href={href}>{button} <Fragment set:html={arrow('right', 'go')} /></a>
+  </div>
+  {art && <div class="art" aria-hidden="true"><slot name="art" /></div>}
 </aside>
 
 <style>
-  .cta { display: flex; gap: 24px; align-items: flex-start; padding: 64px; border-radius: var(--radius-4); background: var(--primary-650); }
-  .headline { flex: 1; min-width: 0; text-wrap: balance; }
-  /* On the blue the second tone is white at 60%, not the neutral grey */
-  .headline .tone-2 { display: block; color: rgb(255 255 255 / .6); } /* claim and context on two lines */
-  .btn { flex: none; }
-  @media (max-width: 999px) { .cta { flex-direction: column; gap: 32px; padding: 40px; } }
-  @media (max-width: 699px) { .cta { padding: 32px 24px; } }
+  .cta { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 32px; padding: 64px; border-radius: var(--radius-4); overflow: hidden; background: var(--cta, var(--primary-450)); }
+  .has-art { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .copy { display: grid; justify-items: start; gap: 40px; }
+  .headline { text-wrap: balance; }
+  /* On the colour the second tone is white at 70%, not the neutral grey */
+  .headline .tone-2 { display: block; color: rgb(255 255 255 / .7); } /* claim and context on two lines */
+  /* Art bleeds to the card's top, right and bottom edges, as in the hero; the live accent turns white on the colour */
+  .art { --cover-450: var(--neutral-0); position: relative; align-self: stretch; min-height: 240px; margin: -64px -64px -64px 0; }
+  .art > :global(svg), .art > :global(img), .art > :global(span) { position: absolute; inset: 6%; width: 88%; height: 88%; object-fit: contain; }
+  .art :global(.hl) { --hairline-hi: var(--neutral-0); width: 100%; height: 100%; }
+  @media (max-width: 999px) { .cta { padding: 40px; } .has-art { grid-template-columns: minmax(0, 1fr); } .art { order: -1; aspect-ratio: 4 / 3; min-height: 0; margin: -40px -40px 0; } }
+  @media (max-width: 699px) { .cta { padding: 32px 24px; } .art { margin: -32px -24px 0; } }
 </style>

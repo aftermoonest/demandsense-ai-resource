@@ -50,7 +50,7 @@ const two = (n: number) => String(n).padStart(2, '0');
   .top > :global(:not(.site-header)) { position: relative; }
   /* Same hero as the hubs (4-line headline room, §8.16) so the title holds its place between Directory and Authors */
   .hero { display: flex; justify-content: space-between; align-items: end; gap: 40px; padding-block: 40px; }
-  .copy { display: grid; gap: 48px; }
+  .copy { display: grid; gap: 24px; }
   .copy .headline { max-width: 760px; min-height: 4lh; }
   .tally { display: flex; gap: 40px; flex: none; }
   .tally div { display: grid; gap: 8px; }
@@ -58,16 +58,25 @@ const two = (n: number) => String(n).padStart(2, '0');
 
   main { background: var(--bg); color: var(--text); border-top: 1px solid var(--line); } /* hero is black too: the edge lines need a rule to start from */
   .blk { padding-block: var(--section-ruled-top) 0; }
-  /* Cells as in Directory's featured authors, wrapped into rows: no gaps, each card framed by 1px lines that meet the next one's */
-  .cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-  .cells > li { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  /* Cells as in Directory's featured authors, wrapped into rows: no gaps, 1px lines only between cards (the page's edge lines
+     already close the sides), and the outer cards' content lines up with the headline */
+  .cells { --cols: 4; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); border-top: 1px solid var(--line); }
+  .cells > li { border-bottom: 1px solid var(--line); }
+  .cells > li:not(:nth-child(4n)) { border-right: 1px solid var(--line); }
+  .cells > li:nth-child(4n + 1) :global(.acard) { --in-l: 0px; }
 
   @media (max-width: 999px) {
     .hero { flex-direction: column; align-items: start; }
-    .cells { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cells { --cols: 2; }
+    .cells > li:nth-child(n) { border-right: 0; }
+    .cells > li:nth-child(odd) { border-right: 1px solid var(--line); }
+    .cells > li:nth-child(n) :global(.acard) { --in-l: var(--in); }
+    .cells > li:nth-child(odd) :global(.acard) { --in-l: 0px; }
   }
   @media (max-width: 699px) {
     .hero { padding-block: 24px; gap: 24px; }
-    .cells { grid-template-columns: 1fr; }
+    .cells { --cols: 1; }
+    .cells > li:nth-child(n) { border-right: 0; }
+    .cells > li:nth-child(n) :global(.acard) { --in-l: 0px; }
   }
 </style>

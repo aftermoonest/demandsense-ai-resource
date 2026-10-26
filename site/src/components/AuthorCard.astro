@@ -1,5 +1,5 @@
 ---
-// Author card: photo, name, role and company, a 2-line bio, count of their work. Initials stand in until photos arrive.
+// Author card: photo, role chip, name, company, a 2-line bio (lowest priority), chips for their work. Initials stand in until photos arrive.
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
 import { T } from '../site';
@@ -8,12 +8,11 @@ const { id, data } = Astro.props.author;
 const mine = (e: { data: { author?: { id: string } } }) => e.data.author?.id === id;
 const nSc = (await getCollection('scenarios', mine)).length;
 const nSk = (await getCollection('skills', mine)).length;
-const count = [
-  nSc && `${nSc} ${(nSc === 1 ? T.scenario : T.scenarios).toLowerCase()}`,
-  nSk && `${nSk} ${(nSk === 1 ? T.skill : T.skills).toLowerCase()}`,
-].filter(Boolean).join(' · ');
+const work = [
+  nSc && { type: 'scenario', text: `${nSc} ${(nSc === 1 ? T.scenario : T.scenarios).toLowerCase()}` },
+  nSk && { type: 'skill', text: `${nSk} ${(nSk === 1 ? T.skill : T.skills).toLowerCase()}` },
+].filter((w) => !!w);
 const initials = data.name.split(' ').map((w) => w[0]).slice(0, 2).join('');
-const job = [data.role, data.company].filter(Boolean).join(', ');
 ---
 <a class="acard" href={`/authors/${id}`}>
   <span class="photo">
@@ -22,28 +21,37 @@ const job = [data.role, data.company].filter(Boolean).join(', ');
       : <><span class="pattern dots" aria-hidden="true" /><span class="ini t-n2" aria-hidden="true">{initials}</span></>}
   </span>
   <span class="txt">
-    <span class="t-h6">{data.name}</span>
-    {job && <span class="t-p2 job">{job}</span>}
-    {data.about && <span class="t-p2 body about">{data.about}</span>}
+    {data.role && <span class="chip role">{data.role}</span>}
+    <span class="t-h6 name">{data.name}</span>
+    {data.company && <span class="t-p2 company">{data.company}</span>}
+    {data.about && <span class="t-p2 about">{data.about}</span>}
   </span>
-  {count && <span class="lbl-2 count">{count}</span>}
+  {work.length > 0 && <span class="work">{work.map((w) => <span class="chip out" data-type={w.type}>{w.text}</span>)}</span>}
 </a>
 
 <style>
   /* Grid card: no frame of its own; the rail draws the cell lines */
-  .acard { display: grid; grid-template-rows: auto 1fr auto; height: 100%; padding-block: 16px 24px; overflow: hidden; transition: background-color var(--t-fast) var(--ease-out); }
-  /* Round portrait, 140px, top-left of the card */
-  .photo { position: relative; display: grid; place-items: center; width: 140px; height: 140px; margin: 24px 24px 0; border-radius: 50%; background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; }
+  /* --in: side inset; a list can zero it on one side so the outer cards line up with the headline */
+  .acard { --in: 24px; --in-l: var(--in); display: grid; grid-template-rows: auto 1fr auto; height: 100%; padding-block: 16px 24px; overflow: hidden; transition: background-color var(--t-fast) var(--ease-out); }
+  /* Round portrait, 96px, top-left of the card (the profile keeps its big one) */
+  .photo { position: relative; display: grid; place-items: center; width: 96px; height: 96px; margin: 24px var(--in) 0 var(--in-l); border-radius: 50%; background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; }
   .photo img { width: 100%; height: 100%; object-fit: cover; }
   .dots { position: absolute; inset: 0; --dot: var(--neutral-100); }
   :global(.surface-black) .dots { --dot: var(--neutral-850); }
   .ini { position: relative; color: var(--text-meta); transition: color var(--t-fast) var(--ease-out); }
-  .txt { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; align-content: start; padding: 24px 24px 0; }
-  .job { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* one line; the full role shows on the profile */
-  .about { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 12px; }
-  .count { margin: 24px 24px 0; } /* the card's own bottom padding holds cards without a count too */
+  .ini { font-size: 28px; }
+  .txt { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; align-content: start; justify-items: start; padding: 24px var(--in) 0 var(--in-l); }
+  /* Role first, in a chip; then name and company; the bio is the quietest line */
+  .role { max-width: 100%; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
+  .company { color: var(--text); }
+  .about { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 12px; color: var(--text-2); }
+  /* Their work as chips, each marked with its type colour */
+  .work { display: flex; flex-wrap: wrap; gap: 6px; margin: 24px var(--in) 0 var(--in-l); } /* the card's own bottom padding holds cards without work too */
+  .work .chip::before { content: ''; width: 6px; height: 6px; background: var(--accent); flex: none; }
+  .work .chip { color: var(--text); box-shadow: inset 0 0 0 1px var(--neutral-500); transition: box-shadow var(--t-fast) var(--ease-out); }
   @media (hover: hover) and (pointer: fine) {
     .acard:hover { background: var(--bg-subtle); }
     .acard:hover .ini { color: var(--text); }
+    .acard:hover .work .chip { box-shadow: inset 0 0 0 1px var(--text); }
   }
 </style>

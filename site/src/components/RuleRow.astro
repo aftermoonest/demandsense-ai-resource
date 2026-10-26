@@ -4,20 +4,23 @@ import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
 import { AREAS, AREA_ICON, T } from '../site';
 import { icon } from '../icons';
-interface Props { rule: CollectionEntry<'rules'> }
-const { id, data } = Astro.props.rule;
+// `lead`: the rule number as a black chip ahead of the category (Directory)
+interface Props { rule: CollectionEntry<'rules'>; lead?: boolean }
+const { rule: { id, data }, lead = false } = Astro.props;
 const skills = await getCollection('skills', (s) => s.data.rules.some((r) => r.id === id));
 const scenarios = await getCollection('scenarios', (s) => s.data.rules.some((r) => r.id === id));
 const MAX = 2; // chips per row before "+N"
 const groups = [
-  { label: T.skills, names: skills.map((s) => s.data.title) },
   { label: T.scenarios, names: scenarios.map((s) => s.data.title) },
+  { label: T.skills, names: skills.map((s) => s.data.title) },
 ].filter((g) => g.names.length);
 ---
 <a data-type="rule" class="rrow" href={`/rules/${id}`}>
   <span class="ico" aria-hidden="true" set:html={icon(AREA_ICON[data.area])} />
   <span class="main">
-    <span class="kick"><span class="chip">{AREAS[data.area]}</span><span class="lbl num">{T.rule} {String(data.number).padStart(2, '0')}</span></span>
+    <span class="kick">{lead
+      ? <><span class="chip dark">{T.rule} {String(data.number).padStart(2, '0')}</span><span class="chip area">{AREAS[data.area]}</span></>
+      : <><span class="chip area">{AREAS[data.area]}</span><span class="lbl num">{T.rule} {String(data.number).padStart(2, '0')}</span></>}</span>
     <span class="copy">
       <span class="t-h6 title">{data.title}</span>
       <span class="t-p2 body">{data.why}</span>
@@ -43,6 +46,7 @@ const groups = [
   .ico { width: 158px; height: 158px; }
   .ico :global(.hl) { width: 100%; height: 100%; }
   .kick { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .kick .chip.dark + .area { margin-left: -10px; } /* two chips sit 6px apart, as on the cards */
   .num { color: var(--text-2); }
   .main { display: grid; gap: 16px; }
   .copy { display: grid; gap: 4px; }
@@ -53,6 +57,9 @@ const groups = [
   .chips .more { color: var(--text-2); }
   @media (hover: hover) and (pointer: fine) {
     .rrow:hover { background: var(--bg-subtle); }
+    /* The category chip firms up to black, as on scenario and skill cards */
+    .area { transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
+    .rrow:hover .area { background: var(--neutral-950); color: var(--neutral-0); }
   }
   @media (max-width: 699px) {
     .rrow { grid-template-columns: 48px minmax(0, 1fr); gap: 16px; align-items: start; }

@@ -66,7 +66,9 @@ const cta = {
         </ul>
       </Sec>
     )}
-    {p.get ? <DetailCta title={cta.headline} context={cta.context} button={cta.button} href="#h-get" /> : <DetailCta title={`Run a ${T.scenario.toLowerCase()} we don’t have yet?`} />}
+    <DetailCta cover={d.cover} {...(p.get ? { title: cta.headline, context: cta.context, button: cta.button, href: '#h-get' } : { title: `Run a ${T.scenario.toLowerCase()} we don’t have yet?` })}>
+      <Fragment slot="art">{d.illustration ? <img src={d.illustration} alt="" /> : <ScenarioCover />}</Fragment>
+    </DetailCta>
   </DetailFrame>
 
   <SubmitBand />

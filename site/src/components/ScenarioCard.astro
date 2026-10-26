@@ -2,6 +2,7 @@
 // Tall scenario card (brief): illustration on top, category + cadence chips, title, 3-line description, author.
 // `wide` (Scenarios hub): illustration left, text right, one card per row.
 // Whole card is the link; no button. "Soon" cards are greyed, carry a Coming soon chip and don't link (no page yet).
+// No author on "soon" cards for now.
 import type { CollectionEntry } from 'astro:content';
 import { getEntry } from 'astro:content';
 import { AREAS } from '../site';
@@ -27,7 +28,7 @@ const Tag = soon ? 'div' : 'a';
     </p>
     <h3 class:list={[wide ? 't-h4' : 't-h5']}>{data.title}</h3>
     <p class:list={['desc body', wide ? 't-p1' : 't-p2']}>{data.description}</p>
-    <Byline author={author} class="by" />
+    {!soon && <Byline author={author} class="by" />}
   </div>
 </Tag>
 
