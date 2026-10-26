@@ -32,7 +32,6 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
       <fieldset class="step">
         <span class="n" aria-hidden="true">1</span>
         <legend class="t-h5">Who’s sending it? <span class="tone-2">We publish it under your name</span></legend>
-        <p class="t-p2 sub">With your company and your links on every page it appears on</p>
         <div class="grid2">
           <label class="f"><span class="lbl">Your name</span><input name="name" autocomplete="name" required placeholder="Full name"></label>
           <label class="f"><span class="lbl">Work email</span><input name="email" type="email" autocomplete="email" required placeholder="name@company.com"></label>
@@ -41,17 +40,15 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
       </fieldset>
       <fieldset class="step">
         <span class="n" aria-hidden="true">2</span>
-        <legend class="t-h5">What are you bringing? <span class="tone-2">A step, a check or a whole routine</span></legend>
-        <p class="t-p2 sub">We package it and test it with you before it goes live</p>
+        <legend class="t-h5">What are you bringing? <span class="tone-2">A rule, a skill or a whole scenario</span></legend>
         <div class="opts" role="radiogroup" aria-label="What you’re bringing">
-          {['A step', 'A skill', 'A whole routine'].map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
+          {['A rule', 'A skill', 'A scenario'].map((o, i) => <label class="opt"><input type="radio" name="kind" value={o} checked={i === 0}><span>{o}</span></label>)}
         </div>
       </fieldset>
       <fieldset class="step">
         <span class="n" aria-hidden="true">3</span>
         <legend class="t-h5">Tell us about it <span class="tone-2">What it checks and how often you run it</span></legend>
-        <p class="t-p2 sub">A few lines are enough to start</p>
-        <label class="f"><span class="lbl">In your words</span><textarea name="about" rows="2" placeholder="It flags… every Monday before…"></textarea></label>
+        <textarea name="about" rows="3" aria-label="Tell us about it" placeholder="Every Monday I pull the demographics report and flag the company sizes we never meant to pay for…"></textarea>
       </fieldset>
       <div class="step last">
         <span class="n" aria-hidden="true">4</span>
@@ -128,7 +125,6 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   .step.last .n { top: 12px; }
   legend { float: left; width: 100%; padding: 0; }
   legend .tone-2 { display: block; }
-  .sub { margin-top: -12px; color: var(--text-body); }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
   .f { display: grid; gap: 4px; min-width: 0; }
   .f .lbl { color: var(--text); }
