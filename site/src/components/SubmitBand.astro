@@ -42,9 +42,10 @@ const own = Astro.slots.has('art');
   .has-art .copy { order: -1; }
   .has-art .headline { max-width: 20em; }
   .art { position: relative; align-self: stretch; margin: -64px -64px -64px 0; pointer-events: none; }
-  /* The card keeps its copy-driven height (64px around the text). The machine is drawn larger than the card: the sheet's top
-     sits about 40px under the card's top edge, and the base's front lip runs off the bottom edge, where the card crops it */
-  .card .art :global(.iso-art) { inset: auto 0; top: 12px; width: 100%; height: 112%; }
+  /* Figma 1000:32834: the card keeps its copy-driven height; the machine is a fixed 617×544 (its drawn bounds), centred in the
+     art column and bleeding 43px past the card's top and bottom edges at every desktop width. The svg is its viewBox ×1.488;
+     the offsets move the drawing's own centre (not the viewBox's) onto the column's centre */
+  @media (min-width: 1000px) { .card .art :global(.iso-art) { inset: auto; left: 50%; top: 50%; width: 685px; height: 589px; transform: translate(calc(-50% + 28px), calc(-50% - 7px)); } }
   .card .art > :global(*) { position: absolute; inset: 0; border-radius: 0; } /* .card: outranks IsoArt's own .iso-panel rule, which the production build loads later */
   .art :global(img) { object-fit: contain; }
   @media (max-width: 999px) { .close { padding-block: 80px 48px; } .card { --pad: 40px; padding: 64px 40px; } .art { order: -1; aspect-ratio: 1; margin: -64px -40px 0; } .has-art { grid-template-columns: minmax(0, 1fr); gap: 40px; } .has-art .copy { order: 0; } }
