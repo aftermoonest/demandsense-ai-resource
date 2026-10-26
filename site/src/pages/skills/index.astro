@@ -100,11 +100,6 @@ const countIn = (a: Area) => all.filter((s) => s.data.area === a).length;
   .filters { display: flex; justify-content: space-between; align-items: start; gap: 24px 40px; }
   .areas { display: flex; flex-wrap: wrap; gap: 8px; }
   .toggle { flex: none; }
-  .fchip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 0; border-radius: var(--radius-pill); background: var(--bg-muted); color: var(--text); font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; white-space: nowrap; cursor: pointer; transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out); }
-  .fchip .n { color: var(--text-body); font-variant-numeric: tabular-nums; transition: color var(--t-fast) var(--ease-out); }
-  .fchip[aria-pressed=true] { background: var(--neutral-950); color: var(--neutral-0); }
-  .fchip[aria-pressed=true] .n { color: var(--neutral-300); }
-  .fchip:active { transform: scale(.97); }
 
   /* Labeled toggle (DESIGN §8.3): 40×20 track, pill knob */
   .toggle { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
@@ -124,10 +119,9 @@ const countIn = (a: Area) => all.filter((s) => s.data.area === a).length;
   .empty { padding-block: 40px; }
 
   @media (hover: hover) and (pointer: fine) {
-    .fchip:not([aria-pressed=true]):hover { background: var(--hover-on-50); }
     .toggle:hover input:not(:checked) + .track { background: var(--neutral-200); }
   }
-  @media (prefers-reduced-motion: reduce) { .fchip:active { transform: none; } .grid > li { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .grid > li { animation: none; } }
   @media (max-width: 999px) {
     .hero { flex-direction: column; align-items: start; }
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
