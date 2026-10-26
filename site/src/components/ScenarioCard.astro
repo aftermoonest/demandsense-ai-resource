@@ -2,7 +2,7 @@
 // Tall scenario card (brief): illustration on top, category + cadence chips, title, 3-line description, author.
 // `wide` (Scenarios hub): illustration left, text right, one card per row.
 // `compact` (In the works): skill-card scale, a short pastel band with a small illustration.
-// Whole card is the link; no button. "Soon" cards are greyed, carry a Coming soon chip and don't link (no page yet).
+// Whole card is the link; no button. "Soon" cards are greyed, carry a Coming next chip and don't link (no page yet).
 // No author on "soon" cards for now.
 import type { CollectionEntry } from 'astro:content';
 import { getEntry } from 'astro:content';
@@ -25,7 +25,7 @@ const Tag = soon ? 'div' : 'a';
   <div class="txt">
     <p class="chips">
       <span class="chip">{AREAS[data.category]}</span>
-      {soon ? <span class="chip out soon-chip">Coming soon</span> : <span class="chip out">{data.cadence}</span>}
+      {soon ? <span class="chip out soon-chip">Coming next</span> : <span class="chip out">{data.cadence}</span>}
     </p>
     <h3 class:list={[wide ? 't-h4' : 't-h5']}>{data.title}</h3>
     <p class:list={['desc body', wide ? 't-p1' : 't-p2']}>{data.description}</p>
