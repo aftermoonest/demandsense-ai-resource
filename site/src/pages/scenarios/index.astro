@@ -57,8 +57,8 @@ const steps = [
 
       {soon.length > 0 && (
         <Sec id="h-soon" label="In the works" title="Being written with their authors." context="Each one gets a page once it runs end to end on sample data">
-          <ul class="list" data-reveal>
-            {soon.map((s) => <li><ScenarioCard scenario={s} wide /></li>)}
+          <ul class="soon-grid" data-reveal>
+            {soon.map((s) => <li><ScenarioCard scenario={s} compact /></li>)}
           </ul>
         </Sec>
       )}
@@ -78,6 +78,7 @@ const steps = [
 
   main :global(.first) { border-top: 0; }
   .list { display: grid; gap: var(--gutter); }
+  .soon-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
 
   /* Light take on the landing timeline: numbered stops on one line, the first one (start here) in orange */
   .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -98,6 +99,7 @@ const steps = [
     .step:not(:last-child)::before { content: ''; position: absolute; left: 23.5px; top: 48px; bottom: -24px; width: 1px; background: var(--line); }
   }
   @media (max-width: 699px) {
+    .soon-grid { grid-template-columns: 1fr; }
     .hero { padding-block: 24px; gap: 24px; }
   }
 </style>

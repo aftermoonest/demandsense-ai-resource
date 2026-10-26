@@ -1,6 +1,7 @@
 ---
 // Tall scenario card (brief): illustration on top, category + cadence chips, title, 3-line description, author.
 // `wide` (Scenarios hub): illustration left, text right, one card per row.
+// `compact` (In the works): skill-card scale, a short pastel band with a small illustration.
 // Whole card is the link; no button. "Soon" cards are greyed, carry a Coming soon chip and don't link (no page yet).
 // No author on "soon" cards for now.
 import type { CollectionEntry } from 'astro:content';
@@ -8,14 +9,14 @@ import { getEntry } from 'astro:content';
 import { AREAS } from '../site';
 import ScenarioCover from './ScenarioCover.astro';
 import Byline from './Byline.astro';
-interface Props { scenario: CollectionEntry<'scenarios'>; wide?: boolean }
-const { scenario, wide = false } = Astro.props;
+interface Props { scenario: CollectionEntry<'scenarios'>; wide?: boolean; compact?: boolean }
+const { scenario, wide = false, compact = false } = Astro.props;
 const { id, data } = scenario;
 const author = await getEntry(data.author);
 const soon = data.status === 'soon';
 const Tag = soon ? 'div' : 'a';
 ---
-<Tag data-type="scenario" class:list={['scard', { soon, wide }]} href={soon ? undefined : `/scenarios/${id}`} style={data.cover ? `--cover: var(--pastel-${data.cover}); --cover-200: var(--pastel-${data.cover}-200); --cover-450: var(--pastel-${data.cover}-450)` : undefined}>
+<Tag data-type="scenario" class:list={['scard', { soon, wide, compact }]} href={soon ? undefined : `/scenarios/${id}`} style={data.cover ? `--cover: var(--pastel-${data.cover}); --cover-200: var(--pastel-${data.cover}-200); --cover-450: var(--pastel-${data.cover}-450)` : undefined}>
   <div class="art" aria-hidden="true">
     {data.illustration
       ? <img src={data.illustration} alt="" loading="lazy" />
@@ -50,6 +51,8 @@ const Tag = soon ? 'div' : 'a';
   .wide .txt { padding: 40px; gap: 16px; }
   .wide .desc { max-width: 520px; }
   @media (max-width: 699px) { .wide { grid-template-columns: none; grid-template-rows: auto 1fr; min-height: 0; } .wide .art { aspect-ratio: 16 / 10; } .wide .txt { padding: 24px; } }
+  .compact .art { aspect-ratio: auto; height: 160px; }
+  .compact .art > :global(svg) { inset: 16px; width: calc(100% - 32px); height: calc(100% - 32px); }
   .soon .art { filter: grayscale(1); opacity: .6; }
   .soon h3, .soon .desc { color: var(--text-2); }
   @media (hover: hover) and (pointer: fine) {
