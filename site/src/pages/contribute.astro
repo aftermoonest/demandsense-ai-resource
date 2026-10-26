@@ -1,0 +1,361 @@
+---
+// Contribute: the submit landing's content (Parts, Stack, Two ways in, What contributors get) moved into the tool,
+// with every deadline and launch-event mention dropped. Hero art is the typewriter instead of the landing's wave.
+import { arrow } from '../arrows';
+import { icon } from '../icons';
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import IsoArt from '../components/IsoArt.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Sec from '../components/Sec.astro';
+import SubmitBand from '../components/SubmitBand.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { T } from '../site';
+
+const TO = 'znak@demontrend.com'; // the submit landing's contact until a form backend exists
+const mail = (subject: string) => `mailto:${TO}?subject=${encodeURIComponent(subject)}`;
+const go = arrow('right', 'go');
+const small = arrow('right');
+
+const PARTS = [
+  { k: 'rule', name: T.rule, what: 'Says what good looks like', ex: 'Judge frequency over 90 days. Low reach, not high frequency, is the usual problem.', you: 'Your view on a rule, next to your skill or scenario. Or a rule we don’t have yet.', send: 'Send a rule', link: 'Checked by' },
+  { k: 'skill', name: T.skill, what: 'Checks an account against a rule', ex: 'Frequency-check reads 90 days of campaigns and flags the 2 of 4 outside their band.', you: 'A skill you built, published under your name.', send: 'Send a skill', link: 'Runs inside' },
+  { k: 'scenario', name: T.scenario, what: 'Does a whole job, with skills inside', ex: 'A weekly waste sweep runs six checks and writes the fix list for the week.', you: 'The routine you run, as a plugin under your name.', send: 'Send a scenario' },
+];
+
+const FEEDBACK = [
+  { t: 'Run it', d: 'Pick a skill or scenario from the library and run it on your own account.' },
+  { t: 'Tell us where it’s off', d: 'What it got wrong, what you saw in the account and what you would do instead.' },
+  { t: 'We test it', d: 'We check your change against the current version on live accounts.' },
+  { t: 'You’re credited', d: 'If the test shows you’re right, the fix goes in and your name goes on the page as a contributor.' },
+];
+
+const TOOLS = [
+  ['LinkedIn® Campaign Manager', 'Campaigns, audiences, spend'],
+  ['Your CRM', 'Deals and stages'],
+  ['Enrichment and data', 'Sharper ICP'],
+  ['Site analytics, visitor ID', 'Which companies came after the ads'],
+  ['Spreadsheets and BI', 'Reports and checks'],
+  ['Slack, email, scripts', 'Where alerts land'],
+];
+const MCP = [['Every client account, one connection', true], ['Read and write in LinkedIn Ads', true], ['Engagement by account'], ['Identified site visitors'], ['CRM matched to ads'], ['Category benchmarks']] as const;
+
+const GET = [
+  { i: 'name', t: 'Your page', d: 'Your name, words and link on a permanent page.' },
+  { i: 'week', t: 'A post per piece', d: 'DemandSense pages and Demand Wire (18K followers total) post every rule, skill or scenario, tagging the people behind it.' },
+  { i: 'coins', t: 'Paid reach', d: 'Our ad budget behind your own posts about the Standard.' },
+  { i: 'reach', t: 'Steady traffic', d: 'Search, GitHub and plugin installs send readers back to your own resources.' },
+  { i: 'audience', t: 'The podcast', d: 'Contributors are invited onto the AdWise podcast.' },
+  { i: 'case', t: 'Work to you', d: 'DemandSense does not run campaigns. Readers who want help with an audit or execution are pointed to you.' },
+  { i: 'badge', t: 'Built with DemandSense', d: 'Use DemandSense in your skill or scenario, and it gets its own promotion budget and a featured spot.', ds: true },
+];
+---
+<Base title="Contribute · The B2B AI Standard for LinkedIn Ads" description="Add a skill, a scenario or a rule to the B2B AI Standard for LinkedIn Ads, or send feedback on one. Published under your name.">
+
+  <div class="top surface-black">
+    <SiteHeader />
+    <div class="wrap hero has-art">
+      <IsoArt name="typewriter" dark accent="brand" place={[-40, -60, 860, 760]} clip={800} class="hero-art" />
+      <div class="copy">
+        <Breadcrumbs items={[{ label: 'Contribute' }]} />
+        <h1 class="headline t-display">Put your work in the Standard. <span class="tone-2">A skill, a scenario or a rule, published under your name</span></h1>
+        <p class="t-p1 body lead">Free, public and built with named practitioners. Send it as you run it today: we package it, test it with you and publish it with your company and links on every page it appears on.</p>
+        <div class="actions">
+          <a class="btn brand lg" href={mail('Contribution')}>Bring your work <Fragment set:html={go} /></a>
+          <a class="btn outlined lg" href="#add">What you can add</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <div class="ruled">
+      <div class="wrap">
+        <Sec id="add" label="What you can add" title="Three parts, one Standard." context="Bring any one of them" body="Each part builds on the one before, and each one carries the names of the people behind it." class="first parts-sec" />
+      </div>
+      <div class="bleed made">
+        <div class="wrap chain" data-reveal>
+          {PARTS.map((p) => [
+            <article data-type={p.k}>
+              <h3 class="headline t-h4"><span class="nm">{p.name}.</span> {p.what}</h3>
+              <div class="ex"><span class="over">Example</span><p class="t-p2 body">{p.ex}</p></div>
+              <div class="yp">
+                <span class="over you">Your part</span>
+                <p class="t-p2">{p.you}</p>
+                <a class="btn filled xs" href={mail(`Contribution: ${p.name.toLowerCase()}`)}>{p.send} <Fragment set:html={small} /></a>
+              </div>
+            </article>,
+            p.link && <span class="link" aria-hidden="true"><span class="lbl">{p.link}</span><Fragment set:html={small} /></span>,
+          ])}
+        </div>
+      </div>
+      <div class="lv-bar" aria-hidden="true"><div class="wrap"><i data-type="rule"></i><i data-type="skill"></i><i data-type="scenario"></i></div></div>
+      <div class="wrap levels">
+        <div><b>For Business Owner</b><span class="t-p2 body">Signs off the budget</span></div>
+        <div><b>For Specialist</b><span class="t-p2 body">In Campaign Manager every day</span></div>
+      </div>
+
+      <div class="wrap">
+        <Sec id="feedback" label="Feedback counts too" title="Think a skill or scenario gets something wrong?" context="Tell us. If testing shows you’re right, you’re credited as a contributor">
+          <ol class="steps" data-reveal>
+            {FEEDBACK.map((s, i) => <li><span class="n lbl">{String(i + 1).padStart(2, '0')}</span><b class="t-h6">{s.t}</b><p class="t-p2 body">{s.d}</p></li>)}
+          </ol>
+          <div class="row-act">
+            <a class="btn brand" href={mail('Feedback on a skill or scenario')}>Send feedback <Fragment set:html={go} /></a>
+            <a class="btn outlined" href="/skills">Browse {T.skills.toLowerCase()}</a>
+            <a class="btn outlined" href="/scenarios">Browse {T.scenarios.toLowerCase()}</a>
+          </div>
+        </Sec>
+      </div>
+    </div>
+
+    <div class="surface-black ruled">
+      <div class="wrap">
+        <Sec id="stack" label="What you build with" title="Build the best stack" context="for running LinkedIn Ads" body="Agency or in-house, a scenario should use whatever does the job best. These are the tools practitioners already rely on, and we suggest you use them." class="first">
+          <div class="hub" data-hub>
+            <svg class="links" aria-hidden="true"></svg>
+            <div class="tools">{TOOLS.map(([b, s]) => <div><b>{b}</b><span>{s}</span></div>)}</div>
+            <div class="core"><span class="lbl">Your scenario</span><b class="t-h6">The best stack for the job</b><span>Agency or in-house. Use whatever runs LinkedIn Ads best.</span></div>
+            <div class="dsc">
+              <div class="dsc-head"><span class="chip">MCP</span><b class="t-h6">DemandSense</b></div>
+              <p class="lbl">We encourage it for these:</p>
+              <ul>{MCP.map(([t, key]) => <li class:list={{ k: key }}>{t}</li>)}</ul>
+              <p class="t-p2 body">Once you confirm you want to build with us, we send the exact MCP specification, so you know what it can read and change. Nothing changes in an account without its owner’s approval.</p>
+            </div>
+          </div>
+          <div class="hubcap"><span class="lbl">Tools you already use</span><span class="lbl">Recommended for LinkedIn data and actions</span></div>
+          <div class="hubhelp">
+            <p>Want to see if DemandSense makes your workflow stronger? <span>Our team looks at it with you.</span></p>
+            <a class="btn lg" href={mail('Contribution: build with DemandSense')}>Bring your work <Fragment set:html={go} /></a>
+          </div>
+        </Sec>
+      </div>
+    </div>
+
+    <div class="ruled">
+      <div class="wrap">
+        <Sec id="join" label="How it works" title="Two ways in." context="Pick the one that fits" class="first">
+          <div class="ways" data-reveal>
+            <div class="way">
+              <div><p class="lbl">01 · Bring what you built</p><h3 class="t-h3">Send a skill</h3></div>
+              <div class="post" aria-hidden="true">
+                <span class="chip">{T.skill} · your check</span>
+                <div><p class="t-h6">By [Your name]</p><p class="t-p2 body">Runs in any AI, on data the user is authorised to access</p></div>
+                <p class="over you">Published under your name</p>
+              </div>
+              <p class="t-p1">Built a skill that checks something in LinkedIn Ads? Send it, and we publish it under your name.</p>
+              <a class="btn brand" href={mail('Contribution: skill')}>Bring your work <Fragment set:html={go} /></a>
+            </div>
+            <div class="way surface-black">
+              <div><p class="lbl">02 · The deepest</p><h3 class="t-h3">Build a scenario with us</h3></div>
+              <div class="post" aria-hidden="true">
+                <span class="chip">{T.scenario} · [Your playbook]</span>
+                <ol class="mini">
+                  <li><span class="lbl">01</span>Your first step</li>
+                  <li><span class="lbl">02</span>Your tools</li>
+                  <li><span class="lbl">03</span>Skill checks</li>
+                  <li><span class="lbl">→</span>Agent runs it</li>
+                </ol>
+                <p class="over you">Installs as a plugin, under your name</p>
+              </div>
+              <p class="t-p1">Have a routine you run? We turn it into a scenario together and publish it as a plugin.</p>
+              <a class="btn brand" href={mail('Contribution: scenario')}>Bring your work <Fragment set:html={go} /></a>
+            </div>
+          </div>
+          <div class="notes">
+            <p class="t-p1"><b>Your view on the rules</b> near your work goes in under your name too.</p>
+            <p class="t-p1"><b>Short on time?</b> <span class="body">Send what you have as it is: notes, a doc, a rough workflow. We package it and test it with you before anything goes out under your name.</span></p>
+          </div>
+        </Sec>
+      </div>
+    </div>
+
+    <div class="surface-black ruled">
+      <div class="wrap">
+        <Sec id="get" label="What contributors get" title="Your name on the work," context="and our reach behind it" class="first">
+          <ul class="get" data-reveal>
+            {GET.map((g) => <li class:list={{ ds: g.ds }}><span class="ico" set:html={icon(g.i)} /><b class="t-h6">{g.t}</b><p class="t-p2 body">{g.d}</p></li>)}
+          </ul>
+        </Sec>
+      </div>
+    </div>
+  </main>
+
+  <SubmitBand title="Have a skill, a scenario or a rule?" context="Put it in the Standard" href={mail('Contribution')}>
+    <IsoArt slot="art" name="cta" blue />
+  </SubmitBand>
+  <SiteFooter />
+</Base>
+
+<script>
+  // Stack hub links (the landing's drawLinks, hub only): every tool wires into "your scenario", which wires into DemandSense.
+  // Side by side: 25% flat, 50% diagonal, 25% flat. Stacked: down a left spine. Offsets, not rects, so reveals never skew them
+  const pos = (el: HTMLElement, box: HTMLElement) => {
+    let x = 0, y = 0, n: HTMLElement | null = el;
+    while (n && n !== box) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent as HTMLElement | null; }
+    return { l: x, r: x + el.offsetWidth, y: y + el.offsetHeight / 2 };
+  };
+  for (const box of document.querySelectorAll<HTMLElement>('[data-hub]')) {
+    const svg = box.querySelector('svg')!;
+    const draw = () => {
+      const cols = [[...box.querySelector('.tools')!.children], [box.querySelector('.core')!], [box.querySelector('.dsc')!]] as HTMLElement[][];
+      const stacked = getComputedStyle(box).gridTemplateColumns.trim().split(/\s+/).length === 1;
+      const ports = new Set<string>();
+      let d = '';
+      for (let c = 0; c < 2; c++) for (const ea of cols[c]) for (const eb of cols[c + 1]) {
+        const a = pos(ea, box), b = pos(eb, box);
+        if (!stacked) { const x1 = a.r + 4, x2 = b.l - 4, w = x2 - x1; d += `M${x1} ${a.y}h${w / 4}L${x2 - w / 4} ${b.y}H${x2}`; ports.add(`${x1},${a.y}`).add(`${x2},${b.y}`); }
+        else { d += `M${a.l - 4} ${a.y}H20L12 ${a.y + 8}V${b.y - 8}L20 ${b.y}H${b.l - 4}`; ports.add(`${a.l - 4},${a.y}`).add(`${b.l - 4},${b.y}`); }
+      }
+      svg.setAttribute('viewBox', `0 0 ${box.offsetWidth} ${box.offsetHeight}`);
+      svg.innerHTML = `<path d="${d}"/>` + [...ports].map((p) => { const [x, y] = p.split(','); return `<circle cx="${x}" cy="${y}" r="2.5"/>`; }).join('');
+    };
+    new ResizeObserver(draw).observe(box);
+  }
+  // The colour bar under the parts and the hub links draw in once, on view
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -15% 0px' });
+  document.querySelectorAll('.lv-bar, [data-hub]').forEach((el) => io.observe(el));
+</script>
+
+<style>
+  .top { position: relative; overflow: hidden; background: var(--bg); color: var(--text); }
+  .top > :global(:not(.site-header)) { position: relative; }
+  .hero { padding-block: 40px; }
+  .copy { display: grid; gap: 24px; justify-items: start; max-width: 760px; }
+  .lead { max-width: 560px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+
+  /* Parts (landing #made-of): three cells split by 1px lines, a connector chip on each divider, a colour bar under them */
+  .made { border-bottom: 1px solid; }
+  .chain { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .chain > article { display: grid; grid-template-rows: subgrid; grid-row: span 3; row-gap: 16px; padding: 40px 72px; }
+  .chain > article + .link + article { border-left: 1px solid var(--line); }
+  .chain > article:first-child { padding-left: 0; } .chain > article:last-of-type { padding-right: 0; }
+  .chain .nm { color: var(--accent); }
+  .chain .ex { display: grid; gap: 8px; align-content: start; }
+  .chain .yp { display: grid; gap: 8px; align-content: start; justify-items: start; margin-inline: -20px; padding: 16px 20px 20px; border-radius: var(--radius-4); background: var(--bg-muted); }
+  .chain .yp .btn { margin-top: 8px; }
+  .link { position: absolute; z-index: 1; top: 71px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: var(--radius-pill); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); translate: -50% -50%; }
+  /* the chain is a .wrap, so the dividers sit a third and two thirds into its content box */
+  @media (min-width: 1000px) {
+    .link:nth-of-type(1) { left: calc(var(--margin) + (100% - 2 * var(--margin)) / 3); }
+    .link:nth-of-type(2) { left: calc(var(--margin) + (100% - 2 * var(--margin)) * 2 / 3); }
+  }
+  .link :global(svg) { width: 12px; height: 12px; }
+  .over { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.4 var(--font-mono); text-transform: uppercase; letter-spacing: 0; color: var(--text-body); }
+  .over::before { content: ''; width: 6px; height: 6px; background: var(--neutral-300); flex: none; }
+  .over.you { color: var(--text); } .over.you::before { background: var(--accent, var(--scenario-300)); }
+
+  .lv-bar { position: relative; height: 3px; --x: max(var(--edge), calc(50% - var(--content-max) / 2 - var(--edge-inset))); background: linear-gradient(90deg in oklch, transparent, var(--rule-300) var(--x), var(--skill-300) 50%, var(--scenario-300) calc(100% - var(--x)), transparent); }
+  .lv-bar .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: 100%; }
+  .lv-bar i { width: 14px; height: 14px; margin-top: -5.5px; border-radius: 50%; background: var(--neutral-0); box-shadow: inset 0 0 0 4px var(--accent); }
+  .lv-bar i + i { margin-left: 72px; }
+  .levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-block: 24px var(--section-ruled-bottom); }
+  .levels > div { display: grid; gap: 2px; }
+  .levels > :last-child { grid-column: 3; padding-left: 72px; }
+  .motion-ready .lv-bar { clip-path: inset(0 100% 0 0); transition: clip-path 1200ms var(--ease-in-out); }
+  .motion-ready .lv-bar.in { clip-path: inset(-12px 0); }
+
+  /* Feedback: four numbered steps on one rail */
+  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+  .steps > li { display: grid; gap: 8px; align-content: start; padding: 24px 24px 0; }
+  .steps > li + li { border-left: 1px solid var(--line); }
+  .steps > li:first-child { padding-left: 0; }
+  .steps > li:last-child b { color: var(--primary-450); }
+  .steps .n { margin-bottom: 16px; }
+  .row-act { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 48px; }
+
+  /* Stack hub (landing #build-with) */
+  .hub { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr) 96px minmax(0, 1fr); align-items: center; }
+  .hub > .tools { grid-column: 1; } .hub > .core { grid-column: 3; } .hub > .dsc { grid-column: 5; }
+  .hub > :not(.links) { position: relative; z-index: 1; }
+  .links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .links :global(path) { fill: none; stroke: var(--neutral-800); stroke-width: 1; }
+  .links :global(circle) { fill: var(--bg); stroke: var(--neutral-500); stroke-width: 1; }
+  .motion-ready .links { opacity: 0; transition: opacity 600ms var(--ease-out) 200ms; }
+  .motion-ready .hub.in .links { opacity: 1; }
+  .tools { display: grid; gap: 8px; }
+  .tools > div { display: grid; gap: 2px; padding: 12px 16px; border-radius: var(--radius-4); background: var(--neutral-900); box-shadow: inset 0 0 0 1px var(--neutral-850); }
+  .tools b { font-size: 14px; letter-spacing: -.03em; }
+  .tools span { font-size: 12px; color: var(--text-2); }
+  .core { display: grid; gap: 8px; padding: 24px; border-radius: var(--radius-4); background: var(--neutral-0); color: var(--neutral-950); }
+  .core span { font-size: 14px; color: var(--neutral-500); }
+  .dsc { display: grid; gap: 16px; padding: 24px; border-radius: var(--radius-4); background: var(--neutral-900); }
+  .dsc-head { display: flex; align-items: center; gap: 12px; }
+  .dsc .chip { background: var(--neutral-0); color: var(--neutral-950); }
+  .dsc ul { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dsc li { padding: 4px 8px; border-radius: var(--radius-6); box-shadow: inset 0 0 0 1px var(--neutral-800); font-size: 14px; letter-spacing: -.03em; color: var(--text-2); }
+  .dsc li.k { color: var(--text); }
+  .dsc li.k::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--text); vertical-align: 1px; }
+  .hubcap { display: flex; justify-content: space-between; margin-top: 16px; }
+  .hubcap .lbl { color: var(--text-2); }
+  .hubhelp { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 32px; margin-top: 64px; padding: 48px; border-radius: var(--radius-4); background: var(--primary-450); }
+  .hubhelp p { max-width: 640px; font-size: 28px; line-height: 1.1; letter-spacing: -.06em; color: var(--neutral-0); }
+  .hubhelp p span { color: rgb(255 255 255 / .7); }
+  .hubhelp .btn { background: var(--neutral-0); color: var(--neutral-950); }
+  @media (hover: hover) and (pointer: fine) { .hubhelp .btn:hover { background: var(--neutral-100); } }
+
+  /* Two ways in */
+  .ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+  .way { display: grid; gap: 32px; align-content: start; justify-items: start; padding: 40px; border-radius: var(--radius-4); background: var(--bg-muted); }
+  .way.surface-black { background: var(--neutral-950); }
+  .way h3 { margin-top: 8px; }
+  .post { --post-line: var(--line); display: grid; gap: 24px; align-self: stretch; justify-self: stretch; padding: 24px; border-radius: var(--radius-4); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
+  .post .chip { justify-self: start; }
+  .post > .over { padding-top: 16px; border-top: 1px solid var(--post-line); }
+  .mini { display: grid; gap: 8px; }
+  .mini li { display: flex; gap: 12px; align-items: baseline; }
+  .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); margin-top: 40px; }
+
+  /* What contributors get: icon cells, four up */
+  .get { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+  .get > li { display: grid; gap: 8px; align-content: start; padding: 32px 24px; border-bottom: 1px solid var(--line); }
+  .get > li:not(:nth-child(4n + 1)) { border-left: 1px solid var(--line); }
+  .get > li:nth-child(4n + 1) { padding-left: 0; }
+  .get .ico { width: 64px; height: 64px; margin-bottom: 16px; }
+  .get .ico :global(svg) { width: 100%; height: 100%; }
+  .get .ds { background: var(--primary-450); padding-left: 24px; border-radius: var(--radius-4); border: 0; --text-body: rgb(255 255 255 / .85); }
+  .get .ds .ico :global(.hl) { --hairline-plate: var(--primary-450); --hairline-hi: var(--neutral-0); --hairline-edge: var(--neutral-0); --hairline-mid: rgb(255 255 255 / .7); --hairline-lo: rgb(255 255 255 / .35); }
+
+  @media (max-width: 999px) {
+    /* The global hub rule hides the art below 1000; here the typewriter stays, under the copy, full bleed */
+    .top .hero.has-art > :global(.hero-art) { display: block; position: relative; inset: auto; order: 1; width: calc(100% + 2 * var(--margin)); margin: -24px calc(-1 * var(--margin)) -96px; aspect-ratio: 1.2; }
+    .top .hero.has-art { padding-bottom: 64px; }
+    .chain { grid-template-columns: minmax(0, 1fr); }
+    .chain > article { grid-row: auto; display: flex; flex-direction: column; padding: 32px 0; }
+    .chain > article + .link + article { border-left: 0; border-top: 1px solid var(--line); }
+    .link { position: relative; top: auto; left: auto; translate: none; justify-self: center; margin-block: -14px; }
+    .link :global(svg) { rotate: 90deg; }
+    .lv-bar .wrap { display: none; }
+    .levels > :last-child { grid-column: 3; padding-left: 0; text-align: right; }
+    .levels { grid-template-columns: 1fr 1fr 1fr; }
+    .steps, .get { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .steps > li:nth-child(3) { border-left: 0; padding-left: 0; }
+    .steps > li:nth-child(n + 3) { border-top: 1px solid var(--line); margin-top: 24px; }
+    .get > li, .get > li:nth-child(4n + 1) { border-left: 0; padding-inline: 0 24px; }
+    .get > li:nth-child(even) { border-left: 1px solid var(--line); padding-left: 24px; }
+    .get .ds { padding-left: 24px; }
+    .hub { grid-template-columns: minmax(0, 1fr); }
+    .hub > .tools, .hub > .dsc { grid-column: 1; padding-left: 32px; }
+    .hub > .dsc { margin-left: 32px; padding-left: 24px; }
+    .hub > .core { grid-column: 1; margin: 32px 0 32px 32px; }
+    .hubcap { display: none; }
+    .ways, .notes { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 699px) {
+    .hero { padding-block: 24px 64px; }
+    .actions .btn { flex: 1; }
+    .levels { grid-template-columns: 1fr 1fr; } .levels > :last-child { grid-column: 2; }
+    .steps, .get { grid-template-columns: minmax(0, 1fr); }
+    .steps > li, .steps > li + li { border-left: 0; padding-inline: 0; }
+    .steps > li + li { border-top: 1px solid var(--line); margin-top: 24px; }
+    .chain .yp { margin-inline: -12px; padding-inline: 12px; } /* the plate stays inside the 16px edge line */
+    .get > li, .get > li:nth-child(even) { border-left: 0; padding-inline: 0; }
+    .get .ds { padding-inline: 24px; }
+    .way { padding: 24px; }
+    .hubhelp { padding: 32px 24px; }
+    .hubhelp p { font-size: 22px; }
+    .hubhelp .btn { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .motion-ready .lv-bar, .motion-ready .links { clip-path: none; opacity: 1; transition: none; } }
+</style>
