@@ -1,7 +1,7 @@
 ---
 // Authors + form (home §7), the submit landing's #get scene reused: a sticky stage holds the centred headline while the
-// author cards scroll up past it, left and right. Once the last card is past, the headline turns into the ask and the
-// form (white on black) rides up over it, so the people and the form read as one story. Below 1000 the cards become
+// author cards scroll up past it, left and right. Once the last card is past, the headline fades and the ask and the
+// form (white on black) come up together, centred on the screen, so people and form read as one story. Below 1000 the cards become
 // a rail and the stage stops sticking. Ref: zade.space "Why founders build it with us".
 import { getCollection } from 'astro:content';
 import { arrow } from '../../arrows';
@@ -15,7 +15,6 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   <div class="stage">
     <div class="wrap heads">
       <h2 id="h-meet" class="headline t-display h-a">Nobody here is describing best practice from the outside.</h2>
-      <p class="headline t-display h-b" aria-hidden="true">You run an account a way that works. <span class="tone-2">Send it.</span></p>
     </div>
   </div>
 
@@ -25,7 +24,7 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   <div class="swap-at" data-swap aria-hidden="true"></div>
 
   <div class="wrap send">
-    <p class="headline t-h3 m-only" aria-hidden="true">You run an account a way that works. <span class="tone-2">Send it.</span></p>
+    <h2 class="headline t-display ask">You run an account a way that works. <span class="tone-2">Send it.</span></h2>
     <!-- Stepped form, as the report's request form (Figma 996:24441): numbered steps on a rail, two-tone step headlines -->
     <form class="card" action={`mailto:${TO}`} method="post" enctype="text/plain" data-send>
       <fieldset class="step">
@@ -74,12 +73,10 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
 </script>
 
 <style>
-  .meet { --cw: 280px; --ch: 340px; position: relative; background: var(--bg); color: var(--text); padding-bottom: 160px; }
+  .meet { --cw: 280px; --ch: 340px; position: relative; background: var(--bg); color: var(--text); }
   .stage { display: grid; place-items: center; padding-block: var(--section-ruled-top) 48px; }
   .heads { display: grid; justify-items: center; width: 100%; text-align: center; }
   .heads > * { grid-area: 1 / 1; max-width: 13em; margin-inline: auto; text-wrap: balance; transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out); }
-  .h-b { opacity: 0; transform: translateY(14px); visibility: hidden; }
-  .m-only { display: none; }
 
   .deck li { border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line-card); overflow: hidden; }
 
@@ -88,10 +85,7 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
     /* the headline fits between the two card columns */
     .heads > * { max-width: calc(100% - 2 * (var(--cw) + 64px)); font-size: clamp(36px, 4vw, 64px); }
     .meet.asked .h-a { opacity: 0; transform: translateY(-14px); }
-    .meet.asked .h-b { opacity: 1; transform: none; visibility: visible; }
-    .h-b { transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out), visibility 0s 400ms; }
-    .meet.asked .h-b { transition-delay: 0s; }
-    /* Deck scrolls over the stage: pulled up one stage height, the first card starting below the fold */
+      /* Deck scrolls over the stage: pulled up one stage height, the first card starting below the fold */
     .deck { position: relative; z-index: 1; display: block; margin-top: calc(var(--site-bar) - 100svh); padding-top: 100svh; pointer-events: none; --step: 26svh; }
     .deck li { pointer-events: auto; width: var(--cw); height: var(--ch); margin-left: calc((100% - var(--cw)) * var(--x)); }
     .deck li + li { margin-top: calc(var(--step) + var(--dy, 0px) - var(--ch)); }
@@ -104,11 +98,14 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
   }
 
   /* Form: white card on black, rides up over the ask */
-  .send { position: relative; z-index: 2; }
+  /* The ask and the form arrive together and sit centred on the screen as one block */
+  .send { position: relative; z-index: 2; display: grid; align-content: center; gap: 32px; min-height: calc(100svh - var(--site-bar)); padding-block: 32px; }
+  .ask { max-width: 13em; margin-inline: auto; text-align: center; text-wrap: balance; font-size: clamp(36px, 4vw, 64px); }
+  @media (min-width: 1000px) { .ask { max-width: none; font-size: clamp(36px, 3.2vw, 48px); } } /* one line, so ask + form fit one screen */
   .card { --bg: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); --line-field: var(--neutral-100); --line: var(--neutral-100);
     display: grid; max-width: 650px; margin-inline: auto; padding: 40px 40px 48px; border-radius: var(--radius-4); background: var(--bg); color: var(--text); }
   /* Steps: number on the left rail, a line runs from each number down to the next */
-  .step { position: relative; display: grid; gap: 20px; margin: 0; padding: 0 0 40px 76px; border: 0; min-width: 0; }
+  .step { position: relative; display: grid; gap: 20px; margin: 0; padding: 0 0 32px 76px; border: 0; min-width: 0; }
   .step::before { content: ''; position: absolute; left: 23px; top: 48px; bottom: 0; width: 1px; background: var(--neutral-100); }
   .step.last { padding-bottom: 0; }
   .step.last::before { display: none; }
@@ -139,12 +136,10 @@ const TO = 'znak@demontrend.com'; // the submit landing's contact until a form b
 
   @media (max-width: 999px) {
     .meet { padding-bottom: var(--section-ruled-bottom); }
-    .h-b { display: none; }
-    .deck { display: grid; grid-auto-flow: column; grid-auto-columns: min(80%, 320px); gap: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); max-width: none; }
+      .deck { display: grid; grid-auto-flow: column; grid-auto-columns: min(80%, 320px); gap: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); max-width: none; }
     .deck li { scroll-snap-align: start; }
     .send { margin-top: 48px; }
     .card { padding: 32px; }
-    .m-only { display: block; margin-bottom: 32px; }
   }
   @media (max-width: 699px) {
     .card { padding: 24px 20px; }
