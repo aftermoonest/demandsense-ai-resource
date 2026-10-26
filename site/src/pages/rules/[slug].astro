@@ -121,7 +121,7 @@ const cta = {
     </Sec>
 
     <DetailCta title={cta.headline} context={cta.context} button={cta.button} cover={AREA_COVER[d.area]}>
-      <Fragment slot="art"><span set:html={icon(AREA_ICON[d.area])} /></Fragment>
+      <Fragment slot="art" set:html={icon(AREA_ICON[d.area])} />
     </DetailCta>
 
     <nav class="pn" aria-label={`Other ${T.rules.toLowerCase()}`}>
