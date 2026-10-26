@@ -95,7 +95,7 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
         <ul class="picks" data-reveal>
           {hubs.map((h) => (
             <li><a class="pick" data-type={h.type} href={h.href}>
-              <span class="cover" aria-hidden="true"><IsoArt name={h.art} accent={h.type} mono zoom={1.1} /></span>
+              <span class="cover" aria-hidden="true"><IsoArt name={h.art} accent={h.type} mono zoom={1.3} /></span>
               <span class="txt">
                 <span class="marker">{h.label}<span class="cnt">{String(h.count).padStart(2, '0')}</span></span>
                 <span class="t-h4">{h.title} <span class="tone-2">{h.context}</span></span>
@@ -165,6 +165,20 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
   .pick::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-card); pointer-events: none; }
   .cover { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--bg-subtle); }
   .cover > :global(.iso-panel) { position: absolute; inset: 0; background: none; border-radius: 0; }
+  /* Pale: the black heroes' look inverted for white. Light faces, pale grey hairlines, colour only on the live part */
+  .pick .cover :global(.iso-art) { --line: color-mix(in srgb, var(--neutral-300) 60%, var(--neutral-200)); }
+  .pick .cover :global(.iso-art .f) { stroke: var(--line); stroke-width: .8; }
+  .pick .cover :global(.iso-art .det) { stroke: var(--neutral-100); stroke-width: .6; }
+  .pick .cover :global(.iso-art :is(.paper, .body)) { fill: var(--neutral-0); }
+  .pick .cover :global(.iso-art .tint) { fill: var(--neutral-25); }
+  .pick .cover :global(.iso-art .blk) { fill: var(--neutral-50); }
+  .pick .cover :global(.iso-art .head) { fill: var(--line); }
+  .pick .cover :global(.iso-art .dash) { stroke: var(--line); stroke-width: 1.2; }
+  .pick .cover :global(.iso-art .lit .f) { stroke: var(--lit, var(--h)); }
+  .pick .cover :global(.iso-art .lit .det) { stroke: color-mix(in srgb, var(--lit, var(--h)) 45%, #fff); }
+  .pick .cover :global(.iso-art .lit .paper) { fill: color-mix(in srgb, var(--lit, var(--h)) 12%, #fff); }
+  .pick .cover :global(.iso-art .lit .tint) { fill: color-mix(in srgb, var(--lit, var(--h)) 25%, #fff); }
+  .pick .cover :global(.iso-art .lit .body) { fill: color-mix(in srgb, var(--lit, var(--h)) 55%, #fff); }
   .txt { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 32px; }
   .cnt { margin-left: 6px; padding: 0 6px; border-radius: var(--radius-2); background: var(--bg-muted); color: var(--text-body); font-variant-numeric: tabular-nums; }
   .txt .t-h4 { max-width: 24em; text-wrap: balance; }
