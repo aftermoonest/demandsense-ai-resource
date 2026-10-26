@@ -1,14 +1,14 @@
-// Home "Why AI can't get LinkedIn Ads right": three blocks on a tray — the data (mismatched exports taped together),
-// the judgement (a dial nobody calibrated) and the context (an account's history on a ruled plate). The section's
-// scroll picks one; it lifts and lights. On the closing line they stack into one bound block, the playbook.
-// draw(a, u): a = how lit each block is (0..1, eased by the page), u = 0..1 merge progress. Pure, so the build renders the first frame.
+// Home "Why AI can't get LinkedIn Ads right": an exploded stack of three blocks — the data (mismatched exports taped
+// together), the judgement (a dial nobody calibrated) and the context (an account's history on a ruled plate). The
+// section's scroll picks one; it slides out and lights. On the closing line the gaps close and a cover drops on: one
+// bound block, the playbook. draw(a, u): a = how lit each block is (0..1, eased by the page), u = 0..1 merge progress.
 import { kernel, k, lerp } from './iso';
 
-const W = 120, D = 90, Z0 = 12, GAP = 150;           // block footprint, tray top, spacing along x
+const W = 120, D = 90, G = 64, POP = 18;              // footprint, gap between exploded layers, slide-out of the lit one
 const H = [36, 40, 30];                               // data, judgement, context heights
-const MX = GAP;                                       // merged column x (middle slot)
-const K = kernel([[-24, -24, 0], [2 * GAP + W + 24, -24, 0], [-24, D + 24, 0], [2 * GAP + W + 24, D + 24, 0], [MX, 0, Z0 + 106 + 30], [0, 0, Z0 + 60]], 24);
-const { on, poly, line, box, cyl, TOP, FRONT, SIDE } = K;
+const TOP_Z = H[0] + H[1] + H[2] + 2 * G + 14;        // highest point, spread
+const K = kernel([[0, 0, 0], [W + POP, 0, 0], [0, D, 0], [W + POP, D, 0], [0, 0, TOP_Z], [W + POP, D, TOP_Z]], 20);
+const { on, line, box, cyl, TOP, FRONT, SIDE } = K;
 export const viewBox = K.viewBox;
 
 const slits = (x0: number, x1: number, y: number, n: number, step: number) =>
@@ -74,13 +74,13 @@ function context(x: number, y: number, z: number) {
 }
 
 // The playbook's cover and spine: drop on at the end of the merge
-function binding(x: number, y: number, z: number, total: number, u: number) {
+function binding(x: number, y: number, total: number, u: number) {
   if (u <= 0) return '';
-  const cz = z + total + lerp(40, 0, u);
+  const cz = total + lerp(40, 0, u);
   let g = `<g style="opacity:${u.toFixed(3)}">` + box(x - 4, y - 4, cz, W + 8, D + 8, 7, 'paper', 'body', 'tint') +
     on(TOP(x - 4, y - 4, cz + 7), `<rect class="det" x="12" y="12" width="${W - 16}" height="${D - 16}" rx="1"/><rect class="f hlf" x="20" y="22" width="${W / 2}" height="6"/><rect class="det" x="20" y="34" width="${W / 3}" height="4"/>`);
   // rings down the front-left edge, through every layer
-  for (let i = 0; i < 4; i++) g += line([[x + 10 + i * 8, y + D + 1, z + 4], [x + 10 + i * 8, y + D + 1, z + total + 2]], 'det spine');
+  for (let i = 0; i < 4; i++) g += line([[x + 10 + i * 8, y + D + 1, 4], [x + 10 + i * 8, y + D + 1, total + 2]], 'det spine');
   return g + '</g>';
 }
 
@@ -88,22 +88,22 @@ function binding(x: number, y: number, z: number, total: number, u: number) {
 const lit = (a: number, inner: string) => (a < 1 ? inner : '') + (a > .005 ? `<g class="lit" style="opacity:${a.toFixed(3)}">${inner}</g>` : '');
 
 export function draw(a: number[], u: number) {
-  // merge in phases: the upper two rise clear, then data slides under and context slides over, then the cover drops
-  const rise = k(u, 0, .4), slide = k(u, .35, .8), cover = k(u, .75, 1);
-  const lift = (i: number) => a[i] * 10 * (1 - rise);
-  const zJ = lerp(Z0, Z0 + H[0], rise), zC = lerp(Z0, Z0 + H[0] + H[1], rise);
-  const xD = lerp(0, MX, slide), xC = lerp(2 * GAP, MX, slide);
+  // the gaps close first, then the cover drops
+  const close = k(u, 0, .7), cover = k(u, .6, 1), gap = G * (1 - close);
+  const z = [0, H[0] + gap, H[0] + H[1] + 2 * gap];
+  const x = (i: number) => a[i] * POP * (1 - close);
   let g = '';
-  // tray with rails and a slot under each block
-  g += box(-24, -24, 0, 2 * GAP + W + 48, D + 48, Z0, 'paper', 'body', 'tint');
-  g += on(TOP(-24, -24, Z0), [0, GAP, 2 * GAP].map((sx) => `<rect class="det" x="${sx + 16}" y="16" width="${W + 16}" height="${D + 16}" rx="2"/>`).join('') +
-    screw(10, 10) + screw(2 * GAP + W + 38, 10) + screw(10, D + 38) + screw(2 * GAP + W + 38, D + 38));
-  g += on(FRONT(-24, D + 24, Z0), slits(10, 2 * GAP + W + 38, 6, 1, 0));
-  g += lit(a[0], data(xD, 0, Z0 + lift(0)));
-  g += lit(a[1], judgement(MX, 0, zJ + lift(1)));
-  g += lit(a[2], context(xC, 0, zC + lift(2)));
-  g += lit(cover, binding(MX, 0, Z0, H[0] + H[1] + H[2], cover));
+  // exploded-view guides: dashed lines from each layer's visible corners up to the next one
+  if (close < 1) {
+    const o = (1 - close).toFixed(3);
+    for (let i = 0; i < 2; i++) for (const [cx, cy] of [[W, 0], [W, D], [0, D]] as const)
+      g += `<g style="opacity:${o}">${line([[cx, cy, z[i] + H[i]], [cx, cy, z[i + 1]]], 'det dashed')}</g>`;
+  }
+  g += lit(a[0], data(x(0), 0, z[0]));
+  g += lit(a[1], judgement(x(1), 0, z[1]));
+  g += lit(a[2], context(x(2), 0, z[2]));
+  g += lit(cover, binding(0, 0, H[0] + H[1] + H[2], cover));
   return g;
 }
 
-export const aria = 'Three blocks on a tray: taped-together data exports, an uncalibrated dial, and a plate with an account’s history. At the end they stack into one bound playbook.';
+export const aria = 'An exploded stack of three blocks: taped-together data exports, an uncalibrated dial, and a plate with an account’s history. At the end they close up into one bound playbook.';
