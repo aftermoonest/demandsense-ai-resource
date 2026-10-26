@@ -1,7 +1,7 @@
 ---
 // "Runs with": one logo tile per connector, its name in a tooltip on hover and focus.
 // Logos live in design-system/logos, in brand colours (Simple Icons, DS Report mark); list/target are Figma line icons.
-// A CRM export is any CRM, so it shows the most common ones stacked.
+// A CRM export is any CRM, so it shows the most common ones stacked; the AI tools (Claude, ChatGPT, Gemini) share one stack too.
 const raw = import.meta.glob('../../../design-system/logos/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 const logo = (n: string) => raw[`../../../design-system/logos/${n}.svg`] ?? '';
 // Connector names are free text in content; match the known ones, generic exports and sources fall back to line icons
@@ -9,14 +9,19 @@ const pick = (name: string) =>
   /crm/i.test(name) ? 'crm' : /claude/i.test(name) ? 'claude' : /chatgpt|openai/i.test(name) ? 'chatgpt' : /gemini/i.test(name) ? 'gemini' : /linkedin/i.test(name) ? 'linkedin' : /demandsense/i.test(name) ? 'demandsense' : /signal|source/i.test(name) ? 'target' : 'list';
 interface Props { items: string[] }
 const { items: all } = Astro.props;
-// Stacked CRM logos go last so single logos lead the row
-const items = [...all.filter((n) => pick(n) !== 'crm'), ...all.filter((n) => pick(n) === 'crm')];
+const AI = ['claude', 'chatgpt', 'gemini'];
+const ai = all.filter((n) => AI.includes(pick(n)));
+const aiLabel = `Works with ${ai.length > 1 ? `${ai.slice(0, -1).join(', ')} or ${ai.at(-1)}` : ai[0]}`;
+// AI stack leads, stacked CRM logos go last, single logos sit between
+const rest = all.filter((n) => !AI.includes(pick(n)));
+const items = [...(ai.length ? [aiLabel] : []), ...rest.filter((n) => pick(n) !== 'crm'), ...rest.filter((n) => pick(n) === 'crm')];
+const stack = (name: string) => (name === aiLabel ? ai.map(pick) : pick(name) === 'crm' ? ['salesforce', 'hubspot', 'zoho'] : undefined);
 ---
 <ul class="conns">
   {items.map((name) => (
     <li class="conn" tabindex="0" aria-label={name}>
-      {pick(name) === 'crm'
-        ? <span class="stack" aria-hidden="true">{['salesforce', 'hubspot', 'zoho'].map((n) => <span class="dot" set:html={logo(n)} />)}</span>
+      {stack(name)
+        ? <span class="stack" aria-hidden="true">{stack(name)!.map((n) => <span class="dot" set:html={logo(n)} />)}</span>
         : <span class="ic" aria-hidden="true" set:html={logo(pick(name))} />}
       <span class="tip" role="tooltip">{name}</span>
     </li>
