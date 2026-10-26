@@ -75,13 +75,13 @@ function context(x: number, y: number, z: number) {
 }
 
 // The playbook's cover and spine: drop on at the end of the merge
-function binding(x: number, y: number, total: number, u: number) {
+function binding(x: number, y: number, z: number, total: number, u: number) {
   if (u <= 0) return '';
-  const cz = total + lerp(40, 0, u);
+  const cz = z + total + lerp(40, 0, u);
   let g = `<g style="opacity:${u.toFixed(3)}">` + box(x - 4, y - 4, cz, W + 8, D + 8, 7, 'paper', 'body', 'tint') +
     on(TOP(x - 4, y - 4, cz + 7), `<rect class="det" x="12" y="12" width="${W - 16}" height="${D - 16}" rx="1"/><rect class="f hlf" x="20" y="22" width="${W / 2}" height="6"/><rect class="det" x="20" y="34" width="${W / 3}" height="4"/>`);
   // rings down the front-left edge, through every layer
-  for (let i = 0; i < 4; i++) g += line([[x + 10 + i * 8, y + D + 1, 4], [x + 10 + i * 8, y + D + 1, total + 2]], 'det spine');
+  for (let i = 0; i < 4; i++) g += line([[x + 10 + i * 8, y + D + 1, z + 4], [x + 10 + i * 8, y + D + 1, z + total + 2]], 'det spine');
   return g + '</g>';
 }
 
@@ -92,7 +92,8 @@ export function draw(a: number[], u: number) {
   // the gaps close first, then the cover drops
   const close = k(u, 0, .7), cover = k(u, .6, 1), gap = G * (1 - close);
   // read top to bottom like the folds: context at the bottom, judgement, data on top
-  const z = [H[2] + H[1] + 2 * gap, H[2] + gap, 0];
+  // closing lifts the whole stack by one gap, so the merged block sits mid-frame rather than on its floor
+  const z0 = G * close, z = [z0 + H[2] + H[1] + 2 * gap, z0 + H[2] + gap, z0];
   const x = (i: number) => X0 + a[i] * POP * (1 - close);
   let g = '';
   // exploded-view guides: dashed lines from each layer's visible corners up to the next one
@@ -104,7 +105,7 @@ export function draw(a: number[], u: number) {
   g += lit(a[2], context(x(2), 0, z[2]));
   g += lit(a[1], judgement(x(1), 0, z[1]));
   g += lit(a[0], data(x(0), 0, z[0]));
-  g += lit(cover, binding(X0, 0, H[0] + H[1] + H[2], cover));
+  g += lit(cover, binding(X0, 0, z0, H[0] + H[1] + H[2], cover));
   return g;
 }
 

@@ -89,7 +89,7 @@ const closing = { label: 'The Standard', title: 'The missing context lives with 
   .body { --fold: 50svh; --figh: 70svh; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
 
   /* Folds: one per screen; the active one is full strength, the rest step back */
-  .folds { grid-column: 1 / span 5; }
+  .folds { grid-column: 1 / span 5; padding-block: calc((var(--figh) - var(--fold)) / 2); }
   .fold { display: grid; gap: 20px; align-content: center; justify-items: start; min-height: var(--fold); }
   /* Not reached yet: grey; the active fold reads in full colour */
   .fold :is(h3, .body-copy, .chip) { transition: color 400ms var(--ease-out); }
@@ -99,8 +99,8 @@ const closing = { label: 'The Standard', title: 'The missing context lives with 
 
   /* Figure: sticks under the header, centred in the screen, for the whole length of the folds */
   /* The figure's centre sits on the first fold's centre at the start, on the screen's centre while stuck, and on the
-     last fold's centre at the end: the column overhangs the folds by half the difference at both ends */
-  .art { grid-column: 6 / -1; margin-block: calc((var(--fold) - var(--figh)) / 2); }
+     last fold's centre at the end: the folds get half the difference as padding, so nothing overhangs the section */
+  .art { grid-column: 6 / -1; }
   .stick { position: sticky; top: calc(50svh - var(--figh) / 2); height: var(--figh); }
   .fig { height: 100%; margin: 0; }
   .fig svg { width: 100%; height: 100%; overflow: visible; }
@@ -134,7 +134,8 @@ const closing = { label: 'The Standard', title: 'The missing context lives with 
   @media (max-width: 999px) {
     /* Figure on top, sticky and short; folds scroll under it */
     .body { grid-template-columns: minmax(0, 1fr); }
-    .art { grid-column: 1; grid-row: 1; position: sticky; top: var(--site-bar); z-index: 1; margin: 0; background: var(--bg); padding-block: 12px; }
+    .art { grid-column: 1; grid-row: 1; position: sticky; top: var(--site-bar); z-index: 1; background: var(--bg); padding-block: 12px; }
+    .folds { padding-block: 0; }
     .stick { position: static; height: auto; padding: 0; }
     .fig { flex: none; height: 34svh; }
     .folds { grid-column: 1; }
