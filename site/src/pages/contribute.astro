@@ -203,6 +203,7 @@ const GET = [
         <div class="copy">
           <h2 id="send-h" class="headline t-display">Have a skill, a scenario or a rule? <span class="tone-2">Put it in the Standard</span></h2>
           <p class="t-p1 lead">Send it as you run it today. We package it, test it with you and publish it under your name, with your company and links on every page it appears on.</p>
+          <IsoArt name="typewriter" mono accent="brand" class="card-art" />
         </div>
         <SendForm opts={OPTS} />
       </div>
@@ -423,9 +424,13 @@ const GET = [
   /* Closing card: white on black, copy left; the form fills the right half edge to edge, split off by a 1px line */
   .close { background: var(--bg); padding-block: 104px 56px; }
   .card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); overflow: hidden; border-radius: var(--radius-4); background: var(--neutral-0); --text: var(--neutral-950); --text-2: var(--neutral-500); --text-body: var(--neutral-800); color: var(--text); }
-  .card .copy { align-self: start; display: grid; gap: var(--gap-body); position: sticky; top: calc(var(--site-bar) + 32px); padding: 64px; }
+  .card .copy { position: relative; display: grid; grid-template-rows: auto auto 1fr; gap: var(--gap-body); align-content: start; justify-items: stretch; max-width: none; padding: 64px 64px 0; }
   .card .lead { max-width: 480px; color: var(--text-body); }
-  .card :global(.send-form) { max-width: none; border-radius: 0; padding: 64px; box-shadow: inset 1px 0 var(--neutral-100); }
+  .card :global(.send-form) { max-width: none; border-radius: 0; padding: 64px; }
+  /* Typewriter fills the column under the copy, bleeding off the bottom and left; it fades out at its top and towards the form */
+  .card :global(.card-art) { --fade: linear-gradient(transparent 5%, #000 40%), linear-gradient(270deg, transparent 5%, #000 45%); min-height: 460px; margin: 0 -64px 0; border-radius: 0; background: none; -webkit-mask: var(--fade); -webkit-mask-composite: source-in; mask: var(--fade); mask-composite: intersect; }
+  .card :global(.card-art .iso-art) { inset: -4% auto -14% -10%; width: 150%; height: 118%; }
+  .card :global(.card-art .type) { fill: var(--primary-450); }
 
   /* Popup: the same form in a modal; fades and rises in, the backdrop dims */
   .pop { width: min(650px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: var(--radius-4); background: var(--neutral-0); color: var(--neutral-950); overflow: auto; overscroll-behavior: contain; opacity: 0; transform: translateY(16px) scale(.98); transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
@@ -449,8 +454,9 @@ const GET = [
     .tl > .stop:not(:last-child)::before { content: ''; position: absolute; left: 13.5px; top: 14px; bottom: -14px; width: 1px; background: var(--line); }
     .close { padding-block: 80px 48px; }
     .card { grid-template-columns: minmax(0, 1fr); }
-    .card .copy { position: static; padding: 48px 40px 0; }
-    .card :global(.send-form) { padding: 40px; box-shadow: inset 0 1px var(--neutral-100); margin-top: 40px; }
+    .card .copy { padding: 48px 40px 0; }
+    .card :global(.card-art) { min-height: 0; aspect-ratio: 1.3; margin-inline: -40px; }
+    .card :global(.send-form) { padding: 40px; }
     .ways { grid-template-rows: none; row-gap: var(--gutter); }
     .way { grid-row: auto; grid-template-rows: none; }
     /* The global hub rule hides the art below 1000; here the typewriter stays, under the copy, full bleed */
@@ -479,7 +485,8 @@ const GET = [
     .way { padding: 24px; }
     .close { padding-block: 32px; }
     .card .copy { padding: 32px 24px 0; }
-    .card :global(.send-form) { padding: 32px 20px; margin-top: 32px; }
+    .card :global(.card-art) { margin-inline: -24px; }
+    .card :global(.send-form) { padding: 32px 20px; }
     .pop-head { padding: 24px 20px 8px; }
     .hubhelp { padding: 32px 24px; }
     .hubhelp p { font-size: 22px; }
