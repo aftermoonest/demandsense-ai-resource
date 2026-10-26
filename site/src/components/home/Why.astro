@@ -1,0 +1,147 @@
+---
+// Why AI can't get LinkedIn Ads right (home, after the problem scene). Left: four folds (data, judgement, context,
+// the closing line). Right: the playbook figure sticks; the fold in the middle of the screen lights its block,
+// and the closing line stacks the three into one bound block. Copy: client V1, 26 Oct 2026.
+import { draw, viewBox, aria } from '../../art/playbook';
+const cards = [
+  { label: 'The data', title: 'Your data is held together with duct tape', body: 'Campaign Manager exports, CRM reports, website data and a spreadsheet joining them by hand. Each covers part of the picture, at a different level (campaigns, people, companies) and over a different date range. AI reads whatever you paste in and fills the gaps with guesses.' },
+  { label: 'The judgement', title: 'It can’t tell generic advice from what works in a real account', body: 'Most of what AI knows about LinkedIn Ads comes from general best-practice content. The calls people make every week on real budgets rarely get written down: when a low CPL is enough to move budget, when a drop in CTR means fatigue, when an audience is big enough to count as warm. So AI doesn’t know them.' },
+  { label: 'The context', title: 'It goes for the average and misses your context', body: 'Models lean toward the most common answer. Ask whether a frequency of 20 over 90 days is too high, and you’ll get the same answer for every campaign. On a cold list that’s far too much. On a retargeting audience it’s within range. Without the campaign’s context and the account’s own history to compare against, AI can’t tell good from average.' },
+];
+const CLOSING = 'The context AI is missing lives with the people who run LinkedIn budgets every week. So we started writing it down with them.';
+const tags = ['Data', 'Judgement', 'Context', 'Playbook'];
+---
+<section class="why blk wrap" aria-labelledby="h-why" data-why>
+  <div class="head">
+    <p class="marker">The problem</p>
+    <h2 id="h-why" class="headline t-h2">Why AI can’t get LinkedIn Ads right. <span class="tone-2">It will answer any question about your campaigns, but the answers make your job messier, not easier</span></h2>
+  </div>
+
+  <div class="body">
+    <ol class="folds">
+      {cards.map((c, i) => (
+        <li class="fold" data-step={i}>
+          <p class="lbl"><span class="no">{String(i + 1).padStart(2, '0')}</span>{c.label}</p>
+          <h3 class="t-h3">{c.title}</h3>
+          <p class="t-p1 body-copy">{c.body}</p>
+        </li>
+      ))}
+      <li class="fold closing" data-step="3">
+        <p class="lbl"><span class="no">04</span>So</p>
+        <p class="t-h2 close-line">{CLOSING}</p>
+      </li>
+    </ol>
+
+    <div class="art">
+      <div class="stick">
+        <figure class="fig">
+          <svg viewBox={viewBox} role="img" aria-label={aria} preserveAspectRatio="xMidYMid meet"><g data-pb set:html={draw([1, 0, 0], 0)} /></svg>
+        </figure>
+        <ol class="tags" aria-hidden="true">{tags.map((t, i) => <li data-tag={i}><span class="no">{String(i + 1).padStart(2, '0')}</span>{t}</li>)}</ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { draw } from '../../art/playbook';
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  for (const sec of document.querySelectorAll<HTMLElement>('[data-why]')) {
+    const g = sec.querySelector('[data-pb]')!;
+    const folds = [...sec.querySelectorAll<HTMLElement>('.fold')];
+    const tags = [...sec.querySelectorAll<HTMLElement>('[data-tag]')];
+    // Eased state: each block's light and the merge chase their targets, ~1.1 s per change
+    const cur = { a: [1, 0, 0], u: 0 }, tgt = { a: [1, 0, 0], u: 0 };
+    let raf = 0, last = 0;
+    const tick = (now: number) => {
+      const dt = Math.min(64, now - (last || now)); last = now;
+      let moving = false;
+      const step = (c: number, t: number, tau: number) => {
+        const n = still.matches ? t : c + (t - c) * (1 - Math.exp(-dt / tau));
+        if (Math.abs(t - n) > .002) { moving = true; return n; }
+        return t;
+      };
+      cur.a = cur.a.map((c, i) => step(c, tgt.a[i], 220));
+      cur.u = step(cur.u, tgt.u, 450); // the merge runs on a gentler clock so its three phases read
+      g.innerHTML = draw(cur.a, cur.u);
+      raf = moving ? requestAnimationFrame(tick) : 0;
+      if (!moving) last = 0;
+    };
+    const go = (i: number) => {
+      tgt.a = [0, 1, 2].map((j) => (j === i || i === 3 ? 1 : 0)); // the closing line lights the whole playbook
+      tgt.u = i === 3 ? 1 : 0;
+      folds.forEach((f, j) => f.classList.toggle('on', j === i));
+      tags.forEach((t, j) => t.classList.toggle('on', j === i));
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    // The fold crossing the middle of the screen is the active one
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && go(Number((e.target as HTMLElement).dataset.step))), { rootMargin: '-50% 0px -50% 0px' });
+    folds.forEach((f) => io.observe(f));
+    go(0);
+  }
+</script>
+
+<style>
+  .why { padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
+  .head { display: grid; gap: var(--gap-overline); margin-bottom: 64px; }
+  .head .headline { max-width: 22em; }
+  .body { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
+
+  /* Folds: one per screen; the active one is full strength, the rest step back */
+  .folds { grid-column: 1 / span 5; }
+  .fold { display: grid; gap: 16px; align-content: center; min-height: calc(80svh - var(--site-bar)); padding-left: 24px; border-left: 1px solid var(--line); opacity: .32; transition: opacity 400ms var(--ease-out), border-color 400ms var(--ease-out); }
+  .fold.on { opacity: 1; border-left-color: var(--primary-450); }
+  .lbl { display: flex; align-items: center; gap: 10px; color: var(--text); }
+  .no { display: grid; place-items: center; min-width: 28px; height: 22px; padding: 0 6px; border-radius: var(--radius-2); background: var(--bg-muted); color: var(--text-body); transition: background-color 400ms var(--ease-out), color 400ms var(--ease-out); }
+  .fold.on .no { background: var(--primary-450); color: var(--neutral-0); }
+  .body-copy { max-width: 34em; color: var(--text-body); text-wrap: pretty; }
+  .close-line { text-wrap: balance; }
+
+  /* Figure: sticks under the header, centred in the screen, for the whole length of the folds */
+  .art { grid-column: 7 / -1; }
+  .stick { position: sticky; top: var(--site-bar); display: grid; align-content: center; gap: 24px; height: calc(100svh - var(--site-bar)); }
+  .fig { margin: 0; aspect-ratio: 4 / 3; border-radius: var(--radius-4); background: var(--bg-subtle) radial-gradient(circle, var(--neutral-100) 1px, transparent 1.5px) 0 0 / 16px 16px; box-shadow: inset 0 0 0 1px var(--line); }
+  .fig svg { width: 100%; height: 100%; overflow: visible; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .tags li { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1px var(--line); font: 600 12px/1 var(--font-mono); text-transform: uppercase; color: var(--text-2); transition: color 300ms var(--ease-out), box-shadow 300ms var(--ease-out); }
+  .tags li .no { min-width: 0; height: 20px; border-radius: var(--radius-pill); font-size: 10px; }
+  .tags li.on { color: var(--text); box-shadow: inset 0 0 0 1px var(--primary-450); }
+  .tags li.on .no { background: var(--primary-450); color: var(--neutral-0); }
+
+  /* Drawing palette on white: pale faces, grey hairlines; the lit block takes primary blue and a soft glow */
+  .fig :global(svg) { --c: var(--primary-450); --ln: color-mix(in srgb, var(--neutral-300) 70%, var(--neutral-200)); }
+  .fig :global(*) { vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+  .fig :global(.f) { stroke: var(--ln); stroke-width: .8; }
+  .fig :global(.det) { fill: none; stroke: var(--neutral-200); stroke-width: .6; }
+  .fig :global(.paper) { fill: var(--neutral-0); }
+  .fig :global(.tint) { fill: var(--neutral-25); }
+  .fig :global(.body) { fill: var(--neutral-50); }
+  .fig :global(.blk) { fill: var(--neutral-200); }
+  .fig :global(.tape) { fill: color-mix(in srgb, var(--neutral-100) 80%, #fff); stroke-dasharray: 2 2; }
+  .fig :global(.band) { fill: var(--neutral-50); stroke: none; }
+  .fig :global(.hlf) { fill: var(--neutral-300); stroke: none; }
+  .fig :global(.hlf-s) { stroke: var(--neutral-300); stroke-width: .8; stroke-dasharray: 3 2; }
+  .fig :global(.spine) { stroke: var(--neutral-300); stroke-width: 1.4; }
+  .fig :global(.lit) { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--c) 30%, transparent)); }
+  .fig :global(.lit .f) { stroke: var(--c); }
+  .fig :global(.lit .det) { stroke: color-mix(in srgb, var(--c) 45%, #fff); }
+  .fig :global(.lit .paper) { fill: color-mix(in srgb, var(--c) 4%, #fff); }
+  .fig :global(.lit .tint) { fill: color-mix(in srgb, var(--c) 9%, #fff); }
+  .fig :global(.lit .body) { fill: color-mix(in srgb, var(--c) 16%, #fff); }
+  .fig :global(.lit .tape) { fill: color-mix(in srgb, var(--c) 28%, #fff); }
+  .fig :global(.lit .band) { fill: color-mix(in srgb, var(--c) 10%, #fff); }
+  .fig :global(.lit :is(.hlf)) { fill: var(--c); }
+  .fig :global(.lit .hlf-s), .fig :global(.lit .spine) { stroke: var(--c); }
+
+  @media (max-width: 999px) {
+    /* Figure on top, sticky and short; folds scroll under it */
+    .body { grid-template-columns: minmax(0, 1fr); }
+    .art { grid-column: 1; grid-row: 1; position: sticky; top: var(--site-bar); z-index: 1; background: var(--bg); padding-block: 12px; }
+    .stick { position: static; height: auto; gap: 12px; }
+    .fig { aspect-ratio: 16 / 9; }
+    .folds { grid-column: 1; }
+    .fold { min-height: 60svh; }
+    .tags { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .fold, .no { transition: none; } }
+</style>

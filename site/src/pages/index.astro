@@ -1,6 +1,6 @@
 ---
 // Home: the Standard's landing. Copy from the live site (the-ai-standard-site.netlify.app); structure from the brief of 26 Oct 2026.
-// Black from the hero through the problem scene, white for The fix, rules and the directory, black again for authors + form.
+// Black from the hero through the problem scene, white for the why-AI-fails block, rules and the directory, black again for authors + form.
 import { getCollection } from 'astro:content';
 import { arrow } from '../arrows';
 import Base from '../layouts/Base.astro';
@@ -10,6 +10,7 @@ import SectionHead from '../components/SectionHead.astro';
 import RuleRow from '../components/RuleRow.astro';
 import Problem from '../components/home/Problem.astro';
 import Meet from '../components/home/Meet.astro';
+import Why from '../components/home/Why.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { T } from '../site';
 
@@ -69,17 +70,7 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
     <Problem />
 
     <div class="ruled">
-      <!-- The fix: empty frame; the client supplies the headline answer, the theses and the visual -->
-      <section class="blk wrap fix" aria-labelledby="h-fix">
-        <div class="fix-copy">
-          <p class="marker">The fix</p>
-          <h2 id="h-fix" class="headline t-h3">Why do you make AI work with data rather than simply store it? <span class="tone-2">Answer to come from the client</span></h2>
-          <ol class="theses" data-reveal>
-            {[1, 2, 3].map((n) => <li><span class="lbl">{String(n).padStart(2, '0')}</span><span class="t-h6">Thesis {n}</span><span class="t-p2 tone-2">Text to come</span></li>)}
-          </ol>
-        </div>
-        <div class="fix-art slot-box" aria-hidden="true"><span class="lbl">Visual</span></div>
-      </section>
+      <Why />
 
       <!-- Rules: the Directory's rules block, as is for now -->
       <section class="blk wrap bleed" data-type="rule" aria-labelledby="h-rules">
@@ -148,17 +139,6 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
   .ini { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--bg-muted); font: 600 12px/1 var(--font-mono); flex: none; }
 
   .blk { padding-block: var(--section-ruled-top) var(--section-ruled-bottom); }
-  /* Placeholder box for client-supplied visuals */
-  .slot-box { display: grid; place-items: center; border-radius: var(--radius-4); background: var(--bg-subtle); box-shadow: inset 0 0 0 1px var(--line); color: var(--text-meta); }
-  .slot-box .lbl { color: var(--text-meta); }
-
-  .fix { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); align-items: stretch; }
-  .fix-copy { grid-column: 1 / span 6; display: grid; gap: var(--gap-overline); align-content: start; }
-  .theses { display: grid; margin-top: var(--header-gap); border-top: 1px solid var(--line); }
-  .theses li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 4px 16px; padding-block: 24px; border-bottom: 1px solid var(--line); }
-  .theses li > :not(.lbl) { grid-column: 2; }
-  .theses .lbl { grid-row: span 2; padding-top: 4px; }
-  .fix-art { grid-column: 8 / -1; min-height: 480px; }
 
 
   .dir-head { display: grid; gap: var(--gap-overline); justify-items: center; text-align: center; margin-bottom: var(--header-gap); }
@@ -198,9 +178,6 @@ const ini = (n: string) => n.split(' ').map((w) => w[0]).slice(0, 2).join('');
     .quotes { grid-auto-columns: min(80%, 420px); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--edge-inset)); padding-inline: var(--edge-inset); scroll-padding-inline: var(--edge-inset); }
     .quote { scroll-snap-align: start; min-height: 300px; }
     .quote:first-child { padding-left: 0; } .quote:last-child { padding-right: 32px; }
-    .fix { grid-template-columns: minmax(0, 1fr); gap: 40px; }
-    .fix-copy, .fix-art { grid-column: 1; }
-    .fix-art { min-height: 280px; }
   }
   @media (max-width: 699px) {
     .hero { padding-block: 40px; }
