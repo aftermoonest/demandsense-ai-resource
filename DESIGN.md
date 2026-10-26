@@ -725,7 +725,7 @@ Two 6-col halves, 128 between rows. Copy half: marker → 24 two-tone headline (
 | Credit, joining paths, benefits | `card/feature` accordion + content cards |
 | Distribution timeline | Horizontal stepper: l1 phase labels, n3 dates, line connecting, orange dot on current |
 | Closing CTA "Take your seat" | Black CTA band with form or email action |
-| Footer disclaimer | Site footer + l2 LinkedIn® trademark line |
+| Footer disclaimer | Site footer + l2 LinkedIn trademark line |
 
 Type badges for Rule / Skill / Scenario: same shape as status chips (pad 4/8, radius 2, l1), all three grey (`--bg-muted` fill, `--text`; on black `neutral/800`). No type colours: the word names the type. In figure titles use the type chip (§8.15).
 

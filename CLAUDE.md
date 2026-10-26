@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Statement
 
-**DemandSense AI Resource** — a resource landing page that introduces a course-like resource, framed explicitly as a *resource* (community-built, free, maintained by DemandSense) rather than a product. The current live version is https://the-ai-standard.vercel.app/ ("The B2B AI Standard for LinkedIn® Ads"). We keep its page structure and rebuild the UI with the DemandSense report design language.
+**DemandSense AI Resource** — a resource landing page that introduces a course-like resource, framed explicitly as a *resource* (community-built, free, maintained by DemandSense) rather than a product. The current live version is https://the-ai-standard.vercel.app/ ("The B2B AI Standard for LinkedIn Ads"). We keep its page structure and rebuild the UI with the DemandSense report design language.
 
 ### Tasks
 

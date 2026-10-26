@@ -1,6 +1,6 @@
 ---
 title: "Account signal sheet"
-description: "Turns a quarter of LinkedIn® Ads, website and CRM data into one ranked list of the accounts sales should call this month, after throwing out the companies that were never real"
+description: "Turns a quarter of LinkedIn Ads, website and CRM data into one ranked list of the accounts sales should call this month, after throwing out the companies that were never real"
 area: "signal-to-sales"
 status: "ready"
 author: "justin-rowe"
@@ -12,7 +12,7 @@ changes: "Reads your data, changes nothing"
 firstRun: "About 10 minutes"
 connectors:
   - Claude
-  - LinkedIn® Ads export
+  - LinkedIn Ads export
   - CRM export
   - DemandSense (optional)
 page:

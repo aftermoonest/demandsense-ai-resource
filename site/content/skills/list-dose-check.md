@@ -11,7 +11,7 @@ changes: "Reads your data, changes nothing"
 firstRun: "About 5 minutes"
 connectors:
   - Claude
-  - LinkedIn® Ads export
+  - LinkedIn Ads export
 # Placeholder page copy (structure from Figma 919:23317); replace with the author’s own
 page:
   does:

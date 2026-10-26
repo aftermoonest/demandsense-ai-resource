@@ -23,7 +23,7 @@ const HEAD: Record<Area, [string, string]> = {
 };
 const groups = (Object.keys(AREAS) as Area[]).map((a) => ({ area: a, rules: rules.filter((r) => r.data.area === a) })).filter((g) => g.rules.length);
 ---
-<Base type="rule" title={`${T.rules} · The B2B AI Standard for LinkedIn® Ads`} description="What an experienced LinkedIn® Ads advertiser checks before trusting a number, one rule at a time">
+<Base type="rule" title={`${T.rules} · The B2B AI Standard for LinkedIn Ads`} description="What an experienced LinkedIn Ads advertiser checks before trusting a number, one rule at a time">
 
   <div class="top surface-black">
     <SiteHeader />

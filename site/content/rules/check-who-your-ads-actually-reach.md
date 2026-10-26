@@ -1,13 +1,13 @@
 ---
 number: 8
 title: "Check every month who your ads actually reach"
-why: "Campaign totals don’t show who the budget actually reached. The LinkedIn® demographics report does"
+why: "Campaign totals don’t show who the budget actually reached. The LinkedIn demographics report does"
 area: "budget-reach"
 featured: true
 page:
   advises:
     text: "The demographics report in Campaign Manager breaks delivery down by seniority, job function, company size and more."
-    source: "LinkedIn® Help a424171 · read 17 Oct 2026"
+    source: "LinkedIn Help a424171 · read 17 Oct 2026"
   adds: "Once a month, check the demographics report by seniority, function and company size, and read the last ten profiles that engaged or became leads."
   reason: "Targeting choices interact. An expansion setting, an overlapping attribute or a missed exclusion can widen delivery without anyone noticing, and a monthly look at the report plus ten real profiles catches it early."
   mattersLess: "If the report matches your targeting month after month, a quick look is enough."
@@ -23,7 +23,7 @@ page:
       company: "B2Linked"
       context: "on an account targeting senior people at companies of 5,000 or more"
       quote: "Over half of our leads started coming from people at much smaller companies, usually one to two-person companies. … If close to 30% or even more of what you check doesn’t actually match what you’re targeting"
-      source: "The LinkedIn® Ads Show, Oct 2026"
+      source: "The LinkedIn Ads Show, Oct 2026"
     - name: "Bogdan Liutic"
       author: "bogdan-liutic"
       company: "CR8"

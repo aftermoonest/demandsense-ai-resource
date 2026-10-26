@@ -14,7 +14,7 @@ youNeed: "Nothing for the sample. A company engagement export and your signal so
 youGet: "An exclusion list, a dose readout and the accounts to route"
 connectors:
   - Claude
-  - LinkedIn® Ads export
+  - LinkedIn Ads export
   - Signal sources
 skills:
   - placeholder-page-check

@@ -49,7 +49,7 @@ const cta = {
   ...p.cta,
 };
 ---
-<Base type="rule" title={`${d.title} · ${T.rules} · The B2B AI Standard for LinkedIn® Ads`} description={d.why}>
+<Base type="rule" title={`${d.title} · ${T.rules} · The B2B AI Standard for LinkedIn Ads`} description={d.why}>
   <DetailHero cover={AREA_COVER[d.area]} crumbs={[{ label: 'Directory', href: '/directory' }, { label: T.rules, href: '/rules' }, { label: d.title }]}
     chips={[{ label: AREAS[d.area] }, { label: `${T.rule} ${nn(d.number)}`, out: true }]} author={author} title={d.title} lead={d.lead ?? d.why}>
     <Fragment slot="actions">
@@ -61,12 +61,12 @@ const cta = {
 
   <DetailFrame toc={toc}>
     {hasRule && (
-      <Sec id="h-rule" label="The rule" title="What the Standard adds." context="On top of what LinkedIn® advises, and why it holds" small class="flush">
+      <Sec id="h-rule" label="The rule" title="What the Standard adds." context="On top of what LinkedIn advises, and why it holds" small class="flush">
         {(p.advises || p.adds) && (
           <div class="pair" data-reveal>
             {p.advises && (
               <div class="box">
-                <p class="lbl-2 k">What LinkedIn® advises</p>
+                <p class="lbl-2 k">What LinkedIn advises</p>
                 <p class="t-p1">{p.advises.text}</p>
                 {p.advises.source && (p.advises.url ? <a class="src ul" href={p.advises.url} rel="noopener">{p.advises.source}</a> : <p class="src">{p.advises.source}</p>)}
               </div>

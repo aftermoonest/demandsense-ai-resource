@@ -11,13 +11,13 @@ changes: "Reads your data, changes nothing"
 firstRun: "About 5 minutes"
 connectors:
   - Claude
-  - LinkedIn® Ads export
+  - LinkedIn Ads export
 # Placeholder page copy (structure from Figma 919:23317); replace with the author’s own
 page:
   does:
     headline: "Some of the companies you pay to reach don’t exist."
     body:
-      - "People list employers like “Self-employed”, “Stealth” or “Confidential”, and LinkedIn® treats each as a company. On an account list, those pages soak up clicks at a price that looks cheap and healthy."
+      - "People list employers like “Self-employed”, “Stealth” or “Confidential”, and LinkedIn treats each as a company. On an account list, those pages soak up clicks at a price that looks cheap and healthy."
       - "This reads every employer behind a paid click, flags the ones that stand for no real company, and gives you the exact names to exclude, matched exactly so a real company is never caught by accident."
   prompt:
     headline: "Paste it into Claude."

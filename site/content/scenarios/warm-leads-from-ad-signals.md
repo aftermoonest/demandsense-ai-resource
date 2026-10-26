@@ -14,7 +14,7 @@ youNeed: "Nothing for the sample. Four CSV exports for your own"
 youGet: "A ranked sheet: who to call, and why"
 connectors:
   - Claude
-  - LinkedIn® Ads export
+  - LinkedIn Ads export
   - CRM export
   - DemandSense (optional)
 skills:
@@ -36,7 +36,7 @@ page:
         text: "Your own staff, competitors, ISPs, bots and placeholder employer pages, struck before anything was ranked"
       - value: "59%"
         title: "A pull that came back short"
-        text: "The LinkedIn® export stopped at 60 rows. More than half the real total was missing, and nothing in Campaign Manager said so"
+        text: "The LinkedIn export stopped at 60 rows. More than half the real total was missing, and nothing in Campaign Manager said so"
       - value: "19 days"
         title: "A source that went quiet"
         text: "Website sessions stopped reporting mid-window. The run halted rather than build a list on a month with a hole in it"

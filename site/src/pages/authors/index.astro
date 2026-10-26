@@ -15,7 +15,7 @@ const signed = (e: { data: { author?: { id: string } } }) => !!e.data.author && 
 const nWork = (await getCollection('scenarios', signed)).length + (await getCollection('skills', signed)).length;
 const two = (n: number) => String(n).padStart(2, '0');
 ---
-<Base title={`${T.authors} · The B2B AI Standard for LinkedIn® Ads`} description="The practitioners who sign the scenarios, skills and rules in the Standard">
+<Base title={`${T.authors} · The B2B AI Standard for LinkedIn Ads`} description="The practitioners who sign the scenarios, skills and rules in the Standard">
 
   <!-- Whole page on black: hero, list and closing band -->
   <div class="top surface-black">
@@ -23,7 +23,7 @@ const two = (n: number) => String(n).padStart(2, '0');
     <div class="wrap hero">
       <div class="copy">
         <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }, { label: T.authors }]} />
-        <h1 class="headline t-display">The people behind the work. <span class="tone-2">Practitioners who run LinkedIn® Ads every week and sign each routine they hand over</span></h1>
+        <h1 class="headline t-display">The people behind the work. <span class="tone-2">Practitioners who run LinkedIn Ads every week and sign each routine they hand over</span></h1>
       </div>
       <dl class="tally" aria-label="In the library">
         <div><dt class="lbl">{T.authors}</dt><dd class="t-n3">{two(authors.length)}</dd></div>
