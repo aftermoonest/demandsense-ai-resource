@@ -145,7 +145,7 @@ const sparkles = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="curren
   .cards li { --bp: var(--neutral-850); grid-area: 1 / 1; display: grid; gap: 8px; align-content: start; padding: 24px; border: 1px dashed var(--neutral-800); border-radius: var(--radius-2); background: var(--neutral-1000); }
   .cards .t-h5 { font-size: 20px; }
   .cards .body { color: var(--text-meta); }
-  .viz { position: relative; margin: -8px -8px 16px; padding: 20px; border: 1px solid var(--bp); background: linear-gradient(var(--neutral-900) 1px, transparent 1px) 0 0 / 16px 16px, linear-gradient(90deg, var(--neutral-900) 1px, transparent 1px) 0 0 / 16px 16px; }
+  .viz { position: relative; margin: -8px -8px 16px; padding: 20px; border: 1px solid var(--bp); --grid: color-mix(in srgb, var(--neutral-900) 55%, transparent); background: linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 24px 24px; }
   /* crop marks on the figure's corners */
   .viz::before, .viz::after { content: ''; position: absolute; width: 8px; height: 8px; border: 0 solid var(--neutral-500); }
   .viz::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
